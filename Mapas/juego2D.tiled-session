@@ -1,0 +1,24 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "",
+    "expandedProjectPaths": [
+    ],
+    "fileStates": {
+    },
+    "last.imagePath": "C:/Users/samue/OneDrive/Escritorio/CIIE/Modern tiles_Free/Interiors_free/48x48",
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 64,
+    "map.tileWidth": 64,
+    "openFiles": [
+    ],
+    "project": "juego2D.tiled-project",
+    "recentFiles": [
+    ],
+    "tileset.tileSize": {
+        "height": 64,
+        "width": 64
+    }
+}
