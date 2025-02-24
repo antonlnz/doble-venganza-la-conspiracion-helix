@@ -3,6 +3,7 @@ import pytmx
 from pygame.locals import *
 
 from Puzzles.cardPuzzle import CardPuzzle
+from Puzzles.keypadPuzzle import KeypadPuzzle
 from ayuntamiento import Ayuntamiento
 
 
@@ -10,13 +11,14 @@ class Fase:
     def __init__(self):  
         self.ayuntamiento = Ayuntamiento()
         self.cardPuzle = CardPuzzle()
-        
+        self.keypadPuzzle = KeypadPuzzle()
 
 
 
     def dibujar(self, pantalla):
         self.ayuntamiento.dibujar(pantalla)
         self.cardPuzle.dibujar(pantalla)
+        #self.keypadPuzzle.dibujar(pantalla)
 
     def update(self, tiempo):
         self.cardPuzle.update(tiempo)
@@ -27,6 +29,9 @@ class Fase:
             # Si se sale del programa
             if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
                 return True
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if evento.button == 1:
+                    self.keypadPuzzle.eventos(evento.pos)
 
         # Indicamos la acción a realizar segun la tecla pulsada para cada jugador
         teclasPulsadas = pygame.key.get_pressed()
