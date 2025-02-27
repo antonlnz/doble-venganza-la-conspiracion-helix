@@ -148,9 +148,13 @@ class WirePuzzle:
         
         # Mostrar información de intentos y tiempo restante
         if not self.puzzle_solved and not self.game_over:
+            # Crear un fondo para los indicadores
+            info_bg = pygame.Surface((200, 80), pygame.SRCALPHA)
+            info_bg.fill((0, 0, 0, 180))  # Negro semitransparente
+            pantalla.blit(info_bg, (40, 40))
+            
             # Mostrar intentos restantes con color según cantidad
             attempts_text = f"Intentos: {self.attempts_left}"
-            # Determinar color según número de intentos
             if self.attempts_left == 3:
                 attempts_color = VERDE
             elif self.attempts_left == 2:
@@ -158,6 +162,7 @@ class WirePuzzle:
             else:  # 1 intento
                 attempts_color = ROJO
             
+            # Dibujar textos de intentos y tiempo
             attempts_surface = self.small_font.render(attempts_text, True, attempts_color)
             pantalla.blit(attempts_surface, (50, 50))
             
@@ -178,16 +183,34 @@ class WirePuzzle:
             
             pantalla.blit(time_surface, (50, 90))
             
-            # Mostrar instrucciones
+            question_width = WIDTH - 900  # Reducir ancho para no tapar contador
+            question_height = 150  # Aumentar altura para añadir instrucciones
+            question_y = 20  # Mantener arriba para evitar superposiciones
+            question_x = WIDTH // 2 - question_width // 2  # Centrar el fondo
+            
+            # Crear un fondo negro semitransparente para la pregunta
+            question_bg = pygame.Surface((question_width, question_height), pygame.SRCALPHA)
+            question_bg.fill((0, 0, 0, 180))  # Negro semitransparente
+            pantalla.blit(question_bg, (question_x, question_y))
+            
+            # Mostrar pregunta con una fuente más grande
+            self.medium_font = pygame.font.SysFont('Arial', 28, bold=True)
             question_text = "¿Cuál es el siguiente número de esta serie: 3.829, 9.382, 2.938...?"
-            question_surface = self.small_font.render(question_text, True, BLANCO)
-            pantalla.blit(question_surface, (WIDTH // 2 - question_surface.get_width() // 2, 50))
+            question_surface = self.medium_font.render(question_text, True, BLANCO)
+            pantalla.blit(question_surface, (WIDTH // 2 - question_surface.get_width() // 2, question_y + 20))
             
+            # Mostrar opciones
             options_text = "A) 8.329   B) 8.239   C) 8.293   D) 8.932"
-            options_surface = self.small_font.render(options_text, True, BLANCO)
-            pantalla.blit(options_surface, (WIDTH // 2 - options_surface.get_width() // 2, 90))
+            options_surface = self.medium_font.render(options_text, True, BLANCO)
+            pantalla.blit(options_surface, (WIDTH // 2 - options_surface.get_width() // 2, question_y + 60))
             
-            # Dibujar el halo rojo en los últimos 5 segundos
+            # Instrucciones para resolver el puzzle
+            self.small_font = pygame.font.SysFont('Arial', 20, bold=True)
+            instruction_text = "Baja los interruptores de la fila correspondiente a la letra correcta (A, B, C o D)"
+            instruction_surface = self.small_font.render(instruction_text, True, BLANCO)
+            pantalla.blit(instruction_surface, (WIDTH // 2 - instruction_surface.get_width() // 2, question_y + 100))
+            
+            # Dibujar el halo rojo en los últimos 10 segundos
             if seconds_left <= 10 and self.red_halo_active:
                 # Crear una superficie semitransparente para el halo
                 halo_surface = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
