@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.2" name="Room_Builder_free_48x48" tilewidth="48" tileheight="48" tilecount="391" columns="17">
+<tileset version="1.10" tiledversion="1.11.1-99-gec89c545" name="Room_Builder_free_48x48" tilewidth="48" tileheight="48" tilecount="391" columns="17">
  <image source="Room_Builder_free_48x48.png" width="816" height="1104"/>
  <tile id="85">
   <objectgroup>
@@ -652,17 +652,17 @@
   </objectgroup>
  </tile>
  <tile id="306">
-  <objectgroup>
-   <object id="1" type="Pared" x="0" y="0" width="48" height="48"/>
+  <objectgroup draworder="index" id="2">
+   <object id="1" type="Pared" x="0.247678" y="0" width="48" height="48"/>
   </objectgroup>
  </tile>
  <tile id="307">
-  <objectgroup>
+  <objectgroup draworder="index" id="2">
    <object id="1" type="Pared" x="0" y="0" width="48" height="48"/>
   </objectgroup>
  </tile>
  <tile id="308">
-  <objectgroup>
+  <objectgroup draworder="index" id="2">
    <object id="1" type="Pared" x="0" y="0" width="48" height="48"/>
   </objectgroup>
  </tile>
