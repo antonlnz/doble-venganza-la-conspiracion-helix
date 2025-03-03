@@ -3,7 +3,7 @@ from settings import *
 import math
 import os
 
-class WirePuzzle:
+class SwitchPuzzle:
     def __init__(self):
         # Obtener la ruta base del proyecto (carpeta raíz)
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
