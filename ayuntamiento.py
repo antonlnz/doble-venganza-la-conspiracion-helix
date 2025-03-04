@@ -5,13 +5,15 @@ import pytmx
 
 from personajes import *
 from settings import *
+from escena import *
 
 
-class Ayuntamiento:
-    def __init__(self):
+class Ayuntamiento(Escena):
+    def __init__(self, director):
+
+        Escena.__init__(self, director)
+
         self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
-
-        
 
         self.jugador1 = Jugador()
         self.grupoJugadores = pygame.sprite.Group( self.jugador1)
@@ -67,17 +69,14 @@ class Ayuntamiento:
         
 
     def dibujar(self,pantalla):
-        
-        # self.grupoTiles.draw(pantalla)
-        # self.grupoObjetos.draw(pantalla)
         self.grupoSprites.draw(pantalla)
-        # pygame.draw.rect(pantalla, ROJO, self.jugador1.rect)
+        
 
     def eventos(self, lista_eventos):
         for evento in lista_eventos:
             # Si se sale del programa
             if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
-                return True
+                self.director.salirEscena()
 
         teclasPulsadas = pygame.key.get_pressed()
         self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
