@@ -1,152 +1,144 @@
 import pygame
 import random
 import time
-
-# Inicializar pygame
-pygame.init()
+import sys
+from escena import *
+import os
 
 # Configuración de la pantalla
-screen = pygame.display.set_mode((800, 600))
-pygame.display.set_caption("Guardias Puzzle")
 
 # Colores
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-
-# Fuente
-font = pygame.font.Font(None, 74)
-
-# Cargar y escalar imagen de fondo
-background_image = pygame.image.load('C:/Users/siimi/Documents/doble-venganza-la-conspiracion-helix/imagenes/Guardias/fondo_banco2.jpg')
-background_image = pygame.transform.scale(background_image, (800, 600))
-
-# Cargar y escalar imágenes de corazones
-heart_full = pygame.image.load('C:/Users/siimi/Documents/doble-venganza-la-conspiracion-helix/imagenes/Guardias/heart_full_16x16.png')
-heart_empty = pygame.image.load('C:/Users/siimi/Documents/doble-venganza-la-conspiracion-helix/imagenes/Guardias/heart_empty_16x16.png')
-heart_full = pygame.transform.scale(heart_full, (24, 24))
-heart_empty = pygame.transform.scale(heart_empty, (24, 24))
-
-# Cargar imágenes de guardias
-policeman_image = pygame.image.load('C:/Users/siimi/Documents/doble-venganza-la-conspiracion-helix/imagenes/Guardias/Policeman.png')
-policewoman_image = pygame.image.load('C:/Users/siimi/Documents/doble-venganza-la-conspiracion-helix/imagenes/Guardias/Policewoman.png')
-policeman_image = pygame.transform.scale(policeman_image, (200, 200))
-policewoman_image = pygame.transform.scale(policewoman_image, (200, 200))
 
 # Guardias
-class Guardia:
-    def __init__(self, x, y, image):
+class Guardia(Escena):
+    def __init__(self, director, x=0, y=0, image=None):
+        Escena.__init__(self, director)
+        pygame.init()
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
+        self.WIDTH, self.HEIGHT = 800, 600
+        self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
+        pygame.display.set_caption("Guardias Puzzle")
+        self.WHITE = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
+        self.RED = (255, 0, 0)
+        self.GREEN = (0, 255, 0)
+        self.font = pygame.font.Font(None, 74)  # Inicializar la fuente aquí
+        # Cargar y escalar imagen de fondo
+        self.background_image = pygame.image.load('imagenes/Guardias/fondo_banco2.jpg')
+        self.background_image = pygame.transform.scale(self.background_image, (800, 600))
+
+        # Cargar y escalar imágenes de corazones
+        self.heart_full = pygame.image.load('imagenes/Guardias/heart_full_16x16.png')
+        self.heart_empty = pygame.image.load('imagenes/Guardias/heart_empty_16x16.png')
+        self.heart_full = pygame.transform.scale(self.heart_full, (24, 24))
+        self.heart_empty = pygame.transform.scale(self.heart_empty, (24, 24))
+
+        # Cargar imágenes de guardias
+        self.policeman_image = pygame.image.load('imagenes/Guardias/Policeman.png')
+        self.policewoman_image = pygame.image.load('imagenes/Guardias/Policewoman.png')
+        self.policeman_image = pygame.transform.scale(self.policeman_image, (200, 200))
+        self.policewoman_image = pygame.transform.scale(self.policewoman_image, (200, 200))
         self.x = x
         self.y = y
-        self.image = image
+        self.image = image if image else self.policeman_image
         self.sequence = self.generate_sequence()
         self.current_index = 0
         self.health = len(self.sequence)
         self.wrong_key = False
+        self.lives = 3
+        self.last_key_time = time.time()
+        self.start_time = time.time()
+        self.time_limits = [10, 7, 5]  # Tiempos para cada guardia
+        self.current_guardia_index = 0
+        self.running = True
+        self.remaining_time = self.time_limits[self.current_guardia_index]
+        self.imagenes_guardias = [
+            self.policeman_image,
+            self.policewoman_image,
+            self.policeman_image
+        ]
 
     def generate_sequence(self):
         return [random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(5)]
 
     def draw(self, screen):
-        screen.blit(self.image, (self.x, self.y + 200))  # Colocar la imagen debajo del recuadro con las letras y centrarla
-        correct_text = font.render(''.join(self.sequence[:self.current_index]), True, GREEN)
+        screen.blit(self.image, (self.WIDTH // 2 - self.image.get_width() // 2, self.HEIGHT // 2 - self.image.get_height() // 2 + 100))  # Move the image further down
+        correct_text = self.font.render(''.join(self.sequence[:self.current_index]), True, self.GREEN)
         if self.wrong_key:
-            remaining_text = font.render(''.join(self.sequence[self.current_index:self.current_index + 1]), True, RED)
+            remaining_text = self.font.render(''.join(self.sequence[self.current_index:self.current_index + 1]), True, self.RED)
         else:
-            remaining_text = font.render(''.join(self.sequence[self.current_index:self.current_index + 1]), True, BLACK)
+            remaining_text = self.font.render(''.join(self.sequence[self.current_index:self.current_index + 1]), True, self.BLACK)
         text_x = 60 + (580 - correct_text.get_width() - remaining_text.get_width()) // 2
         screen.blit(correct_text, (text_x, 160))
         screen.blit(remaining_text, (text_x + correct_text.get_width(), 160))
 
     def check_key(self, key):
-        if key == self.sequence[self.current_index]:
+        if self.current_index < len(self.sequence) and key == self.sequence[self.current_index]:
             self.current_index += 1
             self.wrong_key = False
             if self.current_index == len(self.sequence):
+                self.current_index = 0  # Reiniciar el índice de la secuencia
+                self.sequence = self.generate_sequence()  # Generar una nueva secuencia
+                self.start_time = time.time()  # Reiniciar el tiempo de inicio
+                self.current_guardia_index += 1
+                if self.current_guardia_index >= len(self.time_limits):
+                    self.running = False
+                else:
+                    self.remaining_time = self.time_limits[self.current_guardia_index]  # Actualizar el tiempo restante
+                    self.image = self.imagenes_guardias[self.current_guardia_index]  # Actualizar la imagen del guardia
                 return True
         else:
             self.wrong_key = True
         return False
 
-# Juego
-def game():
-    running = True
-    clock = pygame.time.Clock()
-    guardias = [
-        Guardia(300, 200, policeman_image),
-        Guardia(300, 200, policewoman_image),
-        Guardia(300, 200, policeman_image)
-    ]
-    current_guardia_index = 0
-    lives = 3
-    last_key_time = time.time()
-    start_time = time.time()
-    time_limits = [10, 7, 5]  # Tiempos para cada guardia
-
-    while running:
-        screen.blit(background_image, (0, 0))
-        
-        for event in pygame.event.get():
+    def eventos(self, eventos):
+        for event in eventos:
             if event.type == pygame.QUIT:
-                running = False
+                self.director.salirPrograma()
             elif event.type == pygame.KEYDOWN:
                 current_time = time.time()
-                if current_time - last_key_time > 2:
-                    last_key_time = current_time
-                if guardias[current_guardia_index].check_key(pygame.key.name(event.key).upper()):
-                    if guardias[current_guardia_index].current_index == len(guardias[current_guardia_index].sequence):
-                        current_guardia_index += 1
-                        if current_guardia_index >= len(guardias):
-                            guardias = []  # Vaciar la lista de guardias
-                            running = False
-                            break
-                        start_time = time.time()  # Reset the timer for each new guardia
-                if guardias[current_guardia_index].wrong_key:
-                    lives -= 1
+                if current_time - self.last_key_time > 2:
+                    self.last_key_time = current_time
+                if self.check_key(pygame.key.name(event.key).upper()):
+                    if self.current_index == len(self.sequence):
+                        self.current_guardia_index += 1
+                        if self.current_guardia_index >= len(self.time_limits):
+                            self.running = False
+                        else:
+                            self.start_time = time.time()  # Reset the timer for each new guardia
+                            self.remaining_time = self.time_limits[self.current_guardia_index]  # Actualizar el tiempo restante
+                            self.image = self.imagenes_guardias[self.current_guardia_index]  # Actualizar la imagen del guardia
+                if self.wrong_key:
+                    self.lives -= 1
 
-        if current_guardia_index < len(time_limits):
-            remaining_time = time_limits[current_guardia_index] - (time.time() - start_time)
-
-        if remaining_time <= 0:
-            running = False
-
-        # Dibujar recuadros blancos
-        pygame.draw.rect(screen, WHITE, (550, 50, 50, 50))  # Recuadro para el tiempo
-        pygame.draw.rect(screen, WHITE, (150, 150, 500, 100))  # Recuadro para las palabras
-
-        if current_guardia_index < len(guardias):
-            guardias[current_guardia_index].draw(screen)
-
-        # Mostrar cuenta atrás
-        timer_text = font.render(str(int(remaining_time)), True, RED)
+    def update(self, tiempo_pasado):
+        if self.current_guardia_index < len(self.time_limits):
+            self.remaining_time = self.time_limits[self.current_guardia_index] - (time.time() - self.start_time)
+        if self.remaining_time <= 0 or self.lives <= 0:
+            self.running = False
+    
+    def dibujar(self, screen):
+        screen.blit(self.background_image, (0, 0))
+        pygame.draw.rect(screen, self.WHITE, (550, 50, 50, 50))  # Recuadro para el tiempo
+        pygame.draw.rect(screen, self.WHITE, (150, 150, 500, 100))  # Recuadro para las palabras
+        self.draw(screen)
+        timer_text = self.font.render(str(int(self.remaining_time)), True, self.RED)
         timer_rect = timer_text.get_rect(center=(575, 75))
         screen.blit(timer_text, timer_rect)
-
-        # Mostrar vidas
         for i in range(3):
-            if i < lives:
-                screen.blit(heart_full, (110 + i * 40, 60))
+            if i < self.lives:
+                screen.blit(self.heart_full, (110 + i * 40, 60))
             else:
-                screen.blit(heart_empty, (110 + i * 40, 60))
-
-        if lives <= 0:
-            running = False
-
-        pygame.display.flip()
-        clock.tick(60)
-
-    # Mostrar mensaje de "Perdiste" o "Felicidades"
-    screen.fill(WHITE)
-    if lives <= 0 or remaining_time <= 0:
-        end_text = font.render("Perdiste", True, RED)
-    elif not guardias:
-        end_text = font.render("Felicidades", True, GREEN)
-    screen.blit(end_text, (275, 250))
-    pygame.display.flip()
-    pygame.time.wait(2000)  # Esperar 2 segundos antes de cerrar
-
-    pygame.quit()
-
-if __name__ == "__main__":
-    game()
+                screen.blit(self.heart_empty, (110 + i * 40, 60))
+        if not self.running:
+            screen.fill(self.WHITE)
+            if self.lives <= 0 or self.remaining_time <= 0:
+                end_text = self.font.render("Perdiste", True, self.RED)
+            else:
+                end_text = self.font.render("Felicidades", True, self.GREEN)
+            screen.blit(end_text, (275, 250))
+            pygame.display.flip()
+            pygame.time.wait(2000)  # Esperar 2 segundos antes de cerrar
+            self.director.salirEscena()  # Add this line to exit the scene
+            pygame.quit()
+            sys.exit()
