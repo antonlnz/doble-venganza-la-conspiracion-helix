@@ -2,9 +2,12 @@ import pygame
 from settings import *
 import math
 import os
+from escena import Escena
 
-class SwitchPuzzle:
-    def __init__(self):
+class SwitchPuzzle(Escena):
+    def __init__(self, director):
+        
+        Escena.__init__(self, director)
         # Obtener la ruta base del proyecto (carpeta raíz)
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         
@@ -170,7 +173,7 @@ class SwitchPuzzle:
             seconds_left = max(0, int(self.time_remaining / 1000))
             time_text = f"Tiempo: {seconds_left}s"
             
-            if seconds_left <= 15:  # Cambiado de 10 a 15 segundos
+            if seconds_left <= 15:
                 # Crear una superficie con canal alfa para el parpadeo
                 time_color = ROJO
                 time_surface = self.small_font.render(time_text, True, time_color)
@@ -262,43 +265,46 @@ class SwitchPuzzle:
             if not self.disabled_switches[i]:
                 self.switch_states[i] = False
     
-    def eventos(self, mouse_click):
-        if mouse_click and not self.show_message and not self.puzzle_solved and not self.game_over:
+    def eventos(self, lista_eventos):
+        if not self.show_message and not self.puzzle_solved and not self.game_over:
             mouse_pos = pygame.mouse.get_pos()
             
-            # Verificar si se hizo clic en algún interruptor
-            for i, area in enumerate(self.switch_areas):
-                if area.collidepoint(mouse_pos) and not self.disabled_switches[i] and not self.switch_states[i]:
-                    self.switch_states[i] = True
-                    
-                    # Encontrar a qué fila pertenece este interruptor
-                    current_row = None
-                    current_row_index = None
-                    for row_index, row in enumerate(self.rows):
-                        if i in row:
-                            current_row = row
-                            current_row_index = row_index
+            # Procesar eventos
+            for evento in lista_eventos:
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    # Verificar si se hizo clic en algún interruptor
+                    for i, area in enumerate(self.switch_areas):
+                        if area.collidepoint(mouse_pos) and not self.disabled_switches[i] and not self.switch_states[i]:
+                            self.switch_states[i] = True
+                            
+                            # Encontrar a qué fila pertenece este interruptor
+                            current_row = None
+                            current_row_index = None
+                            for row_index, row in enumerate(self.rows):
+                                if i in row:
+                                    current_row = row
+                                    current_row_index = row_index
+                                    break
+                            
+                            # Solo verificar la fila actual si está completa
+                            if current_row and all(self.switch_states[j] for j in current_row):
+                                self.show_message = True
+                                self.message_timer = 1500
+                                
+                                if current_row_index == self.correct_answer:
+                                    self.puzzle_solved = True
+                                else:
+                                    self.puzzle_failed = True
+                                    self.attempts_left -= 1
+                                    
+                                    # Marcar los interruptores de esta fila como deshabilitados
+                                    for switch_index in current_row:
+                                        self.disabled_switches[switch_index] = True
+                                    
+                                    # Activar game over solo cuando no quedan intentos
+                                    if self.attempts_left <= 0:
+                                        self.game_over = True
                             break
-                    
-                    # Solo verificar la fila actual si está completa
-                    if current_row and all(self.switch_states[j] for j in current_row):
-                        self.show_message = True
-                        self.message_timer = 3000
-                        
-                        if current_row_index == self.correct_answer:
-                            self.puzzle_solved = True
-                        else:
-                            self.puzzle_failed = True
-                            self.attempts_left -= 1
-                            
-                            # Marcar los interruptores de esta fila como deshabilitados
-                            for switch_index in current_row:
-                                self.disabled_switches[switch_index] = True
-                            
-                            # Activar game over solo cuando no quedan intentos
-                            if self.attempts_left <= 0:
-                                self.game_over = True
-                    break
     
     def _check_row_completion(self):
         # Comprobar si se ha completado alguna fila
@@ -352,7 +358,7 @@ class SwitchPuzzle:
                 self.time_remaining = 0
                 self.game_over = True
                 self.show_message = True
-                self.message_timer = 3000
+                self.message_timer = 1500
                 self.timer_paused = True
         
         # Actualizar el temporizador del mensaje si está visible
@@ -362,6 +368,11 @@ class SwitchPuzzle:
             if self.message_timer <= 0:
                 self.show_message = False
                 self.timer_paused = False  # Reanudar temporizador cuando desaparece el mensaje
+                
+                # Salir de la escena cuando termine el mensaje
+                if self.puzzle_solved or self.game_over:
+                    self.director.salirEscena()
+                
                 # Si el puzzle no está resuelto y no se acabó el juego, resetear interruptores activos
                 if not self.puzzle_solved and not self.game_over:
                     self.resetear_interruptores_activos()

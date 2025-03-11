@@ -2,9 +2,13 @@ import pygame
 import math
 import random
 from settings import *
+from escena import Escena
 
-class DoorLockPuzzle:
-    def __init__(self):
+class DoorLockPuzzle(Escena):
+    def __init__(self, director):
+        
+        Escena.__init__(self, director)
+        
         # Configuración general del puzzle
         self.center_x = WIDTH // 2
         self.center_y = HEIGHT // 2
@@ -82,7 +86,7 @@ class DoorLockPuzzle:
         }
         
         # Estado del puzzle
-        self.time_remaining = 30000  # 30 segundos en milisegundos
+        self.time_remaining = 20000
         self.completado = False
         self.game_over = False
         self.show_message = False
@@ -203,10 +207,10 @@ class DoorLockPuzzle:
             # Guardar el mensaje por si se necesita para la lógica del juego
             self.mensaje = message
 
-    def eventos(self, mouse_click):
+    def eventos(self, lista_eventos):
         if self.completado or self.game_over:
             return
-            
+                
         if self.show_message:
             self.message_timer -= 16
             if self.message_timer <= 0:
@@ -214,6 +218,12 @@ class DoorLockPuzzle:
             return
         
         mouse_pos = pygame.mouse.get_pos()
+        mouse_click = False
+        
+        # Procesar eventos
+        for evento in lista_eventos:
+            if evento.type == pygame.MOUSEBUTTONDOWN:
+                mouse_click = True
         
         # Desmarcar todos los pernos
         for pin in self.pins:
@@ -222,14 +232,14 @@ class DoorLockPuzzle:
         # Verificar si la ganzúa está sobre algún perno
         for i, pin in enumerate(self.pins):
             pin_rect = pygame.Rect(pin['x'], pin['y'] - pin['current_position'] - self.pin_height, 
-                                 self.pin_width, self.pin_height)
+                                self.pin_width, self.pin_height)
             
             # Verificar si la punta de la ganzúa está tocando este perno
-            tip_width = max(5, int(5 * self.scale_x))  # Actualizado para coincidir con el dibujo
+            tip_width = max(5, int(5 * self.scale_x))
             tip_height = self.lockpick['height'] + int(4 * self.scale_y)
             lockpick_tip_rect = pygame.Rect(self.lockpick['x'] - tip_width//2, 
-                                          self.lockpick['y'] - 3, 
-                                          tip_width, tip_height)
+                                        self.lockpick['y'] - 3, 
+                                        tip_width, tip_height)
             
             if pin_rect.colliderect(lockpick_tip_rect):
                 # Marcar este perno como seleccionado
@@ -304,15 +314,18 @@ class DoorLockPuzzle:
                     drop_factor = (self.animation_progress - 0.3) / 0.7
                     for pin in self.pins:
                         pin['current_position'] = pin['correct_position'] * (1 - drop_factor)
+                    if drop_factor >= 1.0:  # Cuando la animación termina
+                        self.director.salirEscena()
         
         # Actualizar el temporizador si el juego sigue activo
         elif not self.game_over and not self.show_message:
-            self.time_remaining -= tiempo * 1000  # Convertir a milisegundos
+            self.time_remaining -= tiempo  # Convertir a milisegundos
             
             if self.time_remaining <= 0:
                 self.time_remaining = 0
                 self.game_over = True
                 self.show_message = True
+                self.director.salirEscena()
             
             # Efectos para el temporizador bajo
             segundos_restantes = max(0, int(self.time_remaining / 1000))
