@@ -78,9 +78,9 @@ class Tarjeta(Escena):
         self.screen.blit(congrats_text, (self.WIDTH // 2 - congrats_text.get_width() // 2, self.HEIGHT // 2 - self.completion_image.get_height() // 2 - 40))
         self.screen.blit(completion_text, (self.WIDTH // 2 - completion_text.get_width() // 2, self.HEIGHT // 2 + self.completion_image.get_height() // 2 + 20))
         pygame.display.flip()
-        pygame.time.wait(3000)
-        self.running = False
-        self.director.salirEscena()
+        pygame.time.wait(2000)
+        pygame.quit()
+        sys.exit()
 
     def draw_green_zones(self):
         if self.level == 1:
