@@ -3,10 +3,14 @@ from settings import *
 import math
 import os
 import random
+from escena import Escena
 
 # Se trata del puzzle de cables para desactivar la cámara del almacén
-class CablePuzzle:
-    def __init__(self):
+class CablePuzzle(Escena):
+    def __init__(self, director):
+        
+        Escena.__init__(self, director)
+        
         # Obtener la ruta base del proyecto
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         
@@ -56,7 +60,7 @@ class CablePuzzle:
         # Crear trozos de cable distractores en los conectores de fin
         self.distractor_cables = []
         used_colors = []
-        self.connection_radius = 25
+        self.connection_radius = 30
         
         for i in range(4):
             y_pos = self.panel_y + (i + 1) * (self.panel_height / 5)
@@ -405,58 +409,59 @@ class CablePuzzle:
             
             pantalla.blit(text_surface, text_rect)
     
-    def eventos(self, evento):
+    def eventos(self, lista_eventos):
         if self.show_message or self.puzzle_solved or self.game_over:
             return
-            
-        if evento.type == pygame.MOUSEBUTTONDOWN:
-            mouse_pos = pygame.mouse.get_pos()
-            # Verificar si se hizo clic en un extremo de cable
-            for i, cable in enumerate(self.cables):
-                if not cable["connected"]:
-                    end_x, end_y = cable["end"]
-                    distance = math.sqrt((mouse_pos[0] - end_x)**2 + (mouse_pos[1] - end_y)**2)
-                    if distance < 15:
-                        self.selected_cable = i
-                        self.dragging = True
-                        break
-                        
-        elif evento.type == pygame.MOUSEMOTION and self.dragging:
-            self.cables[self.selected_cable]["end"] = pygame.mouse.get_pos()
-            
-        elif evento.type == pygame.MOUSEBUTTONUP:
-            if self.dragging and self.selected_cable is not None:
+                
+        for evento in lista_eventos:
+            if evento.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                cable = self.cables[self.selected_cable]
+                # Verificar si se hizo clic en un extremo de cable
+                for i, cable in enumerate(self.cables):
+                    if not cable["connected"]:
+                        end_x, end_y = cable["end"]
+                        distance = math.sqrt((mouse_pos[0] - end_x)**2 + (mouse_pos[1] - end_y)**2)
+                        if distance < 15:
+                            self.selected_cable = i
+                            self.dragging = True
+                            break
+                            
+            elif evento.type == pygame.MOUSEMOTION and self.dragging:
+                self.cables[self.selected_cable]["end"] = pygame.mouse.get_pos()
                 
-                # Verificar si el cable se soltó cerca de un punto de conexión de distractor
-                connected = False
-                for i, distractor in enumerate(self.distractor_cables):
-                    connection_point = distractor["connection_point"]
-                    distance = math.sqrt((mouse_pos[0] - connection_point[0])**2 + 
-                                    (mouse_pos[1] - connection_point[1])**2)
+            elif evento.type == pygame.MOUSEBUTTONUP:
+                if self.dragging and self.selected_cable is not None:
+                    mouse_pos = pygame.mouse.get_pos()
+                    cable = self.cables[self.selected_cable]
                     
-                    if distance < self.connection_radius:  # Usar el nuevo radio de detección
-                        # Ajustar el cable al punto de conexión del distractor
-                        cable["end"] = connection_point
-                        cable["connected"] = True
-                        cable["connection"] = i
-                        connected = True
-                        break
-                
-                # Si no se conectó, volver a la posición inicial
-                if not connected:
-                    start_x, start_y = cable["start"]
-                    cable["end"] = (start_x + 60, start_y)
-                    cable["connected"] = False
-                    cable["connection"] = None
-                
-                # Verificar si todos los cables están conectados
-                if all(c["connected"] for c in self.cables):
-                    self._check_connections()
-                
-                self.dragging = False
-                self.selected_cable = None
+                    # Verificar si el cable se soltó cerca de un punto de conexión de distractor
+                    connected = False
+                    for i, distractor in enumerate(self.distractor_cables):
+                        connection_point = distractor["connection_point"]
+                        distance = math.sqrt((mouse_pos[0] - connection_point[0])**2 + 
+                                        (mouse_pos[1] - connection_point[1])**2)
+                        
+                        if distance < self.connection_radius:  # Usar el nuevo radio de detección
+                            # Ajustar el cable al punto de conexión del distractor
+                            cable["end"] = connection_point
+                            cable["connected"] = True
+                            cable["connection"] = i
+                            connected = True
+                            break
+                    
+                    # Si no se conectó, volver a la posición inicial
+                    if not connected:
+                        start_x, start_y = cable["start"]
+                        cable["end"] = (start_x + 60, start_y)
+                        cable["connected"] = False
+                        cable["connection"] = None
+                    
+                    # Verificar si todos los cables están conectados
+                    if all(c["connected"] for c in self.cables):
+                        self._check_connections()
+                    
+                    self.dragging = False
+                    self.selected_cable = None
     
     def _check_connections(self):
         """Verificar si los cables están correctamente conectados"""
@@ -529,3 +534,6 @@ class CablePuzzle:
                 self.show_message = False
                 self.timer_paused = False
                 self.puzzle_failed = False
+                # LLamada para salir de la escena
+                if self.puzzle_solved or self.game_over:
+                    self.director.salirEscena()

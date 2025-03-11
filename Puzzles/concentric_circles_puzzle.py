@@ -2,9 +2,13 @@ import pygame
 import math
 import random
 from settings import *
+from escena import Escena
 
-class ConcentricCirclesPuzzle:
-    def __init__(self):
+class ConcentricCirclesPuzzle(Escena):
+    def __init__(self, director):
+        
+        Escena.__init__(self, director)
+        
         # Configuración general del puzzle
         self.center_x = WIDTH // 2
         self.center_y = HEIGHT // 2
@@ -309,18 +313,22 @@ class ConcentricCirclesPuzzle:
         if self.completado and not self.game_over:
             # Actualizar la animación de la llave
             if self.key_animation:
-                # La animación completa dura 2 segundos
                 time_since_solved = pygame.time.get_ticks() - self.solved_time
-                self.key_progress = min(1.0, time_since_solved / 2000)
+                self.key_progress = min(1.0, time_since_solved / 3000)
+                
+                # Salir cuando termine la animación
+                if self.key_progress >= 1.0:
+                    self.director.salirEscena()
         
         # Actualizar el temporizador si el juego sigue activo
         elif not self.game_over and not self.show_message:
-            self.time_remaining -= tiempo * 1000  # Convertir a milisegundos
+            self.time_remaining -= tiempo
             
             if self.time_remaining <= 0:
                 self.time_remaining = 0
                 self.game_over = True
                 self.show_message = True
+                self.message_timer = 1500
             
             # Efectos para el temporizador bajo
             segundos_restantes = max(0, int(self.time_remaining / 1000))
@@ -333,7 +341,15 @@ class ConcentricCirclesPuzzle:
             # Activar el halo rojo en los últimos 10 segundos
             if segundos_restantes <= 10:
                 self.red_halo_active = True
-                # Hacer que el halo parpadee
                 self.halo_alpha = 40 + 40 * math.sin(pygame.time.get_ticks() * 0.003)
             else:
                 self.red_halo_active = False
+        
+        # Actualizar el temporizador del mensaje
+        if self.show_message:
+            self.message_timer -= tiempo
+            if self.message_timer <= 0:
+                if self.game_over:
+                    self.director.salirEscena()
+                else:
+                    self.show_message = False
