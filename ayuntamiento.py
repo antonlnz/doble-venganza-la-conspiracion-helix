@@ -1,75 +1,83 @@
-import math
-import numpy
 import pygame
 import pytmx
 
+from Puzzles.cardPuzzle import CardPuzzle
+from Puzzles.tarjetaPuzzle import Tarjeta
+from almacen import Almacen
 from personajes import *
 from settings import *
 from escena import *
+from mapa import *
 
 
-class Ayuntamiento(Escena):
+class Ayuntamiento(Mapa):
     def __init__(self, director):
 
-        Escena.__init__(self, director)
+        Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
-        self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
+        self.puzle = CardPuzzle(director)
+        self.puzle2 = CardPuzzle(director)
+        self.puzle3 = CardPuzzle(director)
+        self.siguienteMapa = Almacen(director)
+
+        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (950, 625))
+        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (288, 672))
+        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (192, 240))
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (960, 528))
+
+        self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccionHuida]
+
+        self.posicionamientoInteraccionActual = 0
+
+        self.huida = False
+
+        # self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
+
+        self.puertaAlcalde = ObjetoParaCambiar()
 
         self.jugador1 = Jugador()
-        self.grupoJugadores = pygame.sprite.Group( self.jugador1)
+        self.grupoJugadores = pygame.sprite.Group(self.jugador1)
 
-        self.grupoSpritesDinamicos = pygame.sprite.Group( self.jugador1)
-        self.grupoSprites = pygame.sprite.Group()
+        self.grupoSpritesDinamicos.add(self.jugador1)
 
-        self.offset = pygame.math.Vector2()
-        self.half_w = WIDTH//2
-        self.half_h = HEIGHT//2
+        # self.jugador1.establecerPosicion((WIDTH//2, HEIGHT//2))
+        self.jugador1.establecerPosicion((2184, 1320))
 
-        self.jugador1.establecerPosicion((self.half_w, self.half_h))
+        self.teclaInteraccion = TeclaInteraccion(self.jugador1)
 
         self.center_target_camera(self.jugador1)
-
-        self.width = self.tmxdata.width * self.tmxdata.tilewidth
-        self.height = self.tmxdata.height * self.tmxdata.tileheight
-        self.grupoObstaculos = pygame.sprite.Group()
-        self.grupoObjetos = pygame.sprite.Group()
-        self.grupoTiles = pygame.sprite.Group()
         
-        for layer in self.tmxdata.visible_layers:
-            if hasattr(layer,'data'):
-                for x, y, surf, in layer.tiles():
-                    obj = Object(pygame.Rect(x * self.tmxdata.tilewidth, y * self.tmxdata.tileheight, self.tmxdata.tilewidth, self.tmxdata.tileheight), surf)
-                    self.grupoTiles.add(obj)
-                    self.grupoSprites.add(obj)
 
         for objectGroup in self.tmxdata.objectgroups:
-            if objectGroup.name == "Obstáculos":
+            if objectGroup.name == "Obstaculos":
                 for object in objectGroup:
                     self.grupoObstaculos.add(Obstacle(pygame.Rect(object.x, object.y, object.width, object.height)))
 
-            elif objectGroup.name == "PuertasAbiertas":
+            elif objectGroup.name == "ObjetosPared":
                 for object in objectGroup: 
                     obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
-                    self.grupoObjetos.add(obj)
+                    # self.grupoObjetos.add(obj)
+                    # self.grupoDespuesPersonaje.add(obj)
                     self.grupoSprites.add(obj)
+            elif objectGroup.name == "PuertaAlcalde":
+                 for object in objectGroup:
+                    self.puertaAlcalde.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
+
             else:
                 for object in objectGroup: 
                     obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
                     self.grupoObstaculos.add(obj)
-                    self.grupoObjetos.add(obj)
+                    # self.grupoObjetos.add(obj)
                     self.grupoSprites.add(obj)
            
         self.grupoSprites.add(self.jugador1)
-
-
-    def center_target_camera(self, target):
-        (posx, posy) = target.posicion
-        self.offset.x = posx - self.half_w
-        self.offset.y = posy - self.half_h
         
 
     def dibujar(self,pantalla):
+        pantalla.fill((0,0,0))
         self.grupoSprites.draw(pantalla)
+        self.grupoDespuesPersonaje.draw(pantalla)
+        self.teclaInteraccion.dibujar(pantalla)
         
 
     def eventos(self, lista_eventos):
@@ -78,43 +86,52 @@ class Ayuntamiento(Escena):
             if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
                 self.director.salirEscena()
 
+            if evento.type == KEYDOWN and evento.key == K_e:
+                if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugador1):
+                    if self.huida:
+                        self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
+                    else:
+                        self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
+
+            if evento.type == KEYDOWN and evento.key == K_q:
+                self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+            if evento.type == KEYDOWN and evento.key == K_f:
+                self.teclaInteraccion.mostrar()
+
+            if evento.type == KEYDOWN and evento.key == K_r:
+                self.teclaInteraccion.ocultar()
+            
         teclasPulsadas = pygame.key.get_pressed()
         self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
     
     def update(self, tiempo):
+        
+        if not self.huida:
+            if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena.completado:
+                self.posicionamientoInteraccionActual += 1
+
+                if self.posicionamientoInteraccionActual == (len(self.posicionamientoInteracciones) - 1):
+                    self.huida = True
+            
+        if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugador1) :
+            self.teclaInteraccion.mostrar()
+        else:
+            self.teclaInteraccion.ocultar()
+
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
 
         for sprite in iter(self.grupoObstaculos):
                 sprite.establecerPosicionPantalla(self.offset)
 
-        for sprite in iter(self.grupoObjetos):
-                sprite.establecerPosicionPantalla(self.offset)
+        # for sprite in iter(self.grupoObjetos):
+        #         sprite.establecerPosicionPantalla(self.offset)
 
-        for sprite in iter(self.grupoTiles):
-                sprite.establecerPosicionPantalla(self.offset)
+        # for sprite in iter(self.grupoTiles):
+        #         sprite.establecerPosicionPantalla(self.offset)
 
         for sprite in iter(self.grupoSprites):
                 sprite.establecerPosicionPantalla(self.offset)
-    
 
-class Obstacle(MiSprite):
-    def __init__(self,rectangulo):
-        # Primero invocamos al constructor de la clase padre
-        MiSprite.__init__(self)
-        # Rectangulo con las coordenadas en pantalla que ocupara
-        self.rect = rectangulo
-        # Y lo situamos de forma global en esas coordenadas
-        self.establecerPosicion((self.rect.left, self.rect.bottom))
-
-
-class Object(MiSprite):
-    def __init__(self,rectangulo, imagen):
-        # Primero invocamos al constructor de la clase padre
-        MiSprite.__init__(self)
-        # Rectangulo con las coordenadas en pantalla que ocupara
-        self.rect = rectangulo
-        # Y lo situamos de forma global en esas coordenadas
-        self.establecerPosicion((self.rect.left, self.rect.bottom))
-        
-        self.image = imagen
+        self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].update(self.offset)   
