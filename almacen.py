@@ -1,0 +1,147 @@
+from Puzzles.cardPuzzle import CardPuzzle
+from personajes import *
+from settings import *
+from escena import *
+from mapa import *
+
+
+class Almacen(Mapa):
+    def __init__(self, director):
+
+        Mapa.__init__(self, director, "Mapas/almacen48x48.tmx")
+
+        self.puzle = CardPuzzle(director)
+        self.puzle2 = CardPuzzle(director)
+        self.puzle3 = CardPuzzle(director)
+        self.puzle4 = CardPuzzle(director)
+        self.siguienteMapa = CardPuzzle(director)
+
+        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200))
+        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144))
+        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (216, 528))
+        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (120, 144))
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
+
+        self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, self.posicionamientoInteraccionHuida]
+
+        self.posicionamientoPuzleActual = 0
+
+        self.huida = False
+
+        # self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
+
+        self.puertaAlmacen = ObjetoParaCambiar()
+        self.puertaSala = ObjetoParaCambiar()
+        self.camara = ObjetoParaCambiar()
+        self.cajaFuerte = ObjetoParaCambiar()
+
+        self.jugador1 = Jugador()
+        self.grupoJugadores = pygame.sprite.Group(self.jugador1)
+
+        self.grupoSpritesDinamicos.add(self.jugador1)
+
+        self.jugador1.establecerPosicion((408, 1368))
+
+        self.teclaInteraccion = TeclaInteraccion(self.jugador1)
+
+        self.center_target_camera(self.jugador1)
+
+        for objectGroup in self.tmxdata.objectgroups:
+            if objectGroup.name == "Obstaculos":
+                for object in objectGroup:
+                    self.grupoObstaculos.add(Obstacle(pygame.Rect(object.x, object.y, object.width, object.height)))
+
+            elif objectGroup.name == "ObjetosPared":
+                for object in objectGroup: 
+                    obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
+                    # self.grupoObjetos.add(obj)
+                    # self.grupoDespuesPersonaje.add(obj)
+                    self.grupoSprites.add(obj)
+            elif objectGroup.name == "PuertaAlmacen":
+                 for object in objectGroup:
+                    self.puertaAlmacen.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
+            elif objectGroup.name == "PuertaSala":
+                 for object in objectGroup:
+                    self.puertaSala.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
+            elif objectGroup.name == "Camara":
+                 for object in objectGroup:
+                    self.camara.establecerObjeto(object, [self.grupoSprites])
+            elif objectGroup.name == "CajaFuerte":
+                 for object in objectGroup:
+                    self.cajaFuerte.establecerObjeto(object, [self.grupoSprites])
+            else:
+                for object in objectGroup: 
+                    obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
+                    self.grupoObstaculos.add(obj)
+                    # self.grupoObjetos.add(obj)
+                    self.grupoSprites.add(obj)
+           
+        self.grupoSprites.add(self.jugador1)
+        
+
+    def dibujar(self,pantalla):
+        pantalla.fill((0,0,0))
+        self.grupoSprites.draw(pantalla)
+        self.grupoDespuesPersonaje.draw(pantalla)
+        self.teclaInteraccion.dibujar(pantalla)
+        
+
+    def eventos(self, lista_eventos):
+        for evento in lista_eventos:
+            # Si se sale del programa
+            if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
+                self.director.salirEscena()
+
+            if evento.type == KEYDOWN and evento.key == K_e:
+                if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1):
+                    if self.huida:
+                        self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
+                    else:
+                        self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
+
+            if evento.type == KEYDOWN and evento.key == K_q:
+                self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+                self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+                
+
+            if evento.type == KEYDOWN and evento.key == K_f:
+                self.teclaInteraccion.mostrar()
+                self.camara.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+                self.cajaFuerte.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+            if evento.type == KEYDOWN and evento.key == K_r:
+                self.teclaInteraccion.ocultar()
+            
+        teclasPulsadas = pygame.key.get_pressed()
+        self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+    
+    def update(self, tiempo):
+        
+        if not self.huida:
+            if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena.completado:
+                self.posicionamientoPuzleActual += 1
+
+                if self.posicionamientoPuzleActual == (len(self.posicionamientoInteracciones) - 1):
+                    self.huida = True
+            
+        if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1) :
+            self.teclaInteraccion.mostrar()
+        else:
+            self.teclaInteraccion.ocultar()
+
+        self.center_target_camera(self.jugador1)
+        self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
+
+        for sprite in iter(self.grupoObstaculos):
+                sprite.establecerPosicionPantalla(self.offset)
+
+        # for sprite in iter(self.grupoObjetos):
+        #         sprite.establecerPosicionPantalla(self.offset)
+
+        # for sprite in iter(self.grupoTiles):
+        #         sprite.establecerPosicionPantalla(self.offset)
+
+        for sprite in iter(self.grupoSprites):
+                sprite.establecerPosicionPantalla(self.offset)
+
+        self.posicionamientoInteracciones[self.posicionamientoPuzleActual].update(self.offset)
