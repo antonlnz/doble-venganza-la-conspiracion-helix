@@ -224,13 +224,13 @@ class Personaje(MiSprite):
                     if abs(hit.rect.top - self.rect.bottom) < 10 and velocidady > 0:
                         velocidady = 0
                         
-                    if abs(hit.rect.bottom - self.rect.top) < 10 and velocidady < 0:
+                    if abs(hit.rect.bottom - self.rect.bottom) < 10 and velocidady < 0:
                         velocidady = 0
 
-                    if abs(hit.rect.right - self.rect.left) < 10 and velocidadx < 0:
+                    if abs(hit.rect.right - self.rect.left) < 10 and velocidadx < 0 and hit.rect.bottom > self.rect.bottom and (hit.rect.top + 10) < self.rect.bottom:
                         velocidadx = 0
 
-                    if abs(hit.rect.left - self.rect.right) < 10 and velocidadx > 0:
+                    if abs(hit.rect.left - self.rect.right) < 10 and velocidadx > 0 and hit.rect.bottom > self.rect.bottom and (hit.rect.top + 10) < self.rect.bottom:
                         velocidadx = 0
 
         if (velocidadx == 0) and (velocidady == 0):
@@ -257,9 +257,9 @@ class Personaje(MiSprite):
 
 class Jugador(Personaje):
     "Cualquier personaje del juego"
-    def __init__(self):
+    def __init__(self, archivoImagen, archivoCoordenadas, numImagenes):
         # Invocamos al constructor de la clase padre con la configuracion de este personaje concreto
-        Personaje.__init__(self,'Vince.png','coordVince.txt', [7, 10], VELOCIDAD_JUGADOR, RETARDO_ANIMACION_JUGADOR)
+        Personaje.__init__(self, archivoImagen, archivoCoordenadas, numImagenes, VELOCIDAD_JUGADOR, RETARDO_ANIMACION_JUGADOR)
 
 
     def mover(self, teclasPulsadas, arriba, abajo, izquierda, derecha):

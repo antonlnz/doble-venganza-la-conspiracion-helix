@@ -7,6 +7,7 @@ class Escena:
 
     def __init__(self, director):
         self.director = director
+        self.completado = False
 
     def update(self, *args):
         raise NotImplemented("Tiene que implementar el metodo update.")

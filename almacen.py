@@ -35,7 +35,7 @@ class Almacen(Mapa):
         self.camara = ObjetoParaCambiar()
         self.cajaFuerte = ObjetoParaCambiar()
 
-        self.jugador1 = Jugador()
+        self.jugador1 = Jugador('Eddie.png','coordEddie.txt', [7, 10])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
 
         self.grupoSpritesDinamicos.add(self.jugador1)

@@ -15,7 +15,7 @@ class Ayuntamiento(Mapa):
 
         Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
-        self.puzle = CardPuzzle(director)
+        self.puzle = Tarjeta(director)
         self.puzle2 = CardPuzzle(director)
         self.puzle3 = CardPuzzle(director)
         self.siguienteMapa = Almacen(director)
@@ -35,7 +35,7 @@ class Ayuntamiento(Mapa):
 
         self.puertaAlcalde = ObjetoParaCambiar()
 
-        self.jugador1 = Jugador()
+        self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
 
         self.grupoSpritesDinamicos.add(self.jugador1)
