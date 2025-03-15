@@ -15,29 +15,29 @@ class Guardia(Escena):
         Escena.__init__(self, director)
         pygame.init()
         os.environ['SDL_VIDEO_CENTERED'] = '1'
-        self.WIDTH, self.HEIGHT = 800, 600
+        self.WIDTH, self.HEIGHT = 1920, 1080
         self.screen = pygame.display.set_mode((self.WIDTH, self.HEIGHT))
         pygame.display.set_caption("Guardias Puzzle")
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.RED = (255, 0, 0)
         self.GREEN = (0, 255, 0)
-        self.font = pygame.font.Font(None, 74)  # Inicializar la fuente aquí
+        self.font = pygame.font.Font(None, 148)  # Adjust font size for larger screen
         # Cargar y escalar imagen de fondo
         self.background_image = pygame.image.load('imagenes/Guardias/fondo_banco2.jpg')
-        self.background_image = pygame.transform.scale(self.background_image, (800, 600))
+        self.background_image = pygame.transform.scale(self.background_image, (1920, 1080))
 
         # Cargar y escalar imágenes de corazones
         self.heart_full = pygame.image.load('imagenes/Guardias/heart_full_16x16.png')
         self.heart_empty = pygame.image.load('imagenes/Guardias/heart_empty_16x16.png')
-        self.heart_full = pygame.transform.scale(self.heart_full, (24, 24))
-        self.heart_empty = pygame.transform.scale(self.heart_empty, (24, 24))
+        self.heart_full = pygame.transform.scale(self.heart_full, (48, 48))
+        self.heart_empty = pygame.transform.scale(self.heart_empty, (48, 48))
 
         # Cargar imágenes de guardias
         self.policeman_image = pygame.image.load('imagenes/Guardias/Policeman.png')
         self.policewoman_image = pygame.image.load('imagenes/Guardias/Policewoman.png')
-        self.policeman_image = pygame.transform.scale(self.policeman_image, (200, 200))
-        self.policewoman_image = pygame.transform.scale(self.policewoman_image, (200, 200))
+        self.policeman_image = pygame.transform.scale(self.policeman_image, (400, 400))
+        self.policewoman_image = pygame.transform.scale(self.policewoman_image, (400, 400))
         self.x = x
         self.y = y
         self.image = image if image else self.policeman_image
@@ -62,15 +62,15 @@ class Guardia(Escena):
         return [random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(5)]
 
     def draw(self, screen):
-        screen.blit(self.image, (self.WIDTH // 2 - self.image.get_width() // 2, self.HEIGHT // 2 - self.image.get_height() // 2 + 100))  # Move the image further down
+        screen.blit(self.image, (self.WIDTH // 2 - self.image.get_width() // 2, self.HEIGHT // 2 - self.image.get_height() // 2 + 200))  # Move the image further down
         correct_text = self.font.render(''.join(self.sequence[:self.current_index]), True, self.GREEN)
         if self.wrong_key:
             remaining_text = self.font.render(''.join(self.sequence[self.current_index:self.current_index + 1]), True, self.RED)
         else:
             remaining_text = self.font.render(''.join(self.sequence[self.current_index:self.current_index + 1]), True, self.BLACK)
-        text_x = 60 + (580 - correct_text.get_width() - remaining_text.get_width()) // 2
-        screen.blit(correct_text, (text_x, 160))
-        screen.blit(remaining_text, (text_x + correct_text.get_width(), 160))
+        text_x = (self.WIDTH - correct_text.get_width() - remaining_text.get_width()) // 2
+        screen.blit(correct_text, (text_x, 320))
+        screen.blit(remaining_text, (text_x + correct_text.get_width(), 320))
 
     def check_key(self, key):
         if self.current_index < len(self.sequence) and key == self.sequence[self.current_index]:
@@ -119,24 +119,24 @@ class Guardia(Escena):
     
     def dibujar(self, screen):
         screen.blit(self.background_image, (0, 0))
-        pygame.draw.rect(screen, self.WHITE, (550, 50, 50, 50))  # Recuadro para el tiempo
-        pygame.draw.rect(screen, self.WHITE, (150, 150, 500, 100))  # Recuadro para las palabras
+        pygame.draw.rect(screen, self.WHITE, (self.WIDTH - 350, 150, 100, 100))  # Recuadro para el tiempo
+        pygame.draw.rect(screen, self.WHITE, (self.WIDTH // 2 - 500, 300, 1000, 200))  # Recuadro para las palabras
         self.draw(screen)
         timer_text = self.font.render(str(int(self.remaining_time)), True, self.RED)
-        timer_rect = timer_text.get_rect(center=(575, 75))
+        timer_rect = timer_text.get_rect(center=(self.WIDTH - 300, 200))
         screen.blit(timer_text, timer_rect)
         for i in range(3):
             if i < self.lives:
-                screen.blit(self.heart_full, (110 + i * 40, 60))
+                screen.blit(self.heart_full, (250 + i * 80, 150))
             else:
-                screen.blit(self.heart_empty, (110 + i * 40, 60))
+                screen.blit(self.heart_empty, (250 + i * 80, 150))
         if not self.running:
             screen.fill(self.WHITE)
             if self.lives <= 0 or self.remaining_time <= 0:
                 end_text = self.font.render("Perdiste", True, self.RED)
             else:
                 end_text = self.font.render("Felicidades", True, self.GREEN)
-            screen.blit(end_text, (275, 250))
+            screen.blit(end_text, (self.WIDTH // 2 - end_text.get_width() // 2, self.HEIGHT // 2 - end_text.get_height() // 2))
             pygame.display.flip()
             pygame.time.wait(2000)  # Esperar 2 segundos antes de cerrar
             self.director.salirEscena()  # Add this line to exit the scene

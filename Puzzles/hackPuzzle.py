@@ -1,104 +1,110 @@
 import pygame
 import sys
+import os
+from escena import *
 
-pygame.init()
+class Hack(Escena):
+    def __init__(self, director):
+        Escena.__init__(self, director)
+        os.environ['SDL_VIDEO_CENTERED'] = '1'
+        
+        # Constantes
+        self.GRID_SIZE = 3
+        self.WIDTH = 1920
+        self.HEIGHT = 1080
+        self.TILE_WIDTH = self.WIDTH // self.GRID_SIZE
+        self.TILE_HEIGHT = self.HEIGHT // self.GRID_SIZE
+        self.SCREEN_WIDTH = 1920
+        self.SCREEN_HEIGHT = 1080
+        self.WHITE = (255, 255, 255)
+        self.BLACK = (0, 0, 0)
+        
+        # Creamos un fondo en negro
+        self.blank_surface = pygame.Surface((self.WIDTH, self.HEIGHT))
+        self.blank_surface.fill(self.BLACK)
+        
+        # Creamos las letras de HG
+        font = pygame.font.Font(None, 1350)  
+        text = font.render("HG", True, self.WHITE)
+        text_rect = text.get_rect(center=(self.WIDTH // 2, self.HEIGHT // 2))
+        self.blank_surface.blit(text, text_rect)
+        
+        # Orden inicial del puzzle y orden final
+        self.predefined_order = [0, 1, 2, 3, 4, 5, 6, 8, 7]
+        self.final_order = list(range(9))
+        
+        # Creamos las piezas (tiles)
+        self.tiles = []
+        for y in range(self.GRID_SIZE):
+            for x in range(self.GRID_SIZE):
+                if not (x == self.GRID_SIZE - 1 and y == self.GRID_SIZE - 1):
+                    rect = pygame.Rect(x * self.TILE_WIDTH, y * self.TILE_HEIGHT, self.TILE_WIDTH, self.TILE_HEIGHT)
+                    tile = self.blank_surface.subsurface(rect).copy()
+                    pygame.draw.rect(tile, self.WHITE, tile.get_rect(), 5)
+                    self.tiles.append(tile)
+        
+        # Creamos la pieza "libre"
+        self.tiles.append(pygame.Surface((self.TILE_WIDTH, self.TILE_HEIGHT)))
+        self.tiles[-1].fill(self.WHITE)  # Paint the blank tile white
+        
+        # Ponemos las piezas en el orden predefinido
+        self.tiles = [self.tiles[i] for i in self.predefined_order]
+        
+        # Creamos la ventana
+        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
+        pygame.display.set_caption('Govern of IronRidge')
+        
+    def is_solved(self):
+        return self.predefined_order == self.final_order
+    
+    def get_blank_tile_index(self):
+        return self.predefined_order.index(8)
+    
+    def swap_tiles(self, index1, index2):
+        self.tiles[index1], self.tiles[index2] = self.tiles[index2], self.tiles[index1]
+        self.predefined_order[index1], self.predefined_order[index2] = self.predefined_order[index2], self.predefined_order[index1]
+    
+    def handle_tile_movement(self, pos):
+        blank_index = self.get_blank_tile_index()
+        blank_x = (blank_index % self.GRID_SIZE) * self.TILE_WIDTH
+        blank_y = (blank_index // self.GRID_SIZE) * self.TILE_HEIGHT
+        
+        for i, tile in enumerate(self.tiles):
+            x = (i % self.GRID_SIZE) * self.TILE_WIDTH
+            y = (i // self.GRID_SIZE) * self.TILE_HEIGHT
+            rect = pygame.Rect(x, y, self.TILE_WIDTH, self.TILE_HEIGHT)
+            if rect.collidepoint(pos):
+                if (abs(blank_x - x) == self.TILE_WIDTH and blank_y == y) or (abs(blank_y - y) == self.TILE_HEIGHT and blank_x == x):
+                    self.swap_tiles(i, blank_index)
+                    break
+    
+    def update(self, tiempo):
+        if self.is_solved():
+            print("¡Puzzle resuelto!")
+            self.completado = True
+            self.director.salirEscena()
+            pygame.display.flip()
+            
 
-#Cosntantes 
-TILE_SIZE = 200
-GRID_SIZE = 3
-SCREEN_WIDTH = TILE_SIZE * GRID_SIZE
-SCREEN_HEIGHT = TILE_SIZE * GRID_SIZE
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+    def eventos(self, eventos):
+        for event in eventos:
+            if event.type == pygame.QUIT:
+                self.director.salirPrograma()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                self.handle_tile_movement(event.pos)
 
-# Creamos un fondo en negro
-blank_surface = pygame.Surface((TILE_SIZE * GRID_SIZE, TILE_SIZE * GRID_SIZE))
-blank_surface.fill(BLACK)
+    def dibujar(self, pantalla):
+        pantalla.fill(self.BLACK)
+        for i, tile in enumerate(self.tiles):
+            x = (i % self.GRID_SIZE) * self.TILE_WIDTH
+            y = (i // self.GRID_SIZE) * self.TILE_HEIGHT
+            pantalla.blit(tile, (x, y))
+        pygame.display.flip()
+        
+        pygame.time.wait(500)
+        
 
-# Creamos las letras de HG (Puse 600 para que ocupen toda la pantalla, pero se pueden poner entre 400 y 600, menos no que no cubren todo)
-font = pygame.font.Font(None, 600)  # Increase font size
-text = font.render("HG", True, WHITE)
-text_rect = text.get_rect(center=(TILE_SIZE * GRID_SIZE // 2, TILE_SIZE * GRID_SIZE // 2))
-blank_surface.blit(text, text_rect)
-
-# Orden inicial del puzzle y orden final. El inicial lo puse muy sencillo hay que buscar uno mas complicado
-predefined_order = [0, 1, 2, 3, 4, 5, 6, 8, 7]
-final_order = list(range(9))  
-
-# Creamos las piezas (tiles)
-tiles = []
-for y in range(GRID_SIZE):
-    for x in range(GRID_SIZE):
-        if not (x == GRID_SIZE - 1 and y == GRID_SIZE - 1):  # Nos saltamos la última que sería el espacio en blanco
-            rect = pygame.Rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE)
-            tile = blank_surface.subsurface(rect).copy()
-            pygame.draw.rect(tile, WHITE, tile.get_rect(), 5)
-            tiles.append(tile)
-
-# CCreamos la pieza "libre" (la que se puede mover)
-tiles.append(pygame.Surface((TILE_SIZE, TILE_SIZE)))
-tiles[-1].fill(BLACK)
-
-# Ponemos las piezas en el orden predefinido
-tiles = [tiles[i] for i in predefined_order]
-
-# Funcion para comprabar si el puzzle esta resuelto
-def is_solved():
-    return predefined_order == final_order 
-
-# Funcion para obtener el indice de la pieza en "libre"  
-def get_blank_tile_index():
-    return predefined_order.index(8)  
-
-# Funcion para intercambiar dos piezas, tambien cambia sus posicion en la lista predefined_order
-def swap_tiles(index1, index2):
-    tiles[index1], tiles[index2] = tiles[index2], tiles[index1]
-    predefined_order[index1], predefined_order[index2] = predefined_order[index2], predefined_order[index1]
-
-# Funcion para manejar el movimiento de las piezas
-def handle_tile_movement(pos):
-    blank_index = get_blank_tile_index()
-    blank_x = (blank_index % GRID_SIZE) * TILE_SIZE
-    blank_y = (blank_index // GRID_SIZE) * TILE_SIZE
-
-    for i, tile in enumerate(tiles):
-        x = (i % GRID_SIZE) * TILE_SIZE
-        y = (i // GRID_SIZE) * TILE_SIZE
-        rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
-        if rect.collidepoint(pos):
-            if (abs(blank_x - x) == TILE_SIZE and blank_y == y) or (abs(blank_y - y) == TILE_SIZE and blank_x == x):
-                swap_tiles(i, blank_index)
-                break
-
-# Creamos la ventana
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Govern of IronRidge')
-
-
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            handle_tile_movement(event.pos)
-
-    screen.fill(BLACK)
-
-    # Dibujamos las piezas
-    for i, tile in enumerate(tiles):
-        x = (i % GRID_SIZE) * TILE_SIZE
-        y = (i // GRID_SIZE) * TILE_SIZE
-        screen.blit(tile, (x, y))
-
-    # Actualizamos
-    pygame.display.flip()
-
-    # Miramos si esta resuelto
-    if is_solved():
-        print("¡Puzzle resuelto!")
-        pygame.time.wait(3000)  # Espera 3 segundos
-        running = False
-
-pygame.quit()
-sys.exit()
+if __name__ == "__main__":
+    director = None  # Replace with actual director instance
+    game = Hack(director)
+    game.run()

@@ -20,7 +20,7 @@ class Tarjeta(Escena):
         self.bar_height = 40
         self.bar_x = self.WIDTH // 2 - self.bar_width // 2
         self.bar_y = self.HEIGHT // 2 - self.bar_height // 2
-        self.bar_speed = 5
+        self.bar_speed = 8
         self.red_zone_margin = 50
         self.background_image = pygame.image.load('imagenes/Tarjeta/fondo_seguridad.jpg')
         self.background_image = pygame.transform.scale(self.background_image, (self.WIDTH, self.HEIGHT))
