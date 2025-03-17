@@ -3,6 +3,7 @@ import pytmx
 
 from Puzzles.cardPuzzle import CardPuzzle
 from Puzzles.tarjetaPuzzle import Tarjeta
+from Puzzles.keypadPuzzle import KeypadPuzzle
 from almacen import Almacen
 from personajes import *
 from settings import *
@@ -16,7 +17,7 @@ class Ayuntamiento(Mapa):
         Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
         self.puzle = Tarjeta(director)
-        self.puzle2 = CardPuzzle(director)
+        self.puzle2 = KeypadPuzzle(director)
         self.puzle3 = CardPuzzle(director)
         self.siguienteMapa = Almacen(director)
 

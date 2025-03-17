@@ -6,7 +6,7 @@ from settings import *
 
      
 class CardPuzzle:
-    def __init__(self):
+    def __init__(self, director):
         self.lineaPequeñaX = WIDTH*0.1
         self.lineaPequeñaY = HEIGHT*0.05
         self.lineaGrandeX = WIDTH*0.8
