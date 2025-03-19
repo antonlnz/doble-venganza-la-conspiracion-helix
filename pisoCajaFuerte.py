@@ -1,41 +1,42 @@
 from Puzzles.cardPuzzle import CardPuzzle
 from Puzzles.keypadPuzzle import KeypadPuzzle
-from Puzzles.printPuzzle import Huella
 from Puzzles.sortingGridPuzzle import SortingGridPuzzle
 from Puzzles.switch_puzzle import SwitchPuzzle
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.wire_puzzle import WirePuzzle
 from Puzzles.tuberiasPuzzle import Pipe
 from personajes import *
-from pisoMedioBanco import PisoMedioBanco
 from settings import *
 from escena import *
 from mapa import *
 
 
-class Almacen(Mapa):
-    def __init__(self, director):
+class PisoCajaFuerte(Mapa):
+    def __init__(self, director, anteriorMapa):
 
-        Mapa.__init__(self, director, "Mapas/almacen48x48.tmx")
+        Mapa.__init__(self, director, "Mapas/pisoCajaFuerte48x48.tmx")
 
         self.puzle = SortingGridPuzzle(director)
         self.puzle2 = SwitchPuzzle(director)
-        self.puzle3 = Huella(director)
+        self.puzle3 = SortingGridPuzzle(director)
         # self.puzle3 = Pipe(director)
-        self.puzle4 = Pipe(director) 
-        self.puzle5 = WirePuzzle(director)
-        self.siguienteMapa = PisoMedioBanco(director)
+        self.puzle4 = Tarjeta(director)
+        self.puzle5 = Tarjeta(director)
+        self.anteriorMapa = anteriorMapa
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200))
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144))
         self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (216, 528))
         self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (1056, 576))
         self.posicionamientoInteraccion5 = PosicionamientoInteraccion(self.puzle5, (1392, 1032))
-        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
+        # self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
+        
+        self.subirPiso = PosicionamientoInteraccion(self.anteriorMapa, (1272, 744))
+        # self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
 
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, 
                                                 self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, 
-                                                self.posicionamientoInteraccion5, self.posicionamientoInteraccionHuida]
+                                                self.posicionamientoInteraccion5]
 
         self.posicionamientoPuzleActual = 0
 
@@ -55,7 +56,7 @@ class Almacen(Mapa):
 
         self.grupoSpritesDinamicos.add(self.jugador1)
 
-        self.jugador1.establecerPosicion((408, 1368))
+        self.jugador1.establecerPosicion((1272, 744))
 
         self.teclaInteraccion = TeclaInteraccion(self.jugador1)
 
@@ -115,6 +116,9 @@ class Almacen(Mapa):
                     else:
                         self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
 
+                if self.subirPiso.puedeActivar(self.jugador1):
+                    self.director.salirEscena()
+
             if evento.type == KEYDOWN and evento.key == K_q:
                 self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
                 self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
@@ -140,7 +144,7 @@ class Almacen(Mapa):
                 if self.posicionamientoPuzleActual == (len(self.posicionamientoInteracciones) - 1):
                     self.huida = True
             
-        if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1) :
+        if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1) or self.subirPiso.puedeActivar(self.jugador1) :
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
@@ -174,3 +178,4 @@ class Almacen(Mapa):
                 sprite.establecerPosicionPantalla(self.offset)
 
         self.posicionamientoInteracciones[self.posicionamientoPuzleActual].update(self.offset)
+        self.subirPiso.update(self.offset)  
