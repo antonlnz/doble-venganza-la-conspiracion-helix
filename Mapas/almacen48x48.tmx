@@ -112,7 +112,7 @@
   <object id="144" name="Final" gid="2103" x="96" y="144" width="48" height="64"/>
   <object id="145" name="Inicial" gid="2102" x="96" y="144" width="48" height="64"/>
  </objectgroup>
- <objectgroup id="13" name="ObjetosPared">
+ <objectgroup id="13" name="ObjetosSinColision">
   <object id="5" gid="2096" x="1344" y="144" width="48" height="96"/>
   <object id="96" gid="2114" x="1392" y="144" width="48" height="64"/>
   <object id="97" gid="2119" x="1392" y="105" width="48" height="48"/>

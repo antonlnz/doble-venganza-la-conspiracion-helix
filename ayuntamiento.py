@@ -2,6 +2,7 @@ import pygame
 import pytmx
 
 from Puzzles.cardPuzzle import CardPuzzle
+from Puzzles.hackPuzzle_little import Hack
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.keypadPuzzle import KeypadPuzzle
 from almacen import Almacen
@@ -18,7 +19,7 @@ class Ayuntamiento(Mapa):
 
         self.puzle = Tarjeta(director)
         self.puzle2 = KeypadPuzzle(director)
-        self.puzle3 = CardPuzzle(director)
+        self.puzle3 = Hack(director)
         self.siguienteMapa = Almacen(director)
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (950, 625))
@@ -54,7 +55,7 @@ class Ayuntamiento(Mapa):
                 for object in objectGroup:
                     self.grupoObstaculos.add(Obstacle(pygame.Rect(object.x, object.y, object.width, object.height)))
 
-            elif objectGroup.name == "ObjetosPared":
+            elif objectGroup.name == "ObjetosSinColision":
                 for object in objectGroup: 
                     obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
                     # self.grupoObjetos.add(obj)
@@ -119,6 +120,9 @@ class Ayuntamiento(Mapa):
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
+
+        if self.puzle2.completado and not self.puertaAlcalde.objetoCambiado:
+            self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
 
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)

@@ -67,6 +67,7 @@ class ObjetoParaCambiar():
     def __init__(self):
           self.objetoInicial = None
           self.objetoFinal = None
+          self.objetoCambiado = False
 
     def establecerObjeto(self, object, gruposParaAñadir):
         
@@ -85,7 +86,9 @@ class ObjetoParaCambiar():
              grupo.remove(self.objetoInicial)
 
         for grupo in gruposParaAñadir:
-                grupo.add(self.objetoFinal)            
+                grupo.add(self.objetoFinal)  
+
+        self.objetoCambiado = True          
         # grupoSprites.add(self.objetoFinal)
         # grupoDepuesPersonaje.add(self.objetoFinal)
 
@@ -114,6 +117,9 @@ class TeclaInteraccion(MiSprite):
     def ocultar(self):
         self.pintar = False
 
+    def cambiarTarget(self, target):
+        self.target = target
+
 class PosicionamientoInteraccion():
     def __init__(self, escena, posicion):
         self.escena = escena
@@ -127,3 +133,5 @@ class PosicionamientoInteraccion():
         (posx, posy) = self.posicion
         (scrollx, scrolly) = self.scroll
         return(abs((posx - scrollx) - target.rect.centerx) < 48 and abs((posy - scrolly) - target.rect.centery) < 48)
+    
+

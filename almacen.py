@@ -1,5 +1,12 @@
 from Puzzles.cardPuzzle import CardPuzzle
+from Puzzles.keypadPuzzle import KeypadPuzzle
+from Puzzles.sortingGridPuzzle import SortingGridPuzzle
+from Puzzles.switch_puzzle import SwitchPuzzle
+from Puzzles.tarjetaPuzzle import Tarjeta
+from Puzzles.wire_puzzle import WirePuzzle
+from Puzzles.tuberiasPuzzle import Pipe
 from personajes import *
+from pisoMedioBanco import PisoMedioBanco
 from settings import *
 from escena import *
 from mapa import *
@@ -10,21 +17,28 @@ class Almacen(Mapa):
 
         Mapa.__init__(self, director, "Mapas/almacen48x48.tmx")
 
-        self.puzle = CardPuzzle(director)
-        self.puzle2 = CardPuzzle(director)
-        self.puzle3 = CardPuzzle(director)
-        self.puzle4 = CardPuzzle(director)
-        self.siguienteMapa = CardPuzzle(director)
+        self.puzle = SortingGridPuzzle(director)
+        self.puzle2 = SwitchPuzzle(director)
+        self.puzle3 = Tarjeta(director) # Aqui iría el puzle de la huella del guardia
+        # self.puzle3 = Pipe(director)
+        self.puzle4 = Pipe(director) 
+        self.puzle5 = WirePuzzle(director)
+        self.siguienteMapa = PisoMedioBanco(director)
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200))
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144))
         self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (216, 528))
-        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (120, 144))
+        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (1056, 576))
+        self.posicionamientoInteraccion5 = PosicionamientoInteraccion(self.puzle5, (1392, 1032))
         self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
 
-        self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, self.posicionamientoInteraccionHuida]
+        self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, 
+                                                self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, 
+                                                self.posicionamientoInteraccion5, self.posicionamientoInteraccionHuida]
 
         self.posicionamientoPuzleActual = 0
+
+        self.personajeMovido = False
 
         self.huida = False
 
@@ -51,7 +65,7 @@ class Almacen(Mapa):
                 for object in objectGroup:
                     self.grupoObstaculos.add(Obstacle(pygame.Rect(object.x, object.y, object.width, object.height)))
 
-            elif objectGroup.name == "ObjetosPared":
+            elif objectGroup.name == "ObjetosSinColision" or objectGroup.name == "Estanterias" or objectGroup.name == "EstanteriasArriba":
                 for object in objectGroup: 
                     obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
                     # self.grupoObjetos.add(obj)
@@ -82,6 +96,7 @@ class Almacen(Mapa):
     def dibujar(self,pantalla):
         pantalla.fill((0,0,0))
         self.grupoSprites.draw(pantalla)
+        self.grupoJugadores.draw(pantalla)
         self.grupoDespuesPersonaje.draw(pantalla)
         self.teclaInteraccion.dibujar(pantalla)
         
@@ -128,6 +143,19 @@ class Almacen(Mapa):
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
+
+        if self.puzle.completado and not self.puertaAlmacen.objetoCambiado:
+            self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+        if self.puzle2.completado and not self.camara.objetoCambiado:
+            self.camara.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+        if self.puzle3.completado and not self.puertaSala.objetoCambiado:
+            self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+        
+        if self.puzle4.completado and not self.cajaFuerte.objetoCambiado:
+            self.cajaFuerte.cambiar([self.grupoSprites])
+            self.jugador1.establecerPosicion((120, 168))
 
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
