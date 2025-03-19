@@ -79,7 +79,7 @@ class Pipe(Escena):
             self.grid[y][x] = {'x': x, 'y': y, 'type': pipe_type}
 
         self.elapsed_time = 0
-        self.start_time = time.time()
+        self.start_time = None
         self.running = True
         self.end_time = None  # Añadido para manejar el tiempo de espera
         self.message = None  # Añadido para manejar los mensajes
@@ -121,6 +121,8 @@ class Pipe(Escena):
 
     def update(self, tiempo):
         # Comprobar si el tiempo se ha acabado
+        if self.start_time is None:
+            self.start_time = time.time()
         self.elapsed_time = time.time() - self.start_time
         if self.elapsed_time >= 20:
             self.message = "Perdiste"
@@ -138,6 +140,8 @@ class Pipe(Escena):
             if event.type == pygame.QUIT:
                 self.running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if self.start_time is None:
+                    self.start_time = time.time()
                 mouse_x, mouse_y = event.pos
                 grid_x = mouse_x // self.TILE_SIZE
                 grid_y = mouse_y // self.TILE_SIZE

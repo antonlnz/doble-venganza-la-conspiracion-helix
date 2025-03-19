@@ -27,7 +27,8 @@ class SimonDice(Escena):
         self.user_sequence = []
         self.round_number = 0
         self.game_active = True
-        self.start_time = time.time()
+        self.start_time = None
+        self.completado = False  # Add completado initialization
 
         self.button_radius = 110  # Increased radius
         self.button_positions = [
@@ -46,8 +47,6 @@ class SimonDice(Escena):
         ] + [
             {"color": self.YELLOW, "pos": pos} for pos in self.button_positions[3:]
         ]
-
-        self.dibujar(self.window)  # Dibujar la pantalla inicial
 
     def draw_background(self, pantalla):
         for y in range(self.height):
@@ -147,6 +146,9 @@ class SimonDice(Escena):
 
     def update(self, tiempo):
         if self.game_active:
+            if self.start_time is None: 
+                self.start_time = time.time()
+                self.dibujar(self.window)
             elapsed_time = int(time.time() - self.start_time)
             remaining_time = max(0, self.COUNTDOWN_TIME - elapsed_time)
             self.draw_text(self.window, f"Tiempo: {remaining_time}s", self.width//2, 250)  # Set to 250
@@ -174,6 +176,9 @@ class SimonDice(Escena):
             if event.type == pygame.QUIT:
                 self.director.salirPrograma()
             if self.game_active and event.type == pygame.MOUSEBUTTONDOWN:
+                if self.start_time is None:
+                    self.start_time = time.time()
+                    self.dibujar(self.window) 
                 for i, button in enumerate(self.buttons):
                     if (event.pos[0] - button["pos"][0])**2 + (event.pos[1] - button["pos"][1])**2 <= self.button_radius**2:
                         self.flash_button(self.window, button)
@@ -189,10 +194,11 @@ class SimonDice(Escena):
         pantalla.fill(self.BLACK)
         self.draw_background(pantalla)
         self.draw_buttons(pantalla)
-        if self.game_active:  # Solo actualizar el tiempo si el juego está activo
-            elapsed_time = int(time.time() - self.start_time)
-            remaining_time = max(0, self.COUNTDOWN_TIME - elapsed_time)
-            self.draw_text(pantalla, f"Tiempo: {remaining_time}s", self.width//2, 250)  # Set to 250
+        if self.game_active:
+            if self.start_time is not None:
+                elapsed_time = int(time.time() - self.start_time)
+                remaining_time = max(0, self.COUNTDOWN_TIME - elapsed_time)
+                self.draw_text(pantalla, f"Tiempo: {remaining_time}s", self.width//2, 250)
         pygame.display.flip()
 
 if __name__ == "__main__":
