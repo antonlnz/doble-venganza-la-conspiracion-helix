@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.1-99-gec89c545" name="Puertas/Ventanas" tilewidth="96" tileheight="144" tilecount="90" columns="0">
+<tileset version="1.10" tiledversion="1.11.1-99-gec89c545" name="Puertas/Ventanas" tilewidth="96" tileheight="192" tilecount="141" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image source="PuertaCerrada.png" width="80" height="96"/>
@@ -145,29 +145,32 @@
  <tile id="54">
   <image source="Hospital_Black_Shadow_Singles_48x48_44.png" width="48" height="32"/>
  </tile>
+ <tile id="165">
+  <image source="Hospital_Black_Shadow_Singles_48x48_47.png" width="48" height="32"/>
+ </tile>
+ <tile id="164">
+  <image source="Hospital_Black_Shadow_Singles_48x48_45.png" width="48" height="32"/>
+ </tile>
+ <tile id="163">
+  <image source="Hospital_Black_Shadow_Singles_48x48_43.png" width="48" height="32"/>
+ </tile>
+ <tile id="162">
+  <image source="Hospital_Black_Shadow_Singles_48x48_36.png" width="48" height="80"/>
+ </tile>
  <tile id="56">
   <image source="Hospital_Black_Shadow_Singles_48x48_40.png" width="48" height="32"/>
- </tile>
- <tile id="80">
-  <image source="Halloween_Shadow_Singles_48x48_76.png" width="48" height="48"/>
- </tile>
- <tile id="81">
-  <image source="Halloween_Shadow_Singles_48x48_77.png" width="48" height="48"/>
- </tile>
- <tile id="82">
-  <image source="Halloween_Shadow_Singles_48x48_78.png" width="48" height="48"/>
- </tile>
- <tile id="83">
-  <image source="Halloween_Shadow_Singles_48x48_79.png" width="48" height="32"/>
- </tile>
- <tile id="84">
-  <image source="Halloween_Shadow_Singles_48x48_80.png" width="48" height="48"/>
  </tile>
  <tile id="85">
   <image source="Halloween_Shadow_Singles_48x48_156.png" width="48" height="64"/>
  </tile>
  <tile id="86">
   <image source="Halloween_Shadow_Singles_48x48_157.png" width="48" height="64"/>
+ </tile>
+ <tile id="151">
+  <image source="Halloween_Shadow_Singles_48x48_158.png" width="48" height="64"/>
+ </tile>
+ <tile id="152">
+  <image source="Halloween_Shadow_Singles_48x48_159.png" width="48" height="64"/>
  </tile>
  <tile id="87">
   <image source="Gym_Shadow_Singles_48x48_168.png" width="96" height="96"/>
@@ -270,5 +273,155 @@
  </tile>
  <tile id="122">
   <image source="animated_hospital_xraycabin_door_48x48.png" width="51" height="89"/>
+ </tile>
+ <tile id="124">
+  <image source="Jail_Black_Shadow_Singles_48x48_117.png" width="48" height="64"/>
+ </tile>
+ <tile id="125">
+  <image source="Jail_Black_Shadow_Singles_48x48_118.png" width="48" height="64"/>
+ </tile>
+ <tile id="126">
+  <image source="Jail_Black_Shadow_Singles_48x48_119.png" width="48" height="64"/>
+ </tile>
+ <tile id="127">
+  <image source="Jail_Black_Shadow_Singles_48x48_120.png" width="48" height="64"/>
+ </tile>
+ <tile id="128">
+  <image source="Jail_Black_Shadow_Singles_48x48_129.png" width="96" height="112"/>
+ </tile>
+ <tile id="129">
+  <image source="Jail_Black_Shadow_Singles_48x48_130.png" width="96" height="112"/>
+ </tile>
+ <tile id="130">
+  <image source="Jail_Black_Shadow_Singles_48x48_131.png" width="96" height="112"/>
+ </tile>
+ <tile id="131">
+  <image source="Jail_Black_Shadow_Singles_48x48_132.png" width="96" height="112"/>
+ </tile>
+ <tile id="132">
+  <image source="Jail_Black_Shadow_Singles_48x48_158.png" width="48" height="80"/>
+ </tile>
+ <tile id="133">
+  <image source="Jail_Black_Shadow_Singles_48x48_146.png" width="48" height="112"/>
+ </tile>
+ <tile id="139">
+  <image source="Jail_Black_Shadow_Singles_48x48_151.png" width="48" height="96"/>
+ </tile>
+ <tile id="140">
+  <image source="Condominium_Black_Shadow_Singles_48x48_4.png" width="48" height="192"/>
+ </tile>
+ <tile id="141">
+  <image source="Condominium_Black_Shadow_Singles_48x48_6.png" width="48" height="192"/>
+ </tile>
+ <tile id="142">
+  <image source="Condominium_Black_Shadow_Singles_48x48_13.png" width="64" height="192"/>
+ </tile>
+ <tile id="143">
+  <image source="Condominium_Black_Shadow_Singles_48x48_34.png" width="48" height="96"/>
+ </tile>
+ <tile id="144">
+  <image source="Condominium_Black_Shadow_Singles_48x48_36.png" width="48" height="96"/>
+ </tile>
+ <tile id="145">
+  <image source="Condominium_Black_Shadow_Singles_48x48_50.png" width="64" height="96"/>
+ </tile>
+ <tile id="146">
+  <image source="Jail_Black_Shadow_Singles_48x48_23.png" width="48" height="96"/>
+ </tile>
+ <tile id="148">
+  <image source="Jail_Black_Shadow_Singles_48x48_25.png" width="48" height="96"/>
+ </tile>
+ <tile id="147">
+  <image source="Jail_Black_Shadow_Singles_48x48_24.png" width="48" height="96"/>
+ </tile>
+ <tile id="149">
+  <image source="Jail_Black_Shadow_Singles_48x48_27.png" width="16" height="144"/>
+ </tile>
+ <tile id="150">
+  <image source="Museum_Black_Shadow_Singles_48x48_25.png" width="96" height="128"/>
+ </tile>
+ <tile id="153">
+  <image source="Conference_Hall_Shadow_Singles_48x48_50.png" width="48" height="128"/>
+ </tile>
+ <tile id="154">
+  <image source="Conference_Hall_Shadow_Singles_48x48_51.png" width="48" height="128"/>
+ </tile>
+ <tile id="155">
+  <image source="Conference_Hall_Shadow_Singles_48x48_52.png" width="48" height="128"/>
+ </tile>
+ <tile id="156">
+  <image source="Hospital_Black_Shadow_Singles_48x48_8.png" width="48" height="128"/>
+ </tile>
+ <tile id="157">
+  <image source="Hospital_Black_Shadow_Singles_48x48_10.png" width="48" height="80"/>
+ </tile>
+ <tile id="158">
+  <image source="Hospital_Black_Shadow_Singles_48x48_11.png" width="48" height="128"/>
+ </tile>
+ <tile id="159">
+  <image source="Hospital_Black_Shadow_Singles_48x48_12.png" width="96" height="80"/>
+ </tile>
+ <tile id="160">
+  <image source="Hospital_Black_Shadow_Singles_48x48_13.png" width="48" height="128"/>
+ </tile>
+ <tile id="161">
+  <image source="Hospital_Black_Shadow_Singles_48x48_14.png" width="48" height="128"/>
+ </tile>
+ <tile id="166">
+  <image source="Jail_Black_Shadow_Singles_48x48_175.png" width="48" height="128"/>
+ </tile>
+ <tile id="167">
+  <image source="Jail_Black_Shadow_Singles_48x48_176.png" width="48" height="128"/>
+ </tile>
+ <tile id="169">
+  <image source="Jail_Black_Shadow_Singles_48x48_95.png" width="96" height="48"/>
+ </tile>
+ <tile id="170">
+  <image source="Jail_Black_Shadow_Singles_48x48_93.png" width="64" height="96"/>
+ </tile>
+ <tile id="171">
+  <image source="Jail_Black_Shadow_Singles_48x48_96.png" width="96" height="48"/>
+ </tile>
+ <tile id="172">
+  <image source="Hospital_Black_Shadow_Singles_48x48_109.png" width="96" height="128"/>
+ </tile>
+ <tile id="173">
+  <image source="Hospital_Black_Shadow_Singles_48x48_119.png" width="80" height="128"/>
+ </tile>
+ <tile id="174">
+  <image source="Hospital_Black_Shadow_Singles_48x48_133.png" width="80" height="96"/>
+ </tile>
+ <tile id="175">
+  <image source="Hospital_Black_Shadow_Singles_48x48_134.png" width="80" height="96"/>
+ </tile>
+ <tile id="176">
+  <image source="Hospital_Black_Shadow_Singles_48x48_150.png" width="48" height="96"/>
+ </tile>
+ <tile id="177">
+  <image source="Hospital_Black_Shadow_Singles_48x48_151.png" width="48" height="96"/>
+ </tile>
+ <tile id="178">
+  <image source="Hospital_Black_Shadow_Singles_48x48_152.png" width="48" height="96"/>
+ </tile>
+ <tile id="179">
+  <image source="Basement_Shadow_Singles_48x48_198.png" width="64" height="96"/>
+ </tile>
+ <tile id="180">
+  <image source="Basement_Shadow_Singles_48x48_200.png" width="64" height="96"/>
+ </tile>
+ <tile id="181">
+  <image source="Museum_Black_Shadow_Singles_48x48_40.png" width="96" height="64"/>
+ </tile>
+ <tile id="182">
+  <image source="Museum_Black_Shadow_Singles_48x48_57.png" width="96" height="112"/>
+ </tile>
+ <tile id="183">
+  <image source="Museum_Black_Shadow_Singles_48x48_128.png" width="96" height="64"/>
+ </tile>
+ <tile id="184">
+  <image source="Museum_Black_Shadow_Singles_48x48_130.png" width="96" height="144"/>
+ </tile>
+ <tile id="185">
+  <image source="Museum_Black_Shadow_Singles_48x48_38.png" width="96" height="48"/>
  </tile>
 </tileset>

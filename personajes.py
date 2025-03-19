@@ -283,5 +283,18 @@ class Jugador(Personaje):
         else:
             Personaje.mover(self,QUIETO)
 
-
+    def moverEnYHasta(self, y, variacion):
+        (posx, posy) = self.posicion
+        if(posy < (y-variacion)):
+            velocidady = 1
+            self.movimiento = ABAJO
+            return False
+        elif(posy > (y + variacion)):
+            velocidady = -1
+            self.movimiento = ARRIBA
+            return False
+        else:
+            velocidady = 0
+            self.movimiento = QUIETO
+            return True
 
