@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1-99-gec89c545" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="48" tileheight="48" infinite="0" nextlayerid="8" nextobjectid="70">
+<map version="1.10" tiledversion="1.11.1-99-gec89c545" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="48" tileheight="48" infinite="0" nextlayerid="12" nextobjectid="87">
  <tileset firstgid="1" source="RoomBuilder/Room_Builder_3d_walls_48x48.tsx"/>
  <tileset firstgid="1417" source="RoomBuilder/Room_Builder_Floors_48x48.tsx"/>
  <tileset firstgid="2017" source="Objetos/Objetos.tsx"/>
- <objectgroup id="4" name="Obstaculos" visible="0">
+ <objectgroup id="4" name="Obstaculos">
   <object id="18" x="0" y="0" width="48" height="929"/>
   <object id="19" x="576" y="0" width="48" height="672"/>
   <object id="20" x="0" y="0" width="624" height="144"/>
@@ -14,6 +14,10 @@
   <object id="26" x="336" y="528" width="240" height="96"/>
   <object id="27" x="288" y="528" width="9" height="129"/>
   <object id="28" x="1200" y="528" width="144" height="192"/>
+  <object id="70" x="0" y="288" width="240" height="144"/>
+  <object id="71" x="192" y="240" width="48" height="192"/>
+  <object id="72" x="384" y="240" width="48" height="192"/>
+  <object id="73" x="384" y="288" width="240" height="144"/>
  </objectgroup>
  <layer id="1" name="Suelo" width="30" height="20">
   <data encoding="csv">
@@ -80,26 +84,13 @@
   <object id="17" gid="2159" x="1240" y="720" width="64" height="192"/>
   <object id="30" gid="2103" x="48" y="384" width="48" height="64"/>
   <object id="33" gid="2103" x="48" y="432" width="48" height="64"/>
-  <object id="34" gid="2168" x="120" y="144" width="48" height="64"/>
-  <object id="35" gid="2169" x="96" y="432" width="48" height="64"/>
-  <object id="36" gid="2169" x="144" y="384" width="48" height="64"/>
   <object id="37" gid="2103" x="144" y="432" width="48" height="64"/>
-  <object id="38" gid="2168" x="48" y="144" width="48" height="64"/>
   <object id="39" gid="2103" x="48" y="96" width="48" height="64"/>
   <object id="40" gid="2103" x="456" y="96" width="48" height="64"/>
   <object id="41" gid="2103" x="516" y="144" width="48" height="64"/>
-  <object id="42" gid="2169" x="480" y="432" width="48" height="64"/>
-  <object id="43" gid="2169" x="96" y="384" width="48" height="64"/>
-  <object id="45" gid="2168" x="516" y="96" width="48" height="64"/>
   <object id="46" gid="2103" x="432" y="432" width="48" height="64"/>
-  <object id="49" gid="2168" x="456" y="144" width="48" height="64"/>
-  <object id="50" gid="2169" x="432" y="384" width="48" height="64"/>
-  <object id="51" gid="2169" x="480" y="384" width="48" height="64"/>
-  <object id="52" gid="2169" x="528" y="384" width="48" height="64"/>
-  <object id="53" gid="2169" x="528" y="432" width="48" height="64"/>
   <object id="56" gid="2140" x="600" y="576" width="43" height="34"/>
   <object id="57" gid="2140" x="12.6364" y="54.0909" width="43" height="34"/>
-  <object id="69" gid="2168" x="120" y="96" width="48" height="64"/>
  </objectgroup>
  <objectgroup id="3" name="Objetos"/>
  <objectgroup id="6" name="Reliquia">
@@ -109,5 +100,39 @@
  <objectgroup id="7" name="Reliquia2">
   <object id="67" gid="2200" x="264" y="96" width="96" height="64"/>
   <object id="68" gid="2202" x="264" y="144" width="96" height="48"/>
+ </objectgroup>
+ <objectgroup id="8" name="GrupoCajasFuerte4">
+  <object id="45" name="Inicial" gid="2168" x="516" y="96" width="48" height="64"/>
+  <object id="49" name="Inicial" gid="2168" x="456" y="144" width="48" height="64"/>
+  <object id="85" name="Final" gid="2103" x="516" y="96" width="48" height="64"/>
+  <object id="86" name="Final" gid="2103" x="456" y="144" width="48" height="64"/>
+ </objectgroup>
+ <objectgroup id="9" name="GrupoCajasFuerte3">
+  <object id="34" name="Inicial" gid="2168" x="120" y="144" width="48" height="64"/>
+  <object id="38" name="Inicial" gid="2168" x="48" y="144" width="48" height="64"/>
+  <object id="69" name="Inicial" gid="2168" x="120" y="96" width="48" height="64"/>
+  <object id="82" name="Final" gid="2103" x="120" y="96" width="48" height="64"/>
+  <object id="83" name="Final" gid="2103" x="120" y="144" width="48" height="64"/>
+  <object id="84" name="Final" gid="2103" x="48" y="144" width="48" height="64"/>
+ </objectgroup>
+ <objectgroup id="10" name="GrupoCajasFuerte2">
+  <object id="42" name="Inicial" gid="2169" x="480" y="432" width="48" height="64"/>
+  <object id="50" name="Inicial" gid="2169" x="432" y="384" width="48" height="64"/>
+  <object id="51" name="Inicial" gid="2169" x="480" y="384" width="48" height="64"/>
+  <object id="52" name="Inicial" gid="2169" x="528" y="384" width="48" height="64"/>
+  <object id="53" name="Inicial" gid="2169" x="528" y="432" width="48" height="64"/>
+  <object id="77" name="Final" gid="2103" x="432" y="384" width="48" height="64"/>
+  <object id="78" name="Final" gid="2103" x="480" y="384" width="48" height="64"/>
+  <object id="79" name="Final" gid="2103" x="528" y="384" width="48" height="64"/>
+  <object id="80" name="Final" gid="2103" x="528" y="432" width="48" height="64"/>
+  <object id="81" name="Final" gid="2103" x="480" y="432" width="48" height="64"/>
+ </objectgroup>
+ <objectgroup id="11" name="GrupoCajasFuerte1">
+  <object id="35" name="Inicial" gid="2169" x="96" y="432" width="48" height="64"/>
+  <object id="36" name="Inicial" gid="2169" x="144" y="384" width="48" height="64"/>
+  <object id="43" name="Inicial" gid="2169" x="96" y="384" width="48" height="64"/>
+  <object id="74" name="Final" gid="2103" x="96" y="432" width="48" height="64"/>
+  <object id="75" name="Final" gid="2103" x="96" y="384" width="48" height="64"/>
+  <object id="76" name="Final" gid="2103" x="144" y="384" width="48" height="64"/>
  </objectgroup>
 </map>

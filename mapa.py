@@ -92,6 +92,35 @@ class ObjetoParaCambiar():
         # grupoSprites.add(self.objetoFinal)
         # grupoDepuesPersonaje.add(self.objetoFinal)
 
+class GrupoObjetosParaCambiar():
+    def __init__(self):
+          self.objetosIniciales = []
+          self.objetosFinales = []
+          self.objetosCambiados = False
+
+    def establecerObjeto(self, object, gruposParaAñadir):
+        
+        obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
+
+        if object.name == "Inicial":
+            self.objetosIniciales.append(obj)
+            for grupo in gruposParaAñadir:
+                grupo.add(obj)
+                        
+        elif object.name == "Final":
+            self.objetosFinales.append(obj)
+
+    def cambiar(self, gruposParaAñadir):
+        for objInicial in self.objetosIniciales:
+            for grupo in objInicial.groups():
+                grupo.remove(objInicial)
+
+        for objFinal in self.objetosFinales:
+            for grupo in gruposParaAñadir:
+                grupo.add(objFinal)  
+
+        self.objetosCambiados = True
+
 class TeclaInteraccion(MiSprite):
     def __init__(self, target):
         MiSprite.__init__(self)

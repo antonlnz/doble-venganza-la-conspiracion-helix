@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.1-99-gec89c545" orientation="orthogonal" renderorder="right-down" width="35" height="31" tilewidth="48" tileheight="48" infinite="0" nextlayerid="11" nextobjectid="172">
+<map version="1.10" tiledversion="1.11.1-99-gec89c545" orientation="orthogonal" renderorder="right-down" width="35" height="31" tilewidth="48" tileheight="48" infinite="0" nextlayerid="12" nextobjectid="173">
  <tileset firstgid="1" source="RoomBuilder/Room_Builder_3d_walls_48x48.tsx"/>
  <tileset firstgid="1417" source="RoomBuilder/Room_Builder_Floors_48x48.tsx"/>
  <tileset firstgid="2017" source="Objetos/Objetos.tsx"/>
@@ -100,6 +100,10 @@
   <object id="50" name="Final" gid="2018" x="840" y="575" width="95" height="95"/>
   <object id="51" name="Inicial" gid="2017" x="848" y="576" width="80" height="96"/>
  </objectgroup>
+ <objectgroup id="11" name="PuertaSalaSeguridad">
+  <object id="47" name="Final" gid="2018" x="1320" y="575" width="95" height="95"/>
+  <object id="172" name="Inicial" gid="2017" x="1328" y="576" width="80" height="96"/>
+ </objectgroup>
  <layer id="5" name="Techo" width="35" height="31">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -142,7 +146,6 @@
   <object id="28" gid="2161" x="1536" y="1488" width="48" height="96"/>
   <object id="26" gid="2159" x="376" y="192" width="64" height="192"/>
   <object id="29" gid="2162" x="1480" y="1488" width="64" height="96"/>
-  <object id="47" gid="2018" x="1320" y="575" width="95" height="95"/>
   <object id="52" gid="2167" x="192" y="678" width="96" height="128"/>
   <object id="54" gid="2167" x="192" y="810" width="96" height="128"/>
   <object id="137" gid="2184" x="1104" y="192" width="48" height="128"/>

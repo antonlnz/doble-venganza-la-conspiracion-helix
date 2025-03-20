@@ -29,7 +29,7 @@ class PisoMedioBanco(Mapa):
         self.siguienteMapa = PisoCajaFuerte(director, self)
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (864, 432))
-        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 624))
+        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 576))
         self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (1368, 240))
         self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 720))
         self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.puzle3, (960, 528))
@@ -47,6 +47,7 @@ class PisoMedioBanco(Mapa):
         # self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
 
         self.puertaAcceso = ObjetoParaCambiar()
+        self.puertaSalaSeguridad = ObjetoParaCambiar()
 
         self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
@@ -54,7 +55,7 @@ class PisoMedioBanco(Mapa):
         self.grupoSpritesDinamicos.add(self.jugador1)
 
         # self.jugador1.establecerPosicion((WIDTH//2, HEIGHT//2))
-        self.jugador1.establecerPosicion((380, 380))
+        self.jugador1.establecerPosicion((380, 240))
 
         self.jugador2 = Jugador('Eddie.png','coordEddie.txt', [7, 10])
         self.grupoJugadores = pygame.sprite.Group(self.jugador2)
@@ -84,6 +85,10 @@ class PisoMedioBanco(Mapa):
             elif objectGroup.name == "PuertaAcceso":
                  for object in objectGroup:
                     self.puertaAcceso.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
+
+            elif objectGroup.name == "PuertaSalaSeguridad":
+                 for object in objectGroup:
+                    self.puertaSalaSeguridad.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
 
             else:
                 for object in objectGroup: 
@@ -156,6 +161,12 @@ class PisoMedioBanco(Mapa):
                 self.puertaAcceso.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
             if not self.llego:
                 self.llego = self.jugador2.moverEnYHasta(720, 20)
+
+        if self.puzle2.completado and not self.puertaSalaSeguridad.objetoCambiado:
+            self.puertaSalaSeguridad.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+        if self.puzle3.completado:
+            self.cambiarJugador(self.jugador2)
 
 
         self.center_target_camera(self.jugadorActual)

@@ -46,10 +46,12 @@ class PisoCajaFuerte(Mapa):
 
         # self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
 
-        self.puertaAlmacen = ObjetoParaCambiar()
-        self.puertaSala = ObjetoParaCambiar()
-        self.camara = ObjetoParaCambiar()
-        self.cajaFuerte = ObjetoParaCambiar()
+        self.reliquia = ObjetoParaCambiar()
+
+        self.grupoCajasFuerte1 = GrupoObjetosParaCambiar()
+        self.grupoCajasFuerte2 = GrupoObjetosParaCambiar()
+        self.grupoCajasFuerte3 = GrupoObjetosParaCambiar()
+        self.grupoCajasFuerte4 = GrupoObjetosParaCambiar()
 
         self.jugador1 = Jugador('Eddie.png','coordEddie.txt', [7, 10])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
@@ -73,18 +75,21 @@ class PisoCajaFuerte(Mapa):
                     # self.grupoObjetos.add(obj)
                     # self.grupoDespuesPersonaje.add(obj)
                     self.grupoSprites.add(obj)
-            elif objectGroup.name == "PuertaAlmacen":
+            elif objectGroup.name == "Reliquia":
                  for object in objectGroup:
-                    self.puertaAlmacen.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
-            elif objectGroup.name == "PuertaSala":
+                    self.reliquia.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
+            elif objectGroup.name == "GrupoCajasFuerte1":
                  for object in objectGroup:
-                    self.puertaSala.establecerObjeto(object, [self.grupoObstaculos, self.grupoSprites])
-            elif objectGroup.name == "Camara":
+                    self.grupoCajasFuerte1.establecerObjeto(object, [self.grupoSprites])
+            elif objectGroup.name == "GrupoCajasFuerte2":
                  for object in objectGroup:
-                    self.camara.establecerObjeto(object, [self.grupoSprites])
-            elif objectGroup.name == "CajaFuerte":
+                    self.grupoCajasFuerte2.establecerObjeto(object, [self.grupoSprites])
+            elif objectGroup.name == "GrupoCajasFuerte3":
                  for object in objectGroup:
-                    self.cajaFuerte.establecerObjeto(object, [self.grupoSprites])
+                    self.grupoCajasFuerte3.establecerObjeto(object, [self.grupoSprites])
+            elif objectGroup.name == "GrupoCajasFuerte4":
+                 for object in objectGroup:
+                    self.grupoCajasFuerte4.establecerObjeto(object, [self.grupoSprites])
             else:
                 for object in objectGroup: 
                     obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
@@ -120,17 +125,20 @@ class PisoCajaFuerte(Mapa):
                     self.director.salirEscena()
 
             if evento.type == KEYDOWN and evento.key == K_q:
-                self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-                self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+                self.reliquia.cambiar([self.grupoSprites])
                 
 
             if evento.type == KEYDOWN and evento.key == K_f:
-                self.teclaInteraccion.mostrar()
-                self.camara.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-                self.cajaFuerte.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+                self.grupoCajasFuerte1.cambiar([self.grupoSprites])
+
+            if evento.type == KEYDOWN and evento.key == K_g:
+                self.grupoCajasFuerte2.cambiar([self.grupoSprites])
 
             if evento.type == KEYDOWN and evento.key == K_r:
-                self.teclaInteraccion.ocultar()
+                self.grupoCajasFuerte3.cambiar([self.grupoSprites])
+
+            if evento.type == KEYDOWN and evento.key == K_t:
+                self.grupoCajasFuerte4.cambiar([self.grupoSprites])
             
         teclasPulsadas = pygame.key.get_pressed()
         self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
@@ -179,3 +187,7 @@ class PisoCajaFuerte(Mapa):
 
         self.posicionamientoInteracciones[self.posicionamientoPuzleActual].update(self.offset)
         self.subirPiso.update(self.offset)  
+
+
+    def cajasFuerteRobadas(self):
+        return self.grupoCajasFuerte1.objetosCambiados and self.grupoCajasFuerte2.objetosCambiados and self.grupoCajasFuerte3.objetosCambiados and self.grupoCajasFuerte4.objetosCambiados
