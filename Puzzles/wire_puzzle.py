@@ -8,10 +8,14 @@ class WirePuzzle(Escena):
         Escena.__init__(self, director)
         
         # Variables de tiempo y efectos visuales
-        self.start_time = pygame.time.get_ticks()  # Añadir tiempo inicial
         self.total_time = 45000  # 45 segundos en milisegundos
         self.time_remaining = self.total_time
         
+        # Variables para controlar el inicio del temporizador
+        self.timer_started = False
+        self.start_time = 0
+        self.timer_paused = False  # Variable para pausar el temporizador
+
         self.mensaje_timer = 0
         self.mensaje_duracion = 2000  # 2 segundos en milisegundos
         self.esperando_mensaje = False
@@ -58,6 +62,11 @@ class WirePuzzle(Escena):
         self.banda_color = VERDE  # Color del banner horizontal
         
     def dibujar(self, pantalla):
+        # Si el temporizador no ha comenzado, iniciarlo al mostrar la primera vez
+        if not self.timer_started:
+            self.start_time = pygame.time.get_ticks()
+            self.timer_started = True
+            
         # Dibujar el acertijo
         pregunta = self.font.render("¿Cuál es el siguiente número de esta serie: 3.829, 9.382, 2.938…", True, BLANCO)
         opcionA = self.font.render("A) 8.329", True, BLANCO)
@@ -186,6 +195,7 @@ class WirePuzzle(Escena):
                                     self.completado = True
                                     self.esperando_mensaje = True
                                     self.mensaje_timer = pygame.time.get_ticks()
+                                    self.timer_paused = True  # Pausar el temporizador al completar
                                 else:
                                     self.cables_cortados.append(i)
                                     self.intentos -= 1
@@ -196,10 +206,11 @@ class WirePuzzle(Escena):
                                         self.completado = True
                                         self.esperando_mensaje = True
                                         self.mensaje_timer = pygame.time.get_ticks()
+                                        self.timer_paused = True  # Pausar el temporizador al fallar
                                 break
 
     def update(self, tiempo):
-        if not self.completado:
+        if not self.completado and self.timer_started and not self.timer_paused:
             # Calcular tiempo transcurrido desde el inicio
             current_time = pygame.time.get_ticks()
             elapsed_time = current_time - self.start_time
@@ -211,6 +222,7 @@ class WirePuzzle(Escena):
                 self.mensaje = "¡Has fallado! La alarma se ha activado"
                 self.esperando_mensaje = True
                 self.mensaje_timer = pygame.time.get_ticks()
+                self.timer_paused = True  # Pausar el temporizador al acabarse el tiempo
                 self.director.salirEscena()
             
             # Efectos para el temporizador bajo
