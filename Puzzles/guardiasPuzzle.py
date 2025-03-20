@@ -46,12 +46,12 @@ class Guardia(Escena):
         self.health = len(self.sequence)
         self.wrong_key = False
         self.lives = 3
-        self.last_key_time = time.time()
-        self.start_time = time.time()
+        self.last_key_time = None
+        self.start_time = None  # Changed to None
         self.time_limits = [10, 7, 5]  # Tiempos para cada guardia
         self.current_guardia_index = 0
         self.running = True
-        self.remaining_time = self.time_limits[self.current_guardia_index]
+        self.remaining_time = None  # Changed to None
         self.imagenes_guardias = [
             self.policeman_image,
             self.policewoman_image,
@@ -96,6 +96,11 @@ class Guardia(Escena):
             if event.type == pygame.QUIT:
                 self.director.salirPrograma()
             elif event.type == pygame.KEYDOWN:
+                if self.start_time is None:  # Initialize timer on first key press
+                    self.start_time = time.time()
+                    self.remaining_time = self.time_limits[self.current_guardia_index]
+                    self.last_key_time = time.time()
+
                 current_time = time.time()
                 if current_time - self.last_key_time > 2:
                     self.last_key_time = current_time
@@ -112,10 +117,15 @@ class Guardia(Escena):
                     self.lives -= 1
 
     def update(self, tiempo_pasado):
-        if self.current_guardia_index < len(self.time_limits):
+        if self.start_time is None:  # Initialize timer on first key press
+            self.start_time = time.time()
+            self.remaining_time = self.time_limits[self.current_guardia_index]
+            self.last_key_time = time.time()
+
+        if self.start_time is not None and self.current_guardia_index < len(self.time_limits):
             self.remaining_time = self.time_limits[self.current_guardia_index] - (time.time() - self.start_time)
-        if self.remaining_time <= 0 or self.lives <= 0:
-            self.running = False
+            if self.remaining_time <= 0 or self.lives <= 0:
+                self.running = False
     
     def dibujar(self, screen):
         screen.blit(self.background_image, (0, 0))
