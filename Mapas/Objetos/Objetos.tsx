@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.11.1-99-gec89c545" name="Puertas/Ventanas" tilewidth="96" tileheight="192" tilecount="141" columns="0">
+<tileset version="1.10" tiledversion="1.11.2" name="Puertas/Ventanas" tilewidth="1500" tileheight="1600" tilecount="143" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image source="PuertaCerrada.png" width="80" height="96"/>
@@ -423,5 +423,11 @@
  </tile>
  <tile id="185">
   <image source="Museum_Black_Shadow_Singles_48x48_38.png" width="96" height="48"/>
+ </tile>
+ <tile id="186">
+  <image source="hook.png" width="1500" height="1600"/>
+ </tile>
+ <tile id="187">
+  <image source="rope.png" width="256" height="256"/>
  </tile>
 </tileset>
