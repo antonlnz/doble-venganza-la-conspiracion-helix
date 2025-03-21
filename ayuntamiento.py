@@ -17,7 +17,7 @@ class Ayuntamiento(Mapa):
 
         Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
-        self.puzle = Tarjeta(director)
+        self.puzle = KeypadPuzzle(director)
         self.puzle2 = KeypadPuzzle(director)
         self.puzle3 = Hack(director)
         self.siguienteMapa = Almacen(director)
