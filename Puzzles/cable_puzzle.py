@@ -5,7 +5,7 @@ import os
 import random
 from escena import Escena
 
-# Se trata del puzzle de cables para desactivar la cámara del almacén
+# Se trata del puzzle de cables para activar la bomba del almacén
 class CablePuzzle(Escena):
     def __init__(self, director):
         
@@ -90,11 +90,13 @@ class CablePuzzle(Escena):
         self.selected_cable = None
         self.dragging = False
         for i in range(4):
-            start_x, start_y = self.start_connectors[i].center
+            # Punto de inicio para el cable al final del conector
+            start_x = self.start_connectors[i].right
+            start_y = self.start_connectors[i].centery
             
             cable = {
-                "start": (start_x, start_y),
-                "end": (start_x + 60, start_y),  # Posición inicial cerca del comienzo
+                "start": (start_x, start_y), 
+                "end": (start_x + 60, start_y),
                 "color_pattern": self.cable_colors[i],  # Patrón de color para rayas
                 "connected": False,
                 "start_pattern": self.start_patterns[i],  # Patrón del conector inicial
@@ -360,7 +362,7 @@ class CablePuzzle(Escena):
             pantalla.blit(instruction_bg, (instruction_x, instruction_y))
             
             # Mostrar Instrucciones
-            title_text = "Sistema de Desactivación de Cámaras"
+            title_text = "Sistema de instalación de la bomba"
             title_surface = self.medium_font.render(title_text, True, BLANCO)
             pantalla.blit(title_surface, (WIDTH // 2 - title_surface.get_width() // 2, instruction_y + 15))
             
@@ -387,7 +389,7 @@ class CablePuzzle(Escena):
         # Mostrar mensaje si corresponde
         if self.show_message:
             if self.puzzle_solved:
-                message = "¡Correcto! Has desactivado la cámara"
+                message = "¡Correcto! Has activado la bomba"
                 color = VERDE
             elif self.game_over:
                 if self.time_remaining <= 0:
