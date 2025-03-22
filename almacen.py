@@ -1,3 +1,4 @@
+from Puzzles.cable_puzzle import CablePuzzle
 from Puzzles.cardPuzzle import CardPuzzle
 from Puzzles.keypadPuzzle import KeypadPuzzle
 from Puzzles.printPuzzle import Huella
@@ -6,6 +7,7 @@ from Puzzles.switch_puzzle import SwitchPuzzle
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.wire_puzzle import WirePuzzle
 from Puzzles.tuberiasPuzzle import Pipe
+from periodico_almacen import Periodico_Almacen
 from personajes import *
 from pisoMedioBanco import PisoMedioBanco
 from settings import *
@@ -20,11 +22,10 @@ class Almacen(Mapa):
 
         self.puzle = SortingGridPuzzle(director)
         self.puzle2 = SwitchPuzzle(director)
-        self.puzle3 = Huella(director)
-        # self.puzle3 = Pipe(director)
-        self.puzle4 = Pipe(director) 
-        self.puzle5 = WirePuzzle(director)
-        self.siguienteMapa = PisoMedioBanco(director)
+        self.puzle3 = Pipe(director)
+        self.puzle4 = Huella(director) 
+        self.puzle5 = CablePuzzle(director)
+        self.siguienteMapa = Periodico_Almacen(director)
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200))
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144))
@@ -50,7 +51,7 @@ class Almacen(Mapa):
         self.camara = ObjetoParaCambiar()
         self.cajaFuerte = ObjetoParaCambiar()
 
-        self.jugador1 = Jugador('Eddie.png','coordEddie.txt', [7, 10])
+        self.jugador1 = Jugador('Eddie.png','coordEddie.txt', [7, 10, 5])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
 
         self.grupoSpritesDinamicos.add(self.jugador1)

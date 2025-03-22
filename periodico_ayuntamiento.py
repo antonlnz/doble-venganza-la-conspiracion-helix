@@ -1,6 +1,7 @@
 import os
 import pygame
 import sys
+from almacen import Almacen
 from escena import *
 
 WIDTH = 1920
@@ -35,6 +36,8 @@ class Periodico_Ayuntamiento(Escena):
         self.tiempo_parpadeo = 0
         self.texto_visible = True
         self.velocidad_parpadeo = 300
+
+        self.siguienteMapa = Almacen(director)
     
     def eventos(self, eventos):
         for evento in eventos:
@@ -58,7 +61,7 @@ class Periodico_Ayuntamiento(Escena):
         else:
             self.alpha = min(255, self.alpha + self.fade_speed)
             if self.alpha >= 255:
-                self.director.salirEscena()
+                self.director.cambiarEscena(self.siguienteMapa)
     
     def dibujar(self, pantalla):
         pantalla.blit(self.fondo, (0, 0))

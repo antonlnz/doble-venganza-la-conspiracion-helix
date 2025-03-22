@@ -3,10 +3,9 @@
 
 # Importar modulos
 
-import sys
 import pygame
 from director import *
-from fase import *
+from periodico_fabrica import Periodico_Fabrica
 from settings import *
 
 
@@ -18,7 +17,7 @@ if __name__ == '__main__':
     # Creamos el director
     director = Director()
     # Creamos la escena con la pantalla inicial
-    escena = Ayuntamiento(director)
+    escena = Periodico_Fabrica(director)
     # Le decimos al director que apile esta escena
     director.apilarEscena(escena)
     # Y ejecutamos el juego

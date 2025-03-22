@@ -16,27 +16,13 @@ class PisoCajaFuerte(Mapa):
 
         Mapa.__init__(self, director, "Mapas/pisoCajaFuerte48x48.tmx")
 
-        self.puzle = SortingGridPuzzle(director)
-        self.puzle2 = SwitchPuzzle(director)
-        self.puzle3 = SortingGridPuzzle(director)
-        # self.puzle3 = Pipe(director)
-        self.puzle4 = Tarjeta(director)
-        self.puzle5 = Tarjeta(director)
+    
         self.anteriorMapa = anteriorMapa
 
-        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200))
-        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144))
-        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (216, 528))
-        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (1056, 576))
-        self.posicionamientoInteraccion5 = PosicionamientoInteraccion(self.puzle5, (1392, 1032))
         # self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
         
-        self.subirPiso = PosicionamientoInteraccion(self.anteriorMapa, (1272, 744))
+        self.subirPiso = PosicionamientoInteraccion(self.anteriorMapa, (1272, 720))
         # self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
-
-        self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, 
-                                                self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, 
-                                                self.posicionamientoInteraccion5]
 
         self.posicionamientoPuzleActual = 0
 
@@ -47,13 +33,21 @@ class PisoCajaFuerte(Mapa):
         # self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
 
         self.reliquia = ObjetoParaCambiar()
+        self.interaccionRoboReliquia = PosicionamientoInteraccionRobo(self.reliquia, (312, 192))
 
         self.grupoCajasFuerte1 = GrupoObjetosParaCambiar()
-        self.grupoCajasFuerte2 = GrupoObjetosParaCambiar()
-        self.grupoCajasFuerte3 = GrupoObjetosParaCambiar()
-        self.grupoCajasFuerte4 = GrupoObjetosParaCambiar()
+        self.interaccionRobo1 = PosicionamientoInteraccionRobo(self.grupoCajasFuerte1, (120, 432))
 
-        self.jugador1 = Jugador('Eddie.png','coordEddie.txt', [7, 10])
+        self.grupoCajasFuerte2 = GrupoObjetosParaCambiar()
+        self.interaccionRobo2 = PosicionamientoInteraccionRobo(self.grupoCajasFuerte2, (504, 432))
+
+        self.grupoCajasFuerte3 = GrupoObjetosParaCambiar()
+        self.interaccionRobo3 = PosicionamientoInteraccionRobo(self.grupoCajasFuerte3, (112, 144))
+
+        self.grupoCajasFuerte4 = GrupoObjetosParaCambiar()
+        self.interaccionRobo4 = PosicionamientoInteraccionRobo(self.grupoCajasFuerte4, (512, 144))
+
+        self.jugador1 = Jugador('Eddie.png','coordEddie.txt', [7, 10, 5])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
 
         self.grupoSpritesDinamicos.add(self.jugador1)
@@ -115,14 +109,23 @@ class PisoCajaFuerte(Mapa):
                 self.director.salirEscena()
 
             if evento.type == KEYDOWN and evento.key == K_e:
-                if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1):
-                    if self.huida:
-                        self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
-                    else:
-                        self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
-
                 if self.subirPiso.puedeActivar(self.jugador1):
                     self.director.salirEscena()
+
+                if self.cajasFuerteRobadas() and self.interaccionRoboReliquia.puedeActivar(self.jugador1):
+                    self.reliquia.cambiar([self.grupoSprites])
+
+                if self.interaccionRobo1.puedeActivar(self.jugador1):
+                    self.grupoCajasFuerte1.cambiar([self.grupoSprites])
+
+                if self.interaccionRobo2.puedeActivar(self.jugador1):
+                    self.grupoCajasFuerte2.cambiar([self.grupoSprites])
+
+                if self.interaccionRobo3.puedeActivar(self.jugador1):
+                    self.grupoCajasFuerte3.cambiar([self.grupoSprites])
+
+                if self.interaccionRobo4.puedeActivar(self.jugador1):
+                    self.grupoCajasFuerte4.cambiar([self.grupoSprites])
 
             if evento.type == KEYDOWN and evento.key == K_q:
                 self.reliquia.cambiar([self.grupoSprites])
@@ -145,30 +148,10 @@ class PisoCajaFuerte(Mapa):
     
     def update(self, tiempo):
         
-        if not self.huida:
-            if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena.completado:
-                self.posicionamientoPuzleActual += 1
+        if self.reliquia.objetoCambiado:
+            self.huida = True
 
-                if self.posicionamientoPuzleActual == (len(self.posicionamientoInteracciones) - 1):
-                    self.huida = True
-            
-        if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1) or self.subirPiso.puedeActivar(self.jugador1) :
-            self.teclaInteraccion.mostrar()
-        else:
-            self.teclaInteraccion.ocultar()
-
-        if self.puzle.completado and not self.puertaAlmacen.objetoCambiado:
-            self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-
-        if self.puzle2.completado and not self.camara.objetoCambiado:
-            self.camara.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-
-        if self.puzle3.completado and not self.puertaSala.objetoCambiado:
-            self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-        
-        if self.puzle4.completado and not self.cajaFuerte.objetoCambiado:
-            self.cajaFuerte.cambiar([self.grupoSprites])
-            self.jugador1.establecerPosicion((120, 168))
+        self.altenarTeclaInteraccion()
 
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
@@ -185,9 +168,21 @@ class PisoCajaFuerte(Mapa):
         for sprite in iter(self.grupoSprites):
                 sprite.establecerPosicionPantalla(self.offset)
 
-        self.posicionamientoInteracciones[self.posicionamientoPuzleActual].update(self.offset)
+        self.interaccionRoboReliquia.update(self.offset)
+        self.interaccionRobo1.update(self.offset)
+        self.interaccionRobo2.update(self.offset)
+        self.interaccionRobo3.update(self.offset)
+        self.interaccionRobo4.update(self.offset)
         self.subirPiso.update(self.offset)  
 
+    def altenarTeclaInteraccion(self):
+        if self.subirPiso.puedeActivar(self.jugador1) or self.puedeRobar(self.jugador1) or (self.cajasFuerteRobadas() and self.interaccionRoboReliquia.puedeActivar(self.jugador1)):
+            self.teclaInteraccion.mostrar()
+        else:
+            self.teclaInteraccion.ocultar()
 
     def cajasFuerteRobadas(self):
-        return self.grupoCajasFuerte1.objetosCambiados and self.grupoCajasFuerte2.objetosCambiados and self.grupoCajasFuerte3.objetosCambiados and self.grupoCajasFuerte4.objetosCambiados
+        return self.grupoCajasFuerte1.objetoCambiado and self.grupoCajasFuerte2.objetoCambiado and self.grupoCajasFuerte3.objetoCambiado and self.grupoCajasFuerte4.objetoCambiado
+    
+    def puedeRobar(self, target):
+        return self.interaccionRobo1.puedeActivar(target) or  self.interaccionRobo2.puedeActivar(target) or self.interaccionRobo3.puedeActivar(target) or self.interaccionRobo4.puedeActivar(target) 

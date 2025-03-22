@@ -10,6 +10,7 @@ from Puzzles.hackPuzzle_little import Hack
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.keypadPuzzle import KeypadPuzzle
 # from almacen import Almacen
+from periodico import Periodico_Banco
 from personajes import *
 from pisoCajaFuerte import PisoCajaFuerte
 from settings import *
@@ -27,11 +28,12 @@ class PisoMedioBanco(Mapa):
         self.puzle3 = SimonDice(director)
         self.puzle4 = Guardia(director)
         self.siguienteMapa = PisoCajaFuerte(director, self)
+        # self.siguienteMapa = Periodico_Banco(director)
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (864, 432))
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 576))
         self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (1368, 240))
-        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 720))
+        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 840))
         self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.puzle3, (960, 528))
         
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, self.posicionamientoInteraccionHuida]
@@ -49,7 +51,7 @@ class PisoMedioBanco(Mapa):
         self.puertaAcceso = ObjetoParaCambiar()
         self.puertaSalaSeguridad = ObjetoParaCambiar()
 
-        self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10])
+        self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10, 5])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
 
         self.grupoSpritesDinamicos.add(self.jugador1)
@@ -57,7 +59,7 @@ class PisoMedioBanco(Mapa):
         # self.jugador1.establecerPosicion((WIDTH//2, HEIGHT//2))
         self.jugador1.establecerPosicion((380, 240))
 
-        self.jugador2 = Jugador('Eddie.png','coordEddie.txt', [7, 10])
+        self.jugador2 = Jugador('Eddie.png','coordEddie.txt', [7, 10, 5])
         self.grupoJugadores = pygame.sprite.Group(self.jugador2)
 
         self.grupoSpritesDinamicos.add(self.jugador2)
@@ -69,6 +71,18 @@ class PisoMedioBanco(Mapa):
         self.teclaInteraccion = TeclaInteraccion(self.jugadorActual)
 
         self.center_target_camera(self.jugadorActual)
+
+        self.guardia1 = GuardiaBanco()
+        self.guardia1.establecerPosicion((790, 912))
+        self.grupoSpritesDinamicos.add(self.guardia1)
+
+        self.guardia2 = GuardiaBanco()
+        self.guardia2.establecerPosicion((864, 912))
+        self.grupoSpritesDinamicos.add(self.guardia2)
+
+        self.guardia3 = GuardiaBanco()
+        self.guardia3.establecerPosicion((938, 912))
+        self.grupoSpritesDinamicos.add(self.guardia3)
         
 
         for objectGroup in self.tmxdata.objectgroups:
@@ -96,7 +110,7 @@ class PisoMedioBanco(Mapa):
                     self.grupoObstaculos.add(obj)
                     # self.grupoObjetos.add(obj)
                     self.grupoSprites.add(obj)
-           
+
         self.grupoSprites.add(self.jugador1)
         self.grupoSprites.add(self.jugador2)
         
@@ -133,11 +147,16 @@ class PisoMedioBanco(Mapa):
                 self.cambiarJugador(self.jugador1)
 
             if evento.type == KEYDOWN and evento.key == K_r:
-                # self.jugador2.moverEnYHasta(720, 20)
-                self.llego = not self.llego
+                self.jugador1.noquear()
 
             if evento.type == KEYDOWN and evento.key == K_t:
                 self.puertaAcceso.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+            
+            if evento.type == KEYDOWN and evento.key == K_z:
+                self.mostrarGuardias()
+            
+            if evento.type == KEYDOWN and evento.key == K_x:
+                self.noquearGuardias()
             
         teclasPulsadas = pygame.key.get_pressed()
         self.jugadorActual.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
@@ -151,7 +170,7 @@ class PisoMedioBanco(Mapa):
                 if self.posicionamientoInteraccionActual == (len(self.posicionamientoInteracciones) - 1):
                     self.huida = True
             
-        if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual) or self.bajarPiso.puedeActivar(self.jugador2):
+        if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual) or (self.bajarPiso.puedeActivar(self.jugador2) and not self.siguienteMapa.huida):
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
@@ -167,7 +186,10 @@ class PisoMedioBanco(Mapa):
 
         if self.puzle3.completado:
             self.cambiarJugador(self.jugador2)
+            self.mostrarGuardias()
 
+        if self.puzle4.completado:
+            self.noquearGuardias()
 
         self.center_target_camera(self.jugadorActual)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
@@ -186,3 +208,25 @@ class PisoMedioBanco(Mapa):
 
         self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].update(self.offset)   
         self.bajarPiso.update(self.offset)  
+
+
+    def mostrarGuardias(self):
+        self.grupoObstaculos.add(self.guardia1) 
+        self.grupoSprites.add(self.guardia1) 
+
+        self.grupoObstaculos.add(self.guardia2) 
+        self.grupoSprites.add(self.guardia2) 
+
+        self.grupoObstaculos.add(self.guardia3) 
+        self.grupoSprites.add(self.guardia3)   
+
+    def noquearGuardias(self):
+        self.guardia1.noquear()
+        self.grupoObstaculos.remove(self.guardia1)
+
+        self.guardia2.establecerPosicion((864, 930))
+        self.guardia2.noquear()
+        self.grupoObstaculos.remove(self.guardia2)
+
+        self.guardia3.noquear()
+        self.grupoObstaculos.remove(self.guardia3)

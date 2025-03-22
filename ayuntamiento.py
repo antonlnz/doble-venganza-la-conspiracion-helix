@@ -5,7 +5,7 @@ from Puzzles.cardPuzzle import CardPuzzle
 from Puzzles.hackPuzzle_little import Hack
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.keypadPuzzle import KeypadPuzzle
-from almacen import Almacen
+from periodico_ayuntamiento import Periodico_Ayuntamiento
 from personajes import *
 from settings import *
 from escena import *
@@ -20,7 +20,7 @@ class Ayuntamiento(Mapa):
         self.puzle = Tarjeta(director)
         self.puzle2 = KeypadPuzzle(director)
         self.puzle3 = Hack(director)
-        self.siguienteMapa = Almacen(director)
+        self.siguienteMapa = Periodico_Ayuntamiento(director)
 
         self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (950, 625))
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (288, 672))
@@ -37,9 +37,9 @@ class Ayuntamiento(Mapa):
 
         self.puertaAlcalde = ObjetoParaCambiar()
 
-        self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10])
+        self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10, 5])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
-        self.npc = NPC_Ayuntamiento("NPC/NPC.png", "NPC/coordNpc.txt", [7, 7], 750, 950)
+        self.npc = NPC_Ayuntamiento("Guardia.png", "coordGuardia.txt", [7, 7, 4], 750, 950)
         self.grupoSprites.add(self.npc)
         self.grupoSpritesDinamicos.add(self.npc) #Modificar la logica de los grupos para poder añadir el npc solo al grupo dinamico y
                                                     #que no se mueva con el personaje. 
@@ -112,6 +112,8 @@ class Ayuntamiento(Mapa):
         self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
     
     def update(self, tiempo):
+
+        
         
         if not self.huida:
             if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena.completado:
@@ -143,4 +145,5 @@ class Ayuntamiento(Mapa):
         for sprite in iter(self.grupoSprites):
                 sprite.establecerPosicionPantalla(self.offset)
 
+        self.posicionamientoInteraccion.establecerPosicion(self.npc.posicion)
         self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].update(self.offset)   

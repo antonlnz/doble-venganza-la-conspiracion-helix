@@ -20,13 +20,15 @@ ARRIBA_IZQUIERDA = 5
 ARRIBA_DERECHA = 6
 ABAJO_IZQUIERDA = 7
 ABAJO_DERECHA = 8
+NOQUEADO = 9
 
 #Posturas
 SPRITE_QUIETO = 0
 SPRITE_ANDANDO = 1
+SPRITE_NOQUEADO = 2 
 
 # Velocidades de los distintos personajes
-VELOCIDAD_JUGADOR = 0.2 # Pixeles por milisegundo
+VELOCIDAD_JUGADOR = 0.5 # Pixeles por milisegundo
 VELOCIDAD_SALTO_JUGADOR = 0.3 # Pixeles por milisegundo
 RETARDO_ANIMACION_JUGADOR = 5 # updates que durará cada imagen del personaje
                               # debería de ser un valor distinto para cada postura
@@ -114,7 +116,7 @@ class Personaje(MiSprite):
         self.numImagenPostura = 0;
         cont = 0;
         self.coordenadasHoja = [];
-        for linea in range(0, 2):
+        for linea in range(0, 3):
             self.coordenadasHoja.append([])
             tmp = self.coordenadasHoja[linea]
             for postura in range(1, numImagenes[linea]+1):
@@ -126,6 +128,8 @@ class Personaje(MiSprite):
 
         # En que postura esta inicialmente
         self.numPostura = QUIETO
+
+        self.noqueado = False
 
         # El rectangulo del Sprite
         self.rect = pygame.Rect(100,100,self.coordenadasHoja[self.numPostura][self.numImagenPostura][2],self.coordenadasHoja[self.numPostura][self.numImagenPostura][3])
@@ -151,25 +155,38 @@ class Personaje(MiSprite):
         self.retardoMovimiento -= 1
         # Miramos si ha pasado el retardo para dibujar una nueva postura
         if (self.retardoMovimiento < 0):
-            self.retardoMovimiento = self.retardoAnimacion
-            # Si ha pasado, actualizamos la postura
-            self.numImagenPostura += 1
-            if self.numImagenPostura >= len(self.coordenadasHoja[self.numPostura]):
-                self.numImagenPostura = 0;
-            if self.numImagenPostura < 0:
-                self.numImagenPostura = len(self.coordenadasHoja[self.numPostura])-1
+            if not (self.numPostura == SPRITE_NOQUEADO and self.numImagenPostura == (len(self.coordenadasHoja[self.numPostura]) - 1)):
+
+                self.retardoMovimiento = self.retardoAnimacion
+                # Si ha pasado, actualizamos la postura
+                self.numImagenPostura += 1
+                if self.numImagenPostura >= len(self.coordenadasHoja[self.numPostura]):
+                    self.numImagenPostura = 0;
+                if self.numImagenPostura < 0:
+                    self.numImagenPostura = len(self.coordenadasHoja[self.numPostura])-1
+
+            
             self.image = self.hoja.subsurface(self.coordenadasHoja[self.numPostura][self.numImagenPostura])
 
-            # Si esta mirando a la izquiera, cogemos la porcion de la hoja
+            # Si esta mirando a la derecha, cogemos la porcion de la hoja
             if self.mirando == DERECHA:
                 self.image = self.hoja.subsurface(self.coordenadasHoja[self.numPostura][self.numImagenPostura])
-            #  Si no, si mira a la derecha, invertimos esa imagen
+            #  Si no, si mira a la izquierda, invertimos esa imagen
             elif self.mirando == IZQUIERDA:
                 self.image = pygame.transform.flip(self.hoja.subsurface(self.coordenadasHoja[self.numPostura][self.numImagenPostura]), 1, 0)
 
 
     def update(self, grupoObstaculos, tiempo):
-
+        
+        if self.movimiento == NOQUEADO or self.numPostura == SPRITE_NOQUEADO:
+            self.numPostura = SPRITE_NOQUEADO
+            self.actualizarPostura()
+            velocidadx = 0
+            velocidady = 0
+            self.velocidad = (velocidadx, velocidady)
+            MiSprite.update(self, tiempo)
+            return
+        
         # Las velocidades a las que iba hasta este momento
         (velocidadx, velocidady) = self.velocidad
 
@@ -280,6 +297,8 @@ class Jugador(Personaje):
             Personaje.mover(self,DERECHA)
         elif teclasPulsadas[abajo]:
             Personaje.mover(self,ABAJO)
+        elif self.noqueado == True:
+            Personaje.mover(self,NOQUEADO)
         else:
             Personaje.mover(self,QUIETO)
 
@@ -297,6 +316,25 @@ class Jugador(Personaje):
             velocidady = 0
             self.movimiento = QUIETO
             return True
+        
+    def noquear(self):
+        if not self.noqueado:
+            self.noqueado = True
+            self.numImagenPostura = 0
+
+class GuardiaBanco(Personaje):
+    def __init__(self):
+        # Invocamos al constructor de la clase padre con la configuracion de este personaje concreto
+        # Personaje.__init__(self, 'Guardia.png', 'coordGuardia.txt', [9, 8, 4], VELOCIDAD_JUGADOR, RETARDO_ANIMACION_JUGADOR)
+        Personaje.__init__(self, 'Guardia.png', 'coordGuardia.txt', [7, 7, 4], VELOCIDAD_JUGADOR, RETARDO_ANIMACION_JUGADOR)
+        self.noqueado = False
+
+
+    def noquear(self):
+        if not self.noqueado:
+            self.noqueado = True
+            self.movimiento = NOQUEADO
+            self.numImagenPostura = 0
 
 class NPC_Ayuntamiento(Personaje):
     def __init__(self, archivoImagen, archivoCoordenadas, numImagenes, x_inicio, x_fin):

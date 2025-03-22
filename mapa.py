@@ -96,7 +96,7 @@ class GrupoObjetosParaCambiar():
     def __init__(self):
           self.objetosIniciales = []
           self.objetosFinales = []
-          self.objetosCambiados = False
+          self.objetoCambiado = False
 
     def establecerObjeto(self, object, gruposParaAñadir):
         
@@ -119,7 +119,12 @@ class GrupoObjetosParaCambiar():
             for grupo in gruposParaAñadir:
                 grupo.add(objFinal)  
 
-        self.objetosCambiados = True
+        self.objetoCambiado = True
+
+    # def objetosInicialesAñadirGrupos(self, gruposParaAñadir):
+    #     for objInicial in self.objetosIniciales:
+    #         for grupo in gruposParaAñadir:
+    #             grupo.add(objInicial)  
 
 class TeclaInteraccion(MiSprite):
     def __init__(self, target):
@@ -162,5 +167,24 @@ class PosicionamientoInteraccion():
         (posx, posy) = self.posicion
         (scrollx, scrolly) = self.scroll
         return(abs((posx - scrollx) - target.rect.centerx) < 48 and abs((posy - scrolly) - target.rect.centery) < 48)
+    
+    def establecerPosicion(self, posicion):
+        self.posicion = posicion
+        
+    
+
+class PosicionamientoInteraccionRobo():
+    def __init__(self, robo, posicion):
+        self.robo = robo
+        self.posicion = posicion
+        self.scroll = (0, 0)
+
+    def update(self, scroll):
+        self.scroll = scroll
+
+    def puedeActivar(self, target):
+        (posx, posy) = self.posicion
+        (scrollx, scrolly) = self.scroll
+        return (abs((posx - scrollx) - target.rect.centerx) < 48 and abs((posy - scrolly) - target.rect.centery) < 48) and not self.robo.objetoCambiado
     
 
