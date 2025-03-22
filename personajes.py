@@ -298,3 +298,39 @@ class Jugador(Personaje):
             self.movimiento = QUIETO
             return True
 
+class NPC_Ayuntamiento(Personaje):
+    def __init__(self, archivoImagen, archivoCoordenadas, numImagenes, x_inicio, x_fin):
+        super().__init__(archivoImagen, archivoCoordenadas, numImagenes, 0.1, RETARDO_ANIMACION_JUGADOR)
+        
+        self.x_inicio = x_inicio
+        self.x_fin = x_fin
+        self.direccion = DERECHA  
+        self.wait_time = 0
+        self.wait = False
+
+        self.posicion = (self.x_inicio, 600)  #ver una modificacion
+        self.establecerPosicion(self.posicion)
+
+    def update(self, grupoObstaculo, tiempo):
+        if self.wait:
+            self.wait_time -= tiempo
+            if self.wait_time <= 0:
+                self.wait = False
+                self.mover(self.direccion)
+        else:
+            if self.posicion[0] >= self.x_fin:  # Si llegó al final, cambia de dirección
+                self.direccion = IZQUIERDA
+                self.wait = True
+                self.wait_time = 1000
+                self.numPostura = QUIETO
+            elif self.posicion[0] <= self.x_inicio:  # Si llegó al inicio, cambia de dirección
+                self.direccion = DERECHA
+                self.wait = True
+                self.wait_time = 1000
+                self.numPostura = QUIETO
+            if not self.wait:
+                self.mover(self.direccion)
+
+        super().update(grupoObstaculo, tiempo)
+
+        

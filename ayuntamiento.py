@@ -17,7 +17,7 @@ class Ayuntamiento(Mapa):
 
         Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
-        self.puzle = KeypadPuzzle(director)
+        self.puzle = Tarjeta(director)
         self.puzle2 = KeypadPuzzle(director)
         self.puzle3 = Hack(director)
         self.siguienteMapa = Almacen(director)
@@ -39,7 +39,10 @@ class Ayuntamiento(Mapa):
 
         self.jugador1 = Jugador('Vince.png','coordVince.txt', [7, 10])
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
-
+        self.npc = NPC_Ayuntamiento("NPC/NPC.png", "NPC/coordNpc.txt", [7, 7], 750, 950)
+        self.grupoSprites.add(self.npc)
+        self.grupoSpritesDinamicos.add(self.npc) #Modificar la logica de los grupos para poder añadir el npc solo al grupo dinamico y
+                                                    #que no se mueva con el personaje. 
         self.grupoSpritesDinamicos.add(self.jugador1)
 
         # self.jugador1.establecerPosicion((WIDTH//2, HEIGHT//2))
@@ -78,6 +81,7 @@ class Ayuntamiento(Mapa):
     def dibujar(self,pantalla):
         pantalla.fill((0,0,0))
         self.grupoSprites.draw(pantalla)
+        self.grupoSpritesDinamicos.draw(pantalla)
         self.grupoDespuesPersonaje.draw(pantalla)
         self.teclaInteraccion.dibujar(pantalla)
         
