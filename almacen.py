@@ -62,6 +62,10 @@ class Almacen(Mapa):
 
         self.center_target_camera(self.jugador1)
 
+        self.guardia = GuardiaBanco()
+        self.guardia.establecerPosicion((1056, 576))
+        self.grupoSpritesDinamicos.add(self.guardia)
+
         for objectGroup in self.tmxdata.objectgroups:
             if objectGroup.name == "Obstaculos":
                 for object in objectGroup:
@@ -91,7 +95,9 @@ class Almacen(Mapa):
                     self.grupoObstaculos.add(obj)
                     # self.grupoObjetos.add(obj)
                     self.grupoSprites.add(obj)
-           
+
+        self.grupoObstaculos.add(self.guardia)
+        self.grupoSprites.add(self.guardia)
         self.grupoSprites.add(self.jugador1)
         
 
@@ -114,7 +120,11 @@ class Almacen(Mapa):
                     if self.huida:
                         self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
                     else:
-                        self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
+                        if self.posicionamientoPuzleActual == 3 and not self.guardia.noqueado:
+                            self.guardia.noquear()
+                            self.grupoObstaculos.remove(self.guardia)
+                        else:
+                            self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
 
             if evento.type == KEYDOWN and evento.key == K_q:
                 self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
@@ -158,6 +168,7 @@ class Almacen(Mapa):
         if self.puzle4.completado and not self.cajaFuerte.objetoCambiado:
             self.cajaFuerte.cambiar([self.grupoSprites])
             self.jugador1.establecerPosicion((120, 168))
+            self.guardia.establecerPosicion((60, 168))
 
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
