@@ -2,7 +2,7 @@ import pygame
 import pytmx
 
 from Puzzles.cardPuzzle import CardPuzzle
-from Puzzles.hackPuzzle_little import Hack
+from Puzzles.hackPuzzle import Hack
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.keypadPuzzle import KeypadPuzzle
 from periodico_ayuntamiento import Periodico_Ayuntamiento
