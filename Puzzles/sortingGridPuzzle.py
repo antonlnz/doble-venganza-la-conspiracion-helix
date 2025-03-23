@@ -97,10 +97,8 @@ class SortingGridPuzzle(Escena):
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
         pygame.display.flip()
         self.sound_end_game.play()
-        pygame.time.wait(2000)
         self.sound_end_game.stop()
         self.completado = True
-        self.director.salirEscena()
 
     def dibujar(self, pantalla):
         pantalla.blit(self.background, (0, 0))
@@ -181,7 +179,6 @@ class SortingGridPuzzle(Escena):
             self.sound_completed.play()
             if self.completion_time_remaining <= 0:
                 self.sound_completed.stop()
-                self.director.salirEscena()
         
         if not self.completado:
             self.time_remaining -= tiempo
@@ -217,6 +214,10 @@ class SortingGridPuzzle(Escena):
                 
             if segundos_restantes == 15:
                 self.sound_warning.play()
+
+        if self.completado:
+            if self.retardo():
+                self.director.salirEscena()
 
     def eventos(self, eventos):
         for evento in eventos:

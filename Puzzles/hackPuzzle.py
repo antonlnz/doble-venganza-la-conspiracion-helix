@@ -101,7 +101,7 @@ class Hack(Escena):
             pantalla.blit(tile, (x, y))
         pygame.display.flip()
         
-        pygame.time.wait(500)
+        
         
 
 if __name__ == "__main__":

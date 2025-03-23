@@ -66,10 +66,8 @@ class KeypadPuzzle(Escena):
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
         self.sound_end_game.play()
         pygame.display.flip()
-        pygame.time.wait(2000)
         self.sound_end_game.stop()
         self.completado = True
-        self.director.salirEscena()
 
     def click_on_button(self, pos, image, image_pos):
         x, y = pos
@@ -134,18 +132,19 @@ class KeypadPuzzle(Escena):
                         self.input_text = self.input_text[:-1]
                     elif text == 'OK':
                         if self.input_text == self.expected_text:
-                            pygame.time.delay(500)
                             self.sound_completed.play()
                             self.input_text = ""
                             self.completado = True
                             #self.sound_completed.stop() #preguntar
-                            self.director.salirEscena()
                         else:
-                            pygame.time.delay(500)
                             self.fail = True
                     else:
                         self.input_text += text
         self.mouse_clicks.clear()
+
+        if self.completado:
+            if self.retardo():
+                self.director.salirEscena()
                 
 if __name__ == "__main__":
     director = None  # Replace with actual director object if available

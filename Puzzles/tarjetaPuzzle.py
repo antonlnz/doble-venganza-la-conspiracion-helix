@@ -66,7 +66,6 @@ class Tarjeta(Escena):
         game_over_text = self.font.render('Perdiste', True, self.WHITE)
         screen.blit(game_over_text, (self.WIDTH // 2 - game_over_text.get_width() // 2, self.HEIGHT // 2 - game_over_text.get_height() // 2))
         pygame.display.flip()
-        pygame.time.wait(2000)
         
 
     def show_completion_message(self, screen):
@@ -77,7 +76,6 @@ class Tarjeta(Escena):
         screen.blit(congrats_text, (self.WIDTH // 2 - congrats_text.get_width() // 2, self.HEIGHT // 2 - self.completion_image.get_height() // 2 - 40))
         screen.blit(completion_text, (self.WIDTH // 2 - completion_text.get_width() // 2, self.HEIGHT // 2 + self.completion_image.get_height() // 2 + 20))
         pygame.display.flip()
-        pygame.time.wait(2000)
         
 
     def draw_green_zones(self, screen):
@@ -136,6 +134,10 @@ class Tarjeta(Escena):
             return False
 
     def update(self, tiempo):
+        if self.completado:
+            if self.retardo():
+                self.director.salirEscena()
+
         if self.bar_moving:
             self.bar_x += self.bar_speed * self.bar_direction
             if self.bar_x > self.WIDTH - self.red_zone_margin - self.bar_width or self.bar_x < self.red_zone_margin:
@@ -183,7 +185,6 @@ class Tarjeta(Escena):
                 if self.lives == 0:
                     self.running = False
                     self.completado = True
-                    self.director.salirEscena()
                 else:
                     self.bar_moving = True
 
@@ -222,14 +223,15 @@ class Tarjeta(Escena):
             pygame.draw.rect(pantalla, self.WHITE, (zone['x'], zone['y'], zone['width'], zone['height']))
         pygame.draw.rect(pantalla, self.BLACK, (self.bar_x, self.bar_y, self.bar_width, self.bar_height))
         self.draw_lives(pantalla)
-        if self.lives == 0:
+        print(self.lives)
+        if self.lives <= 0:
             self.game_over(pantalla)
+            self.completado = True
             
         
         if len(self.completed_zones) == 5:
             self.show_completion_message(pantalla)
             self.completado = True
-            self.director.salirEscena()
             
                 
         pygame.display.flip()
