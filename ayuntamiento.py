@@ -17,15 +17,17 @@ class Ayuntamiento(Mapa):
 
         Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
+        self.inicializarTextosMisiones()
+
         self.puzle = Tarjeta(director)
         self.puzle2 = KeypadPuzzle(director)
         self.puzle3 = Hack(director)
         self.siguienteMapa = Periodico_Ayuntamiento(director)
 
-        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (950, 625))
-        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (288, 672))
-        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (192, 240))
-        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (960, 528))
+        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (950, 625), self.textoMision)
+        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (288, 672), self.textoMision2)
+        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (192, 240), self.textoMision3)
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (960, 528), self.textoMisionHuida)
 
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccionHuida]
 
@@ -77,6 +79,11 @@ class Ayuntamiento(Mapa):
            
         self.grupoSprites.add(self.jugador1)
         
+    def inicializarTextosMisiones(self):
+        self.textoMision = "Roba la tarjeta de acceso al guardia"
+        self.textoMision2 = "Usa el código de la tarjeta (789456123) para\n entrar en la oficina del alcalde"
+        self.textoMision3 = "Descifra los planos que se encuentrar en la mesa del alcalde"
+        self.textoMisionHuida = "Huye por la ventana de la sala contigua"
 
     def dibujar(self,pantalla):
         pantalla.fill((0,0,0))
@@ -84,6 +91,7 @@ class Ayuntamiento(Mapa):
         self.grupoSpritesDinamicos.draw(pantalla)
         self.grupoDespuesPersonaje.draw(pantalla)
         self.teclaInteraccion.dibujar(pantalla)
+        self.mision.dibujar(pantalla)
         
 
     def eventos(self, lista_eventos):
@@ -126,6 +134,8 @@ class Ayuntamiento(Mapa):
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
+
+        self.mision.establecerTexto(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].textoMision)
 
         if self.puzle2.completado and not self.puertaAlcalde.objetoCambiado:
             self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])

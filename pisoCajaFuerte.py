@@ -16,20 +16,18 @@ class PisoCajaFuerte(Mapa):
 
         Mapa.__init__(self, director, "Mapas/pisoCajaFuerte48x48.tmx")
 
+        self.inicializarTextosMisiones()
+
+        self.mision.establecerTexto(self.textoRoboCajasFuerte)
     
         self.anteriorMapa = anteriorMapa
 
         # self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
         
-        self.subirPiso = PosicionamientoInteraccion(self.anteriorMapa, (1272, 720))
+        self.subirPiso = PosicionamientoInteraccion(self.anteriorMapa, (1272, 720), "")
         # self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
 
-        self.posicionamientoPuzleActual = 0
-
-        self.personajeMovido = False
-
         self.huida = False
-
         # self.tmxdata = pytmx.load_pygame("Mapas/ayuntamiento48x48v2.tmx")
 
         self.reliquia = ObjetoParaCambiar()
@@ -92,6 +90,12 @@ class PisoCajaFuerte(Mapa):
                     self.grupoSprites.add(obj)
            
         self.grupoSprites.add(self.jugador1)
+
+    def inicializarTextosMisiones(self):
+        self.textoRoboCajasFuerte = "Roba todas las cajas fuerte"
+        self.textoRoboReliquia = "Roba la reliquia que se encuentra en el centro"
+        self.textoMisionHuida = "Huye hasta la azotea donde te espera Vince"
+        
         
 
     def dibujar(self,pantalla):
@@ -100,6 +104,7 @@ class PisoCajaFuerte(Mapa):
         self.grupoJugadores.draw(pantalla)
         self.grupoDespuesPersonaje.draw(pantalla)
         self.teclaInteraccion.dibujar(pantalla)
+        self.mision.dibujar(pantalla)
         
 
     def eventos(self, lista_eventos):
@@ -147,9 +152,13 @@ class PisoCajaFuerte(Mapa):
         self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
     
     def update(self, tiempo):
+
+        if self.cajasFuerteRobadas() and not self.reliquia.objetoCambiado:
+            self.mision.establecerTexto(self.textoRoboReliquia)
         
         if self.reliquia.objetoCambiado:
             self.huida = True
+            self.mision.establecerTexto(self.textoMisionHuida)
 
         self.altenarTeclaInteraccion()
 

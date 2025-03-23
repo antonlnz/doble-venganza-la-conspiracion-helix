@@ -23,6 +23,8 @@ class PisoMedioBanco(Mapa):
 
         Mapa.__init__(self, director, "Mapas/pisoMedioBanco48x48.tmx")
 
+        self.inicializarTextosMisiones()
+
         self.puzle = ConcentricCirclesPuzzle(director)
         self.puzle2 = DoorLockPuzzle(director)
         self.puzle3 = SimonDice(director)
@@ -30,17 +32,17 @@ class PisoMedioBanco(Mapa):
         self.siguienteMapa = PisoCajaFuerte(director, self)
         # self.siguienteMapa = Periodico_Banco(director)
 
-        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (864, 432))
-        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 576))
-        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (1368, 240))
-        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 840))
-        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.puzle3, (960, 528))
+        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (864, 432), self.textoMision)
+        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 576), self.textoMision2)
+        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (1368, 240), self.textoMision3)
+        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 840), self.textoMision4)
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.puzle3, (960, 528), self.textoMisionHuida)
         
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, self.posicionamientoInteraccionHuida]
 
         self.posicionamientoInteraccionActual = 0
 
-        self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (1512, 1368))
+        self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (1512, 1368), self.textoMisionSiguienteMapa)
 
         self.huida = False
 
@@ -113,6 +115,14 @@ class PisoMedioBanco(Mapa):
 
         self.grupoSprites.add(self.jugador1)
         self.grupoSprites.add(self.jugador2)
+
+    def inicializarTextosMisiones(self):
+        self.textoMision = "Abre la puerta para poder avanzar"
+        self.textoMision2 = "Abre la puerta de la sala de seguridad\n para acceder a la misma"
+        self.textoMision3 = "Desarma los sistemas de seguridad desde\n el ordenador que se encuentra en la sala de seguridad"
+        self.textoMision4 = "Defiende a Vince de los guardias mientras termina de desarmar la seguridad"
+        self.textoMisionSiguienteMapa = "Baja hasta el piso de la caja fuerte"
+        self.textoMisionHuida = "Huye hasta la azotea donde te espera Vince"
         
     def cambiarJugador(self, jugador):
         self.jugadorActual = jugador
@@ -122,6 +132,7 @@ class PisoMedioBanco(Mapa):
         self.grupoSprites.draw(pantalla)
         self.grupoDespuesPersonaje.draw(pantalla)
         self.teclaInteraccion.dibujar(pantalla)
+        self.mision.dibujar(pantalla)
         
 
     def eventos(self, lista_eventos):
@@ -174,6 +185,8 @@ class PisoMedioBanco(Mapa):
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
+
+        self.mision.establecerTexto(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].textoMision)
 
         if self.puzle.completado: 
             if not self.puertaAcceso.objetoCambiado:

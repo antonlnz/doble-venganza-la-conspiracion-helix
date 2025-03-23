@@ -20,6 +20,8 @@ class Almacen(Mapa):
 
         Mapa.__init__(self, director, "Mapas/almacen48x48.tmx")
 
+        self.inicializarTextosMisiones()
+
         self.puzle = SortingGridPuzzle(director)
         self.puzle2 = SwitchPuzzle(director)
         self.puzle3 = Pipe(director)
@@ -27,18 +29,18 @@ class Almacen(Mapa):
         self.puzle5 = CablePuzzle(director)
         self.siguienteMapa = Periodico_Almacen(director)
 
-        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200))
-        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144))
-        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (216, 528))
-        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (1056, 576))
-        self.posicionamientoInteraccion5 = PosicionamientoInteraccion(self.puzle5, (1392, 1032))
-        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144))
+        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzle, (216, 1200), self.textoMision)
+        self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 144), self.textoMision2)
+        self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (216, 528), self.textoMision3)
+        self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (1056, 576), self.textoMision4)
+        self.posicionamientoInteraccion5 = PosicionamientoInteraccion(self.puzle5, (1392, 1032), self.textoMision5)
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.siguienteMapa, (720, 144), self.textoMisionHuida)
 
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, 
                                                 self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, 
                                                 self.posicionamientoInteraccion5, self.posicionamientoInteraccionHuida]
 
-        self.posicionamientoPuzleActual = 0
+        self.posicionamientoInteraccionActual = 0
 
         self.personajeMovido = False
 
@@ -99,6 +101,14 @@ class Almacen(Mapa):
         self.grupoObstaculos.add(self.guardia)
         self.grupoSprites.add(self.guardia)
         self.grupoSprites.add(self.jugador1)
+
+    def inicializarTextosMisiones(self):
+        self.textoMision = "Abre la puerta para acceder al almacen"
+        self.textoMision2 = "Encuentra la caja de fusibles\n para desactivar la camara"
+        self.textoMision3 = "Abre la puerta de la sala en\n donde se encuentra la caja fuerte"
+        self.textoMision4 = "Noquea al guardia y llevalo hasta\n la caja fuerta para abrirla con su huella"
+        self.textoMision5 = "Coloca una de las bombas conseguidas\n en la esquina inferior derecha del almacen\n para crear una distraccion al huir"
+        self.textoMisionHuida = "Huye por el conducto de ventilacion"
         
 
     def dibujar(self,pantalla):
@@ -107,6 +117,7 @@ class Almacen(Mapa):
         self.grupoJugadores.draw(pantalla)
         self.grupoDespuesPersonaje.draw(pantalla)
         self.teclaInteraccion.dibujar(pantalla)
+        self.mision.dibujar(pantalla)
         
 
     def eventos(self, lista_eventos):
@@ -116,15 +127,15 @@ class Almacen(Mapa):
                 self.director.salirEscena()
 
             if evento.type == KEYDOWN and evento.key == K_e:
-                if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1):
+                if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugador1):
                     if self.huida:
-                        self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
+                        self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
                     else:
-                        if self.posicionamientoPuzleActual == 3 and not self.guardia.noqueado:
+                        if self.posicionamientoInteraccionActual == 3 and not self.guardia.noqueado:
                             self.guardia.noquear()
                             self.grupoObstaculos.remove(self.guardia)
                         else:
-                            self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
+                            self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
 
             if evento.type == KEYDOWN and evento.key == K_q:
                 self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
@@ -145,16 +156,18 @@ class Almacen(Mapa):
     def update(self, tiempo):
         
         if not self.huida:
-            if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena.completado:
-                self.posicionamientoPuzleActual += 1
+            if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena.completado:
+                self.posicionamientoInteraccionActual += 1
 
-                if self.posicionamientoPuzleActual == (len(self.posicionamientoInteracciones) - 1):
+                if self.posicionamientoInteraccionActual == (len(self.posicionamientoInteracciones) - 1):
                     self.huida = True
             
-        if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1) :
+        if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugador1) :
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
+
+        self.mision.establecerTexto(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].textoMision)
 
         if self.puzle.completado and not self.puertaAlmacen.objetoCambiado:
             self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
@@ -185,4 +198,4 @@ class Almacen(Mapa):
         for sprite in iter(self.grupoSprites):
                 sprite.establecerPosicionPantalla(self.offset)
 
-        self.posicionamientoInteracciones[self.posicionamientoPuzleActual].update(self.offset)
+        self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].update(self.offset)

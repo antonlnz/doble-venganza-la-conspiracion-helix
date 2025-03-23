@@ -21,6 +21,8 @@ class Mapa(Escena):
         # self.grupoTiles = pygame.sprite.Group()
         self.grupoDespuesPersonaje = pygame.sprite.Group()
 
+        self.mision = Mision()
+
         self.tmxdata = pytmx.load_pygame(mapa)
 
         for layer in self.tmxdata.visible_layers:
@@ -155,9 +157,10 @@ class TeclaInteraccion(MiSprite):
         self.target = target
 
 class PosicionamientoInteraccion():
-    def __init__(self, escena, posicion):
+    def __init__(self, escena, posicion, textoMision):
         self.escena = escena
         self.posicion = posicion
+        self.textoMision = textoMision
         self.scroll = (0, 0)
 
     def update(self, scroll):
@@ -188,3 +191,48 @@ class PosicionamientoInteraccionRobo():
         return (abs((posx - scrollx) - target.rect.centerx) < 48 and abs((posy - scrolly) - target.rect.centery) < 48) and not self.robo.objetoCambiado
     
 
+class Mision():
+    def __init__(self):
+        self.texto = "Texto por defecto no cambiado"
+        self.medium_font = pygame.font.SysFont('Arial', 22, bold=True)
+
+        self.actualizar_dimensiones()
+
+    def actualizar_dimensiones(self):
+        """Calcula el tamaño de la caja según el texto actual"""
+        lineas = self.texto.split("\n")
+        max_ancho = max(self.medium_font.size(linea)[0] for linea in lineas) + 20  # Margen
+        total_alto = len(lineas) * (self.medium_font.get_height() + 5) + 20  # Espaciado
+
+        self.mision_width = max_ancho
+        self.mision_height = total_alto
+        self.mision_x = WIDTH - self.mision_width - 10  # Ajustar posición
+        self.mision_y = 10  # Mantener arriba
+
+    def dibujar(self, pantalla):
+        
+        
+        # Crear un fondo negro semitransparente para la pregunta
+        mision_bg = pygame.Surface((self.mision_width, self.mision_height), pygame.SRCALPHA)
+        mision_bg.fill((0, 0, 0, 180))  # Negro semitransparente
+        pantalla.blit(mision_bg, (self.mision_x, self.mision_y))
+        
+        # Mostrar pregunta con una fuente más grande
+        
+
+        self.dibujar_texto_con_saltos(pantalla)
+        # mision_surface = self.medium_font.render(self.texto, True, BLANCO)
+        # pantalla.blit(mision_surface, (self.mision_x + 20, self.mision_y + 20))
+  
+    def dibujar_texto_con_saltos(self, pantalla):
+        # """Dibuja un texto en la pantalla manejando los saltos de línea (\n)"""
+        lineas = self.texto.split("\n")  # Divide el texto en líneas
+        y_offset = 0  # Desplazamiento vertical entre líneas
+        for linea in lineas:
+            superficie_texto = self.medium_font.render(linea, True, BLANCO)
+            pantalla.blit(superficie_texto, (self.mision_x + 10, self.mision_y + 10 + y_offset))
+            y_offset += self.medium_font.get_height() + 5  # Espaciado entre líneas
+
+    def establecerTexto(self, texto):
+        self.texto = texto
+        self.actualizar_dimensiones()
