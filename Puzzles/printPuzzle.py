@@ -22,8 +22,8 @@ class Huella(Escena):
         self.level = 1
         self.game_over = False
         self.setup_level()
-        pygame.mouse.set_pos(10, self.HEIGHT // 2)
-        
+        self.primera = True
+
         # Cargar imagen de fondo
         self.background_image = pygame.image.load("imagenes/Huella/suelo_factory.png")
         self.bg_width, self.bg_height = self.background_image.get_size()
@@ -102,6 +102,9 @@ class Huella(Escena):
         if self.game_over:
             if self.retardo():
                 self.director.salirEscena()
+        if self.primera:
+            self.primera = False
+            pygame.mouse.set_pos(10, self.HEIGHT // 2)
 
         else:
             mouse_x, mouse_y = pygame.mouse.get_pos()
