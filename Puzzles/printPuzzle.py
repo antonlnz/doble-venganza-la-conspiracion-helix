@@ -20,6 +20,7 @@ class Huella(Escena):
         self.font = pygame.font.Font(None, 74)
         self.message = ""
         self.level = 1
+        self.game_over = False
         self.setup_level()
         pygame.mouse.set_pos(10, self.HEIGHT // 2)
         
@@ -32,19 +33,20 @@ class Huella(Escena):
         self.player_image = pygame.transform.scale(self.player_image, (80, 80))  # Imagen de 100x100
     
     def setup_level(self):
+        pygame.mouse.set_pos(10, self.HEIGHT // 2)
         self.red_zones = []
         self.moving_zones = []
         self.vertical_moving_zones = []
         if self.level == 1:
             self.red_zones = [
-                pygame.Rect(400, 100, 100, 400),  
-                pygame.Rect(400, 700, 100, 500),  
-                pygame.Rect(600, 100, 100, 600),  
-                pygame.Rect(800, 700, 100, 700),  
-                pygame.Rect(1000, 100, 100, 650),
-                pygame.Rect(1200, 700, 100, 650),
-                pygame.Rect(1400, 100, 100, 550),
-                pygame.Rect(1600, 700, 100, 750)    
+                pygame.Rect(400, 10, 100, 650),  
+                pygame.Rect(400, 900, 100, 550),  
+                pygame.Rect(600, 10, 100, 800),  
+                pygame.Rect(800, 900, 100, 750),  
+                pygame.Rect(1000, 10, 100, 850),
+                pygame.Rect(1200, 900, 100, 750),
+                pygame.Rect(1400, 10, 100, 650),
+                pygame.Rect(1600, 900, 100, 850)    
             ]
             self.vertical_moving_zones = [
                 pygame.Rect(800, 100, 100, 100)
@@ -52,11 +54,11 @@ class Huella(Escena):
             self.vertical_direction = [1]
         elif self.level == 2:
             self.red_zones = [
-                pygame.Rect(400, 100, 100, 500),  
-                pygame.Rect(400, 700, 100, 500), 
-                pygame.Rect(1200, 700, 100, 650),
-                pygame.Rect(1400, 100, 100, 550),
-                pygame.Rect(1600, 700, 100, 750) 
+                pygame.Rect(400, 10, 100, 650),  
+                pygame.Rect(400, 900, 100, 600), 
+                pygame.Rect(1200, 900, 100, 700),
+                pygame.Rect(1400, 10, 100, 650),
+                pygame.Rect(1600, 900, 100, 750) 
             ]
             self.moving_zones = [
                 pygame.Rect(250, 300, 100, 200),
@@ -73,14 +75,14 @@ class Huella(Escena):
             self.vertical_direction = [-1, 1, -1]
         elif self.level == 3:
             self.red_zones = [
-                pygame.Rect(400, 50, 100, 400),  
-                pygame.Rect(400, 700, 100, 500),  
-                pygame.Rect(600, 100, 100, 600),  
-                pygame.Rect(800, 700, 100, 700),  
-                pygame.Rect(1000, 100, 100, 650),
-                pygame.Rect(1200, 700, 100, 650),
-                pygame.Rect(1400, 100, 100, 550),
-                pygame.Rect(1600, 700, 100, 750)    
+                pygame.Rect(400, 50, 100, 450),  
+                pygame.Rect(400, 900, 100, 600),  
+                pygame.Rect(600, 10, 100, 650),  
+                pygame.Rect(800, 900, 100, 800),  
+                pygame.Rect(1000, 10, 100, 750),
+                pygame.Rect(1200, 900, 100, 750),
+                pygame.Rect(1400, 10, 100, 600),
+                pygame.Rect(1600, 900, 100, 850)    
             ]
             self.moving_zones = [
                 pygame.Rect(250, 300, 100, 200),
@@ -97,27 +99,32 @@ class Huella(Escena):
         pygame.mouse.set_pos(10, self.HEIGHT // 2)
 
     def update(self, tiempo):
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        self.player.topleft = (mouse_x - self.player.width // 2, mouse_y - self.player.height // 2)
-        
-        # Actualizamos el rectángulo de colisión de acuerdo con la posición del jugador
-        self.player_collision_rect.topleft = (self.player.x + 20, self.player.y + 25)  # Ajuste para que sea 50x50
-        
-        self.check_collisions()
-        if self.level > 1:
-            self.update_moving_zones()
-            self.update_vertical_moving_zones()
+        if self.game_over:
+            if self.retardo():
+                self.director.salirEscena()
+
+        else:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            self.player.topleft = (mouse_x - self.player.width // 2, mouse_y - self.player.height // 2)
+            
+            # Actualizamos el rectángulo de colisión de acuerdo con la posición del jugador
+            self.player_collision_rect.topleft = (self.player.x + 20, self.player.y + 25)  # Ajuste para que sea 50x50
+            
+            self.check_collisions()
+            if self.level > 1:
+                self.update_moving_zones()
+                self.update_vertical_moving_zones()
     
     def update_moving_zones(self):
         for i, zone in enumerate(self.moving_zones):
             zone.x += self.moving_direction[i] * 5
-            if zone.left < 205 or zone.right > self.WIDTH-205:
+            if zone.left < 20 or zone.right > self.WIDTH-20:
                 self.moving_direction[i] *= -1
     
     def update_vertical_moving_zones(self):
         for i, zone in enumerate(self.vertical_moving_zones):
             zone.y += self.vertical_direction[i] * 5
-            if zone.top < 100 or zone.bottom > self.HEIGHT-100:
+            if zone.top < 10 or zone.bottom > self.HEIGHT-10:
                 self.vertical_direction[i] *= -1        
     
     def check_collisions(self):
@@ -125,18 +132,33 @@ class Huella(Escena):
         for zone in self.red_zones:
             if self.player_collision_rect.colliderect(zone):
                 self.message = "¡Perdiste!"
-                self.director.salirEscena()
+                pygame.mouse.set_visible(False)  # Ocultar el cursor
+                pygame.event.set_grab(True)
+                self.game_over = True
+                if self.game_over:
+                    if self.retardo():
+                        self.director.salirEscena()
                 return
         if self.level > 1:
             for zone in self.moving_zones:
                 if self.player_collision_rect.colliderect(zone):
                     self.message = "¡Perdiste!"
-                    self.director.salirEscena()
+                    pygame.mouse.set_visible(False)  # Ocultar el cursor
+                    pygame.event.set_grab(True)
+                    self.game_over = True
+                    if self.game_over:
+                        if self.retardo():
+                            self.director.salirEscena()
                     return
             for zone in self.vertical_moving_zones:
                 if self.player_collision_rect.colliderect(zone):
                     self.message = "¡Perdiste!"
-                    self.director.salirEscena()
+                    pygame.mouse.set_visible(False)  # Ocultar el cursor
+                    pygame.event.set_grab(True)
+                    self.game_over = True
+                    if self.game_over:
+                        if self.retardo():
+                            self.director.salirEscena()
                     return
         if self.player_collision_rect.colliderect(self.goal):
             if self.level < 3:
@@ -144,10 +166,17 @@ class Huella(Escena):
                 self.setup_level()
             else:
                 self.message = "¡Felicidades!"
-                self.director.salirEscena()
+                pygame.mouse.set_visible(False)  # Ocultar el cursor
+                pygame.event.set_grab(True)
+                self.game_over = True
+                if self.game_over:
+                    if self.retardo():
+                        self.director.salirEscena()
             return
     
     def eventos(self, eventos):
+        if self.game_over:
+            return
         for event in eventos:
             if event.type == pygame.QUIT:
                 sys.exit()

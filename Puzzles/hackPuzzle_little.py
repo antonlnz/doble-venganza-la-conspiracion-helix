@@ -79,8 +79,8 @@ class Hack(Escena):
         if self.is_solved():
             print("¡Puzzle resuelto!")
             self.completado = True
-            self.director.salirEscena()
-
+            if self.retardo():
+                self.director.salirEscena()
     def eventos(self, eventos):
         for event in eventos:
             if event.type == pygame.QUIT:

@@ -120,11 +120,10 @@ class SimonDice(Escena):
                 else:
                     self.draw_text(self.window, "¡Perdiste!", self.width//2, self.height//2 - 30, 50, self.BLACK, background=True)
                 pygame.display.flip()
-                pygame.time.delay(2000)
+                
                 running = False
-                self.director.salirEscena()  # Salir de la escena
-
-            pygame.display.flip()
+                if self.retardo():
+                    self.director.salirEscena()
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -162,14 +161,10 @@ class SimonDice(Escena):
                     self.show_sequence(self.window)
                     self.user_sequence = []
         else:
-            if self.round_number == self.TARGET_ROUNDS:
-                self.draw_text(self.window, "¡Felicidades!", self.width//2, self.height//2 - 30, 50, self.BLACK, background=True)
-            else:
-                self.draw_text(self.window, "¡Perdiste!", self.width//2, self.height//2 - 30, 50, self.BLACK, background=True)
-            pygame.display.flip()
-            pygame.time.delay(2000)
-            self.completado = True
-            self.director.salirEscena()  # Salir de la escena
+            if self.retardo():
+                    self.director.salirEscena()                
+                    pygame.quit()
+                    sys.exit()
 
     def eventos(self, eventos):
         for event in eventos:
@@ -199,7 +194,15 @@ class SimonDice(Escena):
                 elapsed_time = int(time.time() - self.start_time)
                 remaining_time = max(0, self.COUNTDOWN_TIME - elapsed_time)
                 self.draw_text(pantalla, f"Tiempo: {remaining_time}s", self.width//2, 250)
-        pygame.display.flip()
+        else:
+            if self.round_number == self.TARGET_ROUNDS:
+                self.draw_text(self.window, "¡Felicidades!", self.width//2, self.height//2 - 30, 50, self.BLACK, background=True)
+                pygame.display.flip()
+            else:
+                self.draw_text(self.window, "¡Perdiste!", self.width//2, self.height//2 - 30, 50, self.BLACK, background=True)
+                pygame.display.flip()
+            self.completado = True
+
 
 if __name__ == "__main__":
     game = SimonDice()

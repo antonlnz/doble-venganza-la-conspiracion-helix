@@ -186,8 +186,8 @@ class Pipe(Escena):
             text = font.render(self.message, True, self.BLACK)
             self.screen.blit(text, (self.SCREEN_WIDTH // 2 - text.get_width() // 2, self.SCREEN_HEIGHT // 2 - text.get_height() // 2))
             pygame.display.flip()
-            time.sleep(2)  # Esperar 2 segundos
-            self.director.salirEscena()
+            if self.retardo():
+                self.director.salirEscena()
         else:
             pygame.display.flip()
 

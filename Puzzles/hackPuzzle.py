@@ -82,8 +82,9 @@ class Hack(Escena):
         if self.is_solved():
             print("¡Puzzle resuelto!")
             self.completado = True
-            self.director.salirEscena()
-            pygame.display.flip()
+            if self.retardo():
+                self.director.salirEscena()
+                pygame.display.flip()
             
 
     def eventos(self, eventos):

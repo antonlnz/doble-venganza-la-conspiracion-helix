@@ -259,9 +259,11 @@ class LaserPuzzle(Escena):
                 line_rect = pygame.Rect(0, self.SCREEN_HEIGHT // 2 - text.get_height() // 2, self.SCREEN_WIDTH, text.get_height())
                 pygame.draw.rect(self.screen, self.WHITE, line_rect)
                 self.screen.blit(text, (self.SCREEN_WIDTH // 2 - text.get_width() // 2, self.SCREEN_HEIGHT // 2 - text.get_height() // 2))
-                pygame.display.flip()
-                pygame.time.wait(3000)
-                self.running = False
+                if self.retardo():
+                   self.director.salirEscena()
+                   pygame.flip()
+                   
+
 
         pygame.quit()
 
