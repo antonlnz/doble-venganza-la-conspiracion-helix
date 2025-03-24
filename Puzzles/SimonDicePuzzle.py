@@ -140,9 +140,6 @@ class SimonDice(Escena):
                                 if self.round_number == self.TARGET_ROUNDS:
                                     self.game_active = False
 
-        pygame.quit()
-        sys.exit()
-
     def update(self, tiempo):
         if self.game_active:
             if self.start_time is None: 
@@ -162,9 +159,7 @@ class SimonDice(Escena):
                     self.user_sequence = []
         else:
             if self.retardo():
-                    self.director.salirEscena()                
-                    pygame.quit()
-                    sys.exit()
+                    self.director.salirEscena()
 
     def eventos(self, eventos):
         for event in eventos:

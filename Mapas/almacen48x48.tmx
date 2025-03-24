@@ -6,14 +6,14 @@
  <objectgroup id="9" name="Obstaculos">
   <object id="265" x="0" y="0" width="1488" height="144"/>
   <object id="266" x="0" y="0" width="48" height="1104"/>
-  <object id="267" x="240" y="1056" width="1248" height="18"/>
-  <object id="268" x="1440" y="144" width="48" height="930"/>
+  <object id="267" x="240" y="1056" width="1248" height="144"/>
+  <object id="268" x="1440" y="0" width="48" height="1074"/>
   <object id="269" x="192" y="816" width="480" height="117"/>
   <object id="270" x="192" y="624" width="480" height="117"/>
   <object id="271" x="144" y="48" width="288" height="117"/>
   <object id="272" x="48" y="384" width="144" height="144"/>
   <object id="273" x="240" y="384" width="384" height="144"/>
-  <object id="274" x="528" y="0" width="96" height="402"/>
+  <object id="274" x="528" y="0" width="96" height="528"/>
   <object id="275" x="816" y="816" width="480" height="117"/>
   <object id="276" x="816" y="624" width="480" height="117"/>
   <object id="277" x="816" y="432" width="480" height="117"/>
@@ -23,7 +23,6 @@
   <object id="311" x="576" y="1056" width="48" height="354"/>
   <object id="312" x="0" y="1392" width="624" height="18"/>
   <object id="313" x="0" y="1056" width="192" height="144"/>
-  <object id="314" x="240" y="1056" width="384" height="144"/>
  </objectgroup>
  <layer id="1" name="Suelo" width="31" height="30">
   <data encoding="csv">
@@ -96,9 +95,6 @@
  <objectgroup id="11" name="PuertaAlmacen">
   <object id="283" name="Inicial" gid="2017" x="176" y="1200" width="80" height="96"/>
   <object id="284" name="Final" gid="2018" x="168" y="1199" width="95" height="95"/>
-  <object id="285" gid="2137" x="191" y="1203" width="49" height="90"/>
-  <object id="288" gid="2136" x="191" y="1201" width="47" height="133"/>
-  <object id="289" gid="2137" x="191" y="1203" width="49" height="90"/>
  </objectgroup>
  <objectgroup id="10" name="PuertaSala">
   <object id="2" name="Inicial" gid="2017" x="176" y="528" width="80" height="96"/>

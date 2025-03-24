@@ -118,7 +118,7 @@ class PisoCajaFuerte(Mapa):
                     self.director.salirEscena()
 
                 if self.cajasFuerteRobadas() and self.interaccionRoboReliquia.puedeActivar(self.jugador1):
-                    self.reliquia.cambiar([self.grupoSprites])
+                    self.reliquia.cambiar([self.grupoObstaculos, self.grupoSprites])
 
                 if self.interaccionRobo1.puedeActivar(self.jugador1):
                     self.grupoCajasFuerte1.cambiar([self.grupoSprites])

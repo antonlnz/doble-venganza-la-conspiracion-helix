@@ -148,9 +148,7 @@ class Guardia(Escena):
                 end_text = self.font.render("Felicidades", True, self.GREEN)
             screen.blit(end_text, (self.WIDTH // 2 - end_text.get_width() // 2, self.HEIGHT // 2 - end_text.get_height() // 2))
             if self.retardo():
+                self.completado = True
                 self.director.salirEscena()
-                pygame.flip()
-                pygame.quit()
-                sys.exit()
 
             
