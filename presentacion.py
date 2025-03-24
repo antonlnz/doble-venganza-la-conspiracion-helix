@@ -51,7 +51,6 @@ class Presentacion(Escena):
         )
         self.eddie_imagen = pygame.transform.flip(self.eddie_imagen, True, False)
         
-        # Crear silueta de Eddie
         self.eddie_silueta = self.eddie_imagen.copy()
         self.eddie_silueta.fill((0, 0, 0, 255), special_flags=pygame.BLEND_RGBA_MULT)
 
@@ -143,6 +142,12 @@ class Presentacion(Escena):
             )
         }
         
+        self.nombres_hablantes = {
+            'comentarios': 'Narrador',
+            'vince': 'Vince',
+            'otros': 'Jefe de Policia',
+            'eddie': 'Eddie'
+        }
 
         self.fuente = pygame.font.Font(None, 36)
         self.mostrar_triangulo = True
@@ -201,16 +206,14 @@ class Presentacion(Escena):
                         pos_y = HEIGHT//2 - soldado.get_height()//2
                         pantalla.blit(soldado, (pos_x, pos_y))
 
-            # Dibujar siluetas si es necesario
             if dialogo.get("siluetas", False):
-                # Posiciones para las siluetas relativas a Eddie
                 siluetas_posiciones = [
-                    (WIDTH * 0.5, HEIGHT//2 - self.eddie_silueta.get_height()//2 - 30),  # Arriba
-                    (WIDTH * 0.7, HEIGHT//2 - self.eddie_silueta.get_height()//2 - 15),  # Arriba derecha
-                    (WIDTH * 0.45, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 30),  # Abajo izquierda
-                    (WIDTH * 0.65, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 20),  # Abajo derecha
-                    (WIDTH * 0.75, HEIGHT//2 - self.eddie_silueta.get_height()//2),      # Derecha
-                    (WIDTH * 0.55, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 10), # Centro izquierda
+                    (WIDTH * 0.5, HEIGHT//2 - self.eddie_silueta.get_height()//2 - 30), 
+                    (WIDTH * 0.7, HEIGHT//2 - self.eddie_silueta.get_height()//2 - 15),  
+                    (WIDTH * 0.45, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 30),  
+                    (WIDTH * 0.65, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 20), 
+                    (WIDTH * 0.75, HEIGHT//2 - self.eddie_silueta.get_height()//2),     
+                    (WIDTH * 0.55, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 10), 
                 ]
                 
                 for pos in siluetas_posiciones:
@@ -233,13 +236,40 @@ class Presentacion(Escena):
                     )
                     pantalla.blit(caja, dialogo_pos)
                     
-                    # Dividir el texto en líneas y renderizar cada una
+                    nombre = self.nombres_hablantes[dialogo["retrato"]]
+                    nombre_texto = self.fuente.render(nombre, True, NEGRO)
+                    nombre_rect = nombre_texto.get_rect()
+                    
+                    
+                    nombre_box_pos = (
+                        dialogo_pos[0] - 10,  
+                        dialogo_pos[1] - nombre_rect.height//2  
+                    )
+                    
+                    
+                    nombre_box_rect = pygame.Rect(
+                        nombre_box_pos[0],
+                        nombre_box_pos[1],
+                        nombre_rect.width + 20,  
+                        nombre_rect.height + 10   
+                    )
+                    pygame.draw.rect(pantalla, BLANCO, nombre_box_rect)  
+                    pygame.draw.rect(pantalla, NEGRO, nombre_box_rect, 2)  
+                    
+                   
+                    nombre_pos = (
+                        nombre_box_pos[0] + 10, 
+                        nombre_box_pos[1] + 5    
+                    )
+                    pantalla.blit(nombre_texto, nombre_pos)
+                    
+                    
                     lineas = dialogo["texto"].split('\n')
                     for i, linea in enumerate(lineas):
                         texto = self.fuente.render(linea.strip(), True, NEGRO)
                         texto_pos = (
                             dialogo_pos[0] + 40, 
-                            dialogo_pos[1] + caja.get_height()//3 + (i * 30)  # 30 pixels entre líneas
+                            dialogo_pos[1] + caja.get_height()//3 + (i * 30)
                         )
                         pantalla.blit(texto, texto_pos)
                     
