@@ -51,6 +51,10 @@ class Presentacion(Escena):
         )
         self.eddie_imagen = pygame.transform.flip(self.eddie_imagen, True, False)
         
+        # Crear silueta de Eddie
+        self.eddie_silueta = self.eddie_imagen.copy()
+        self.eddie_silueta.fill((0, 0, 0, 255), special_flags=pygame.BLEND_RGBA_MULT)
+
         self.vince_imagen = pygame.transform.scale(
             pygame.image.load("imagenes/Dialogos/vince_imagen.png"),
             (WIDTH//5, personaje_altura) 
@@ -68,11 +72,56 @@ class Presentacion(Escena):
         self.fade_surface.fill(NEGRO)
         
         self.dialogos = [
-            {"texto": "La noche era fría y oscura...", "fondo": "noche", "retrato": "comentarios", "personajes": []},
-            {"texto": "¿Qué tenemos aquí?", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, "soldados_estaticos": True, "personajes": ["eddie"]},
-            {"texto": "¡Alto ahí!", "fondo": "noche", "retrato": "otros", "mostrar_soldados": True, "soldados_disparo": True, "personajes": ["eddie"]},
-            {"texto": "Todo se volvió negro...", "fondo": "negro", "retrato": "eddie", "personajes": []},
-            {"texto": "No puede ser...", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Noche cerrada sobre el ayuntamiento de Ironridge", "fondo": "noche", "retrato": "comentarios", "personajes": []},
+            {"texto": "Mientras en el ayuntamiento se lleva acabo una gala, \n fuera del las cosas se ponene tensas", "fondo": "noche", "retrato": "comentarios", "personajes": []},
+            {"texto": "Por favor dispérsense", "fondo": "noche", "retrato": "otros", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Solo queremos hablar con el presidente de Helix", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Si no se dispersan tendremos que abrir fuego", "fondo": "noche", "retrato": "otros", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "No es necesario, solo queremos \n explicaciones del accidente de la fábrica", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Esto es una manifestación pacífica no estamos haciendo daño a nadie", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Es la última advertencia, dispérsense", "fondo": "noche", "retrato": "otros", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Señor, le repito que...", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Apunten", "fondo": "noche", "retrato": "otros", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "¡POR FAVOR ESPERE NO..!", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, 
+             "soldados_estaticos": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "¡FUEGO!", "fondo": "noche", "retrato": "otros", "mostrar_soldados": True, 
+             "soldados_disparo": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "¡NO!", "fondo": "noche", "retrato": "eddie", "mostrar_soldados": True, 
+             "soldados_disparo": True, "personajes": ["eddie"], "siluetas": True},
+            {"texto": "Ven conmigo...", "fondo": "negro", "retrato": "vince", "personajes": []},
+            {"texto": "Parece que no han ido bien las cosas", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": " *respirando con dificultad* Gracias.", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "No hace falta darlas", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Igualmente...", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "¿Y tu quien eres?", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Me llamo Vince y soy quien tiene tu billete para salir de aqui", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "JaJaJa, ¿y por qué querría salir de aquí?", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Eddie, por favor no te tengo que decir todo", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Espera, ¿cómo sabes mi nombre?", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Necesito un compañero y tú cumplías lo requerido", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "¿Compañero de que?", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Compañero para asaltar el banco de Ironridge", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Tu estas demente", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Eddie tú sabes que la vida aquí para ti y tu familia no es segura", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Y sabes que Helix Global no te ayuda para mantenerla", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Mira lo que ocurrió con tu hijo", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Ni se te ocurra volver a nombrar a Max", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Esta bien, pero sabes que lo que digo es cierto", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Y sabes que Helix nunca se hara responsable de lo ocurrido", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Si quieres cobrar lo que te corresponde escúchame", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Y como esperas robar el banco", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Tú tranquilo, ya te explico el plan y cómo escaparemos después incluida tu familia", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Así que vamos a tomar algo y te explico", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
+            {"texto": "Te escucho, pero no he aceptado todavía", "fondo": "callejon", "retrato": "eddie", "personajes": ["eddie", "vince"]},
+            {"texto": "Bueno eso lo veremos", "fondo": "callejon", "retrato": "vince", "personajes": ["eddie", "vince"]},
         ]
 
         self.cajas_dialogo = {
@@ -152,6 +201,21 @@ class Presentacion(Escena):
                         pos_y = HEIGHT//2 - soldado.get_height()//2
                         pantalla.blit(soldado, (pos_x, pos_y))
 
+            # Dibujar siluetas si es necesario
+            if dialogo.get("siluetas", False):
+                # Posiciones para las siluetas relativas a Eddie
+                siluetas_posiciones = [
+                    (WIDTH * 0.5, HEIGHT//2 - self.eddie_silueta.get_height()//2 - 30),  # Arriba
+                    (WIDTH * 0.7, HEIGHT//2 - self.eddie_silueta.get_height()//2 - 15),  # Arriba derecha
+                    (WIDTH * 0.45, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 30),  # Abajo izquierda
+                    (WIDTH * 0.65, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 20),  # Abajo derecha
+                    (WIDTH * 0.75, HEIGHT//2 - self.eddie_silueta.get_height()//2),      # Derecha
+                    (WIDTH * 0.55, HEIGHT//2 - self.eddie_silueta.get_height()//2 + 10), # Centro izquierda
+                ]
+                
+                for pos in siluetas_posiciones:
+                    pantalla.blit(self.eddie_silueta, pos)
+
             if "personajes" in dialogo:
                 if "eddie" in dialogo["personajes"]:
                     eddie_pos = (WIDTH * 0.6, HEIGHT//2 - self.eddie_imagen.get_height()//2)
@@ -168,9 +232,16 @@ class Presentacion(Escena):
                         HEIGHT * 0.65  
                     )
                     pantalla.blit(caja, dialogo_pos)
-                    texto = self.fuente.render(dialogo["texto"], True, NEGRO)
-                    texto_pos = (dialogo_pos[0] + 40, dialogo_pos[1] + caja.get_height()//3)
-                    pantalla.blit(texto, texto_pos)
+                    
+                    # Dividir el texto en líneas y renderizar cada una
+                    lineas = dialogo["texto"].split('\n')
+                    for i, linea in enumerate(lineas):
+                        texto = self.fuente.render(linea.strip(), True, NEGRO)
+                        texto_pos = (
+                            dialogo_pos[0] + 40, 
+                            dialogo_pos[1] + caja.get_height()//3 + (i * 30)  # 30 pixels entre líneas
+                        )
+                        pantalla.blit(texto, texto_pos)
                     
                     if self.mostrar_triangulo:
                         triangulo_pos = [
