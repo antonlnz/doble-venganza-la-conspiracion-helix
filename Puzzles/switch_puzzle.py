@@ -12,9 +12,8 @@ class SwitchPuzzle(Escena):
         self.base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         
         # Construir rutas a los recursos usando os.path.join
-        resources_path = os.path.join(self.base_path, "resources", "images", "puzzles")
-        panel_path = os.path.join(resources_path, "control_camera_panel.png")
-        switch_path = os.path.join(resources_path, "switch.png")
+        panel_path = "imagenes/switch/control_camera_panel.png"
+        switch_path = "imagenes/switch/switch.png"
         
         # Cargar imágenes
         self.panel_image = pygame.image.load(panel_path).convert_alpha()

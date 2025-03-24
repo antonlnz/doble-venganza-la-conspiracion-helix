@@ -14,7 +14,7 @@ class DoorLockPuzzle(Escena):
         self.center_y = HEIGHT // 2
         
         # Cargar imágenes
-        self.background_image = pygame.image.load("resources/images/puzzles/lock_background.jpeg")
+        self.background_image = pygame.image.load("imagenes/door_lock/lock_background.jpeg")
         # Guardar dimensiones originales antes de escalar
         self.original_bg_width = self.background_image.get_width()
         self.original_bg_height = self.background_image.get_height()
@@ -27,7 +27,7 @@ class DoorLockPuzzle(Escena):
         self.scale_y = HEIGHT / self.original_bg_height
         
         # Cargar imagen del perno y mantener la original antes de escalar
-        self.perno_original = pygame.image.load("resources/images/puzzles/perno.png")
+        self.perno_original = pygame.image.load("imagenes/door_lock/perno.png")
         
         self.original_pin_width = self.perno_original.get_width()
         self.original_pin_height = self.perno_original.get_height()
