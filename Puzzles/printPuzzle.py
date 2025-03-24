@@ -20,7 +20,7 @@ class Huella(Escena):
         self.font = pygame.font.Font(None, 74)
         self.message = ""
         self.level = 1
-        self.game_over = False
+        self.completado = False
         self.setup_level()
         self.primera = True
 
@@ -99,14 +99,16 @@ class Huella(Escena):
         pygame.mouse.set_pos(10, self.HEIGHT // 2)
 
     def update(self, tiempo):
-        if self.game_over:
+        if self.completado:
             if self.retardo():
                 self.director.salirEscena()
-        if self.primera:
-            self.primera = False
-            pygame.mouse.set_pos(10, self.HEIGHT // 2)
+        
 
         else:
+            if self.primera:
+                self.primera = False
+                pygame.mouse.set_pos(20, self.HEIGHT // 2)
+
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.player.topleft = (mouse_x - self.player.width // 2, mouse_y - self.player.height // 2)
             
@@ -137,8 +139,8 @@ class Huella(Escena):
                 self.message = "¡Perdiste!"
                 pygame.mouse.set_visible(False)  # Ocultar el cursor
                 pygame.event.set_grab(True)
-                self.game_over = True
-                if self.game_over:
+                self.completado = True
+                if self.completado:
                     if self.retardo():
                         self.director.salirEscena()
                 return
@@ -148,8 +150,8 @@ class Huella(Escena):
                     self.message = "¡Perdiste!"
                     pygame.mouse.set_visible(False)  # Ocultar el cursor
                     pygame.event.set_grab(True)
-                    self.game_over = True
-                    if self.game_over:
+                    self.completado = True
+                    if self.completado:
                         if self.retardo():
                             self.director.salirEscena()
                     return
@@ -158,8 +160,8 @@ class Huella(Escena):
                     self.message = "¡Perdiste!"
                     pygame.mouse.set_visible(False)  # Ocultar el cursor
                     pygame.event.set_grab(True)
-                    self.game_over = True
-                    if self.game_over:
+                    self.completado = True
+                    if self.completado:
                         if self.retardo():
                             self.director.salirEscena()
                     return
@@ -171,14 +173,14 @@ class Huella(Escena):
                 self.message = "¡Felicidades!"
                 pygame.mouse.set_visible(False)  # Ocultar el cursor
                 pygame.event.set_grab(True)
-                self.game_over = True
-                if self.game_over:
+                self.completado = True
+                if self.completado:
                     if self.retardo():
                         self.director.salirEscena()
             return
     
     def eventos(self, eventos):
-        if self.game_over:
+        if self.completado:
             return
         for event in eventos:
             if event.type == pygame.QUIT:

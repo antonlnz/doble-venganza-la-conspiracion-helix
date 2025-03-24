@@ -538,4 +538,5 @@ class CablePuzzle(Escena):
                 self.puzzle_failed = False
                 # LLamada para salir de la escena
                 if self.puzzle_solved or self.game_over:
+                    self.completado = True
                     self.director.salirEscena()

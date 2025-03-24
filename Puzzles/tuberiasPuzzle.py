@@ -187,6 +187,7 @@ class Pipe(Escena):
             self.screen.blit(text, (self.SCREEN_WIDTH // 2 - text.get_width() // 2, self.SCREEN_HEIGHT // 2 - text.get_height() // 2))
             pygame.display.flip()
             if self.retardo():
+                self.completado = True
                 self.director.salirEscena()
         else:
             pygame.display.flip()

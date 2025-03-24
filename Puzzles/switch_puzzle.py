@@ -371,6 +371,7 @@ class SwitchPuzzle(Escena):
                 
                 # Salir de la escena cuando termine el mensaje
                 if self.puzzle_solved or self.game_over:
+                    self.completado = True
                     self.director.salirEscena()
                 
                 # Si el puzzle no está resuelto y no se acabó el juego, resetear interruptores activos
