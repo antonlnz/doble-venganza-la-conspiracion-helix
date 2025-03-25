@@ -1,8 +1,8 @@
 import os
 import pygame
 import sys
+from azotea_banco import AzoteaBanco
 from escena import *
-from pisoMedioBanco import PisoMedioBanco
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -37,7 +37,7 @@ class Periodico_Almacen(Escena):
         self.texto_visible = True
         self.velocidad_parpadeo = 300
 
-        self.siguienteMapa = PisoMedioBanco(director)
+        self.siguienteMapa = AzoteaBanco(director)
     
     def eventos(self, eventos):
         for evento in eventos:

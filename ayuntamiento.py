@@ -106,18 +106,9 @@ class Ayuntamiento(Mapa):
                         self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
                     else:
                         self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
-
-            if evento.type == KEYDOWN and evento.key == K_q:
-                self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-
-            if evento.type == KEYDOWN and evento.key == K_f:
-                self.teclaInteraccion.mostrar()
-
-            if evento.type == KEYDOWN and evento.key == K_r:
-                self.teclaInteraccion.ocultar()
             
         teclasPulsadas = pygame.key.get_pressed()
-        self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+        self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
     
     def update(self, tiempo):
 
@@ -139,6 +130,9 @@ class Ayuntamiento(Mapa):
 
         if self.puzle2.completado and not self.puertaAlcalde.objetoCambiado:
             self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+            for grupo in self.npc.groups():
+                grupo.remove(self.npc)
 
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)

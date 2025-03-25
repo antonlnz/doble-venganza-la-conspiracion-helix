@@ -163,8 +163,8 @@ class SimonDice(Escena):
 
     def eventos(self, eventos):
         for event in eventos:
-            if event.type == pygame.QUIT:
-                self.director.salirPrograma()
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                self.director.salirEscena()
             if self.game_active and event.type == pygame.MOUSEBUTTONDOWN:
                 if self.start_time is None:
                     self.start_time = time.time()

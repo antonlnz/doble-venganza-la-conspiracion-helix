@@ -1,5 +1,7 @@
 from Puzzles.laserPuzzle import LaserPuzzle
+from periodico import Periodico_Banco
 from personajes import *
+from pisoMedioBanco import PisoMedioBanco
 from settings import *
 from escena import *
 from mapa import *
@@ -65,6 +67,12 @@ class AzoteaBanco(Mapa):
         # Inicializamos la clase padre
         Mapa.__init__(self, director, "Mapas/azotea_banco48x48.tmx")
 
+        self.siguienteMapa = PisoMedioBanco(director, self)
+
+        self.mapaHuida = Periodico_Banco(director)
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.mapaHuida, (2350, 550), "")
+        
+        self.huida = False
         # Inicializamos la cámara
         self.camera = pygame.Rect(0, 0, WIDTH, HEIGHT)
 
@@ -87,8 +95,10 @@ class AzoteaBanco(Mapa):
 
         if panel_pos:
             self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, panel_pos, "Hackea el sistema para desbloquear la puerta y acceder al banco")
+            self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, panel_pos, "")
         else:
             self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, (216, 528), "Hackea el sistema para desbloquear la puerta y acceder al banco")
+            self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (216, 528), "")
         
         # Creamos el jugador
         self.jugador1 = Jugador('Eddie.png', 'coordEddie.txt', [7, 10, 5])
@@ -199,18 +209,18 @@ class AzoteaBanco(Mapa):
     
             # Activar puzzle
             if evento.type == KEYDOWN and evento.key == K_e:
-                if self.posicionamientoInteraccion.puedeActivar(self.jugador1):
+                if self.posicionamientoInteraccionHuida.puedeActivar(self.jugador1) and self.huida:
+                    self.director.cambiarEscena(self.posicionamientoInteraccionHuida.escena)
+
+                if self.posicionamientoInteraccion.puedeActivar(self.jugador1) and not self.puzzle.completado:
                     self.director.apilarEscena(self.posicionamientoInteraccion.escena)
-    
-            # Mostrar/ocultar tecla de interacción
-            if evento.type == KEYDOWN and evento.key == K_f:
-                self.teclaInteraccion.mostrar()
-            if evento.type == KEYDOWN and evento.key == K_r:
-                self.teclaInteraccion.ocultar()
+
+                if self.bajarPiso.puedeActivar(self.jugador1) and not self.siguienteMapa.huida and self.puzzle.completado:
+                    self.director.apilarEscena(self.bajarPiso.escena)
     
         # Movimiento del jugador
         teclasPulsadas = pygame.key.get_pressed()
-        self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+        self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
 
     def update(self, tiempo):
         # Para cada sprite en el grupo, actualizamos manualmente
@@ -223,7 +233,7 @@ class AzoteaBanco(Mapa):
         self.center_target_camera(self.jugador1)
         
         # Actualizamos la visibilidad de la tecla de interacción
-        if self.posicionamientoInteraccion.puedeActivar(self.jugador1):
+        if  self.activarTeclaInteraccion():
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
@@ -237,6 +247,11 @@ class AzoteaBanco(Mapa):
             
             # Ahora mostramos la puerta final
             self.puertaFinal.cambiar()
+
+        self.huida = self.siguienteMapa.huida
+
+        if self.huida:
+            self.teclaInteraccion.posicion_interaccion = self.posicionamientoInteraccionHuida.posicion
 
     def dibujar(self, pantalla):
         # Rellenamos el fondo
@@ -276,7 +291,16 @@ class AzoteaBanco(Mapa):
         # 5. Dibujamos la tecla de interacción si es necesario
         if self.teclaInteraccion.visible:
             # Ajustamos la posición con respecto a la cámara
-            pos_x = self.posicionamientoInteraccion.posicion[0] - self.camera.x
-            pos_y = self.posicionamientoInteraccion.posicion[1] - self.camera.y - 60  # Ajustado para que aparezca encima del panel
+            pos_x = self.teclaInteraccion.posicion_interaccion[0] - self.camera.x
+            pos_y = self.teclaInteraccion.posicion_interaccion[1] - self.camera.y - 60  # Ajustado para que aparezca encima del panel
             pantalla.blit(self.teclaInteraccion.image, 
                       (pos_x - self.teclaInteraccion.image.get_width() / 2, pos_y))
+            
+            
+    def activarTeclaInteraccion(self):
+        if self.huida:
+            return self.posicionamientoInteraccionHuida.puedeActivar(self.jugador1)
+        if self.puzzle.completado:
+            return self.bajarPiso.puedeActivar(self.jugador1) and not self.siguienteMapa.huida
+        else:
+            return self.posicionamientoInteraccion.puedeActivar(self.jugador1)

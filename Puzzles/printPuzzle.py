@@ -101,13 +101,12 @@ class Huella(Escena):
     def update(self, tiempo):
         if self.completado:
             if self.retardo():
+                pygame.mouse.set_visible(True)
                 self.director.salirEscena()
-        
-
         else:
             if self.primera:
                 self.primera = False
-                pygame.mouse.set_pos(20, self.HEIGHT // 2)
+                pygame.mouse.set_pos(10, self.HEIGHT // 2)
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
             self.player.topleft = (mouse_x - self.player.width // 2, mouse_y - self.player.height // 2)
@@ -133,6 +132,7 @@ class Huella(Escena):
                 self.vertical_direction[i] *= -1        
     
     def check_collisions(self):
+        pygame.mouse.set_visible(False)
         # Usamos self.player_collision_rect (50x50) para la comprobación de colisiones
         for zone in self.red_zones:
             if self.player_collision_rect.colliderect(zone):
@@ -142,6 +142,7 @@ class Huella(Escena):
                 self.completado = True
                 if self.completado:
                     if self.retardo():
+                        pygame.mouse.set_visible(True)
                         self.director.salirEscena()
                 return
         if self.level > 1:
@@ -153,6 +154,7 @@ class Huella(Escena):
                     self.completado = True
                     if self.completado:
                         if self.retardo():
+                            pygame.mouse.set_visible(True)
                             self.director.salirEscena()
                     return
             for zone in self.vertical_moving_zones:
@@ -163,6 +165,7 @@ class Huella(Escena):
                     self.completado = True
                     if self.completado:
                         if self.retardo():
+                            pygame.mouse.set_visible(True)
                             self.director.salirEscena()
                     return
         if self.player_collision_rect.colliderect(self.goal):
@@ -176,6 +179,7 @@ class Huella(Escena):
                 self.completado = True
                 if self.completado:
                     if self.retardo():
+                        pygame.mouse.set_visible(True)
                         self.director.salirEscena()
             return
     

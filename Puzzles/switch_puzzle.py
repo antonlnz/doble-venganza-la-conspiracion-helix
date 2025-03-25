@@ -270,6 +270,9 @@ class SwitchPuzzle(Escena):
             
             # Procesar eventos
             for evento in lista_eventos:
+                if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
+                    self.director.salirEscena()
+
                 if evento.type == pygame.MOUSEBUTTONDOWN:
                     # Verificar si se hizo clic en algún interruptor
                     for i, area in enumerate(self.switch_areas):

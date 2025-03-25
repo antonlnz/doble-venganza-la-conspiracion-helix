@@ -137,8 +137,9 @@ class Pipe(Escena):
 
     def eventos(self, eventos):
         for event in eventos:
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
+                self.director.salirEscena() 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if self.start_time is None:
                     self.start_time = time.time()

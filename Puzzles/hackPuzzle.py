@@ -80,7 +80,6 @@ class Hack(Escena):
     
     def update(self, tiempo):
         if self.is_solved():
-            print("¡Puzzle resuelto!")
             self.completado = True
             if self.retardo():
                 self.director.salirEscena()
@@ -89,8 +88,8 @@ class Hack(Escena):
 
     def eventos(self, eventos):
         for event in eventos:
-            if event.type == pygame.QUIT:
-                self.director.salirPrograma()
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                self.director.salirEscena()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 self.handle_tile_movement(event.pos)
 

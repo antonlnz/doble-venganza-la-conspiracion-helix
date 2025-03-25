@@ -1,8 +1,7 @@
 import os
 import pygame
-import sys
-from ayuntamiento import Ayuntamiento
 from escena import *
+from presentacion import Presentacion
 
 WIDTH = 1920
 HEIGHT = 1080
@@ -37,7 +36,7 @@ class Periodico_Fabrica(Escena):
         self.texto_visible = True
         self.velocidad_parpadeo = 300
 
-        self.siguienteMapa = Ayuntamiento(director)
+        self.siguienteMapa = Presentacion(director)
     
     def eventos(self, eventos):
         for evento in eventos:

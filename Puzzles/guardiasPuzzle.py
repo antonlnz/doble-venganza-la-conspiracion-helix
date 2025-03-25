@@ -93,8 +93,8 @@ class Guardia(Escena):
 
     def eventos(self, eventos):
         for event in eventos:
-            if event.type == pygame.QUIT:
-                self.director.salirPrograma()
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                self.director.salirEscena()
             elif event.type == pygame.KEYDOWN:
                 if self.start_time is None:  # Initialize timer on first key press
                     self.start_time = time.time()

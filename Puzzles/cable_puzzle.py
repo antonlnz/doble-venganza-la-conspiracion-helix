@@ -416,6 +416,9 @@ class CablePuzzle(Escena):
             return
                 
         for evento in lista_eventos:
+            if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
+                self.director.salirEscena() 
+
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 # Verificar si se hizo clic en un extremo de cable

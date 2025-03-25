@@ -190,8 +190,9 @@ class Tarjeta(Escena):
 
     def eventos(self, eventos):
         for event in eventos:
-            if event.type == pygame.QUIT:
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 self.running = False
+                self.director.salirEscena()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and self.bar_moving:
                     self.bar_moving = False
@@ -223,7 +224,7 @@ class Tarjeta(Escena):
             pygame.draw.rect(pantalla, self.WHITE, (zone['x'], zone['y'], zone['width'], zone['height']))
         pygame.draw.rect(pantalla, self.BLACK, (self.bar_x, self.bar_y, self.bar_width, self.bar_height))
         self.draw_lives(pantalla)
-        print(self.lives)
+
         if self.lives <= 0:
             self.game_over(pantalla)
             self.completado = True

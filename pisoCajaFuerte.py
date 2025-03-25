@@ -111,7 +111,7 @@ class PisoCajaFuerte(Mapa):
         for evento in lista_eventos:
             # Si se sale del programa
             if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
-                self.director.salirEscena()
+                self.director.salirPrograma()
 
             if evento.type == KEYDOWN and evento.key == K_e:
                 if self.subirPiso.puedeActivar(self.jugador1):
@@ -131,25 +131,9 @@ class PisoCajaFuerte(Mapa):
 
                 if self.interaccionRobo4.puedeActivar(self.jugador1):
                     self.grupoCajasFuerte4.cambiar([self.grupoSprites])
-
-            if evento.type == KEYDOWN and evento.key == K_q:
-                self.reliquia.cambiar([self.grupoSprites])
-                
-
-            if evento.type == KEYDOWN and evento.key == K_f:
-                self.grupoCajasFuerte1.cambiar([self.grupoSprites])
-
-            if evento.type == KEYDOWN and evento.key == K_g:
-                self.grupoCajasFuerte2.cambiar([self.grupoSprites])
-
-            if evento.type == KEYDOWN and evento.key == K_r:
-                self.grupoCajasFuerte3.cambiar([self.grupoSprites])
-
-            if evento.type == KEYDOWN and evento.key == K_t:
-                self.grupoCajasFuerte4.cambiar([self.grupoSprites])
             
         teclasPulsadas = pygame.key.get_pressed()
-        self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+        self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
     
     def update(self, tiempo):
 
@@ -160,7 +144,7 @@ class PisoCajaFuerte(Mapa):
             self.huida = True
             self.mision.establecerTexto(self.textoMisionHuida)
 
-        self.altenarTeclaInteraccion()
+        self.activarTeclaInteraccion()
 
         self.center_target_camera(self.jugador1)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
@@ -184,7 +168,7 @@ class PisoCajaFuerte(Mapa):
         self.interaccionRobo4.update(self.offset)
         self.subirPiso.update(self.offset)  
 
-    def altenarTeclaInteraccion(self):
+    def activarTeclaInteraccion(self):
         if self.subirPiso.puedeActivar(self.jugador1) or self.puedeRobar(self.jugador1) or (self.cajasFuerteRobadas() and self.interaccionRoboReliquia.puedeActivar(self.jugador1)):
             self.teclaInteraccion.mostrar()
         else:

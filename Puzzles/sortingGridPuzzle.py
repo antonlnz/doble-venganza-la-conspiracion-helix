@@ -221,7 +221,7 @@ class SortingGridPuzzle(Escena):
 
     def eventos(self, eventos):
         for evento in eventos:
-            if evento.type == pygame.QUIT:
+            if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
                 self.director.salirEscena()
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 if evento.button == 1:

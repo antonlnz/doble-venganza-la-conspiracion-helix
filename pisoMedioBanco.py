@@ -19,16 +19,18 @@ from mapa import *
 
 
 class PisoMedioBanco(Mapa):
-    def __init__(self, director):
+    def __init__(self, director, anteriorMapa):
 
         Mapa.__init__(self, director, "Mapas/pisoMedioBanco48x48.tmx")
 
         self.inicializarTextosMisiones()
 
+        self.anteriorMapa = anteriorMapa
+
         self.puzle = ConcentricCirclesPuzzle(director)
         self.puzle2 = DoorLockPuzzle(director)
-        self.puzle3 = SimonDice(director)
-        self.puzle4 = Guardia(director)
+        self.puzle3 = SimonDice(director) #Hay que cambiar y añadir la funcion retardo
+        self.puzle4 = Guardia(director) #Hay que cambiar y añadir la funcion retardo
         self.siguienteMapa = PisoCajaFuerte(director, self)
         # self.siguienteMapa = Periodico_Banco(director)
 
@@ -36,11 +38,13 @@ class PisoMedioBanco(Mapa):
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 576), self.textoMision2)
         self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (1368, 240), self.textoMision3)
         self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 840), self.textoMision4)
-        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.puzle3, (960, 528), self.textoMisionHuida)
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.anteriorMapa, (408, 192), self.textoMisionHuida)
         
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, self.posicionamientoInteraccionHuida]
 
         self.posicionamientoInteraccionActual = 0
+
+        # self.subirPiso = PosicionamientoInteraccion(self.anteriorMapa, (408, 192), "")
 
         self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (1512, 1368), self.textoMisionSiguienteMapa)
 
@@ -139,38 +143,21 @@ class PisoMedioBanco(Mapa):
         for evento in lista_eventos:
             # Si se sale del programa
             if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
-                self.director.salirEscena()
+                self.director.salirPrograma()
 
             if evento.type == KEYDOWN and evento.key == K_e:
+
                 if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual):
-                    if self.huida:
-                        self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
+                    if self.huida and self.siguienteMapa.huida:
+                        self.director.salirEscena()
                     else:
                         self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
 
                 if self.bajarPiso.puedeActivar(self.jugador2):
                         self.director.apilarEscena(self.bajarPiso.escena)
-
-            if evento.type == KEYDOWN and evento.key == K_q:
-                self.cambiarJugador(self.jugador2)
-
-            if evento.type == KEYDOWN and evento.key == K_f:
-                self.cambiarJugador(self.jugador1)
-
-            if evento.type == KEYDOWN and evento.key == K_r:
-                self.jugador1.noquear()
-
-            if evento.type == KEYDOWN and evento.key == K_t:
-                self.puertaAcceso.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-            
-            if evento.type == KEYDOWN and evento.key == K_z:
-                self.mostrarGuardias()
-            
-            if evento.type == KEYDOWN and evento.key == K_x:
-                self.noquearGuardias()
             
         teclasPulsadas = pygame.key.get_pressed()
-        self.jugadorActual.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+        self.jugadorActual.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
     
     def update(self, tiempo):
         
@@ -181,7 +168,7 @@ class PisoMedioBanco(Mapa):
                 if self.posicionamientoInteraccionActual == (len(self.posicionamientoInteracciones) - 1):
                     self.huida = True
             
-        if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual) or (self.bajarPiso.puedeActivar(self.jugador2) and not self.siguienteMapa.huida):
+        if self.activarTeclaInteraccion():
             self.teclaInteraccion.mostrar()
         else:
             self.teclaInteraccion.ocultar()
@@ -203,6 +190,10 @@ class PisoMedioBanco(Mapa):
 
         if self.puzle4.completado:
             self.noquearGuardias()
+
+        if self.siguienteMapa.huida:
+            for grupo in self.jugador1.groups():
+                grupo.remove(self.jugador1)
 
         self.center_target_camera(self.jugadorActual)
         self.grupoSpritesDinamicos.update(self.grupoObstaculos, tiempo)
@@ -243,3 +234,15 @@ class PisoMedioBanco(Mapa):
 
         self.guardia3.noquear()
         self.grupoObstaculos.remove(self.guardia3)
+
+    def activarTeclaInteraccion(self):
+        if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual):
+            if(self.huida and not self.siguienteMapa.huida):
+                return False
+            else:
+                return True
+        elif (self.bajarPiso.puedeActivar(self.jugador2) and not self.siguienteMapa.huida):
+            return True
+        else:
+            return False
+        # return self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual) or (self.bajarPiso.puedeActivar(self.jugador2) and not self.siguienteMapa.huida)

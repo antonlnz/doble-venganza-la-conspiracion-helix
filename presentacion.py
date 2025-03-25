@@ -1,4 +1,5 @@
 import pygame
+from ayuntamiento import Ayuntamiento
 from escena import Escena
 from settings import *
 
@@ -10,6 +11,8 @@ class Presentacion(Escena):
         self.tiempo = 0
         self.dialogo_actual = 0
         self.next_background = None
+
+        self.siguienteEscena = Ayuntamiento(director)
         
 
         self.fondo_noche = pygame.transform.scale(
@@ -176,10 +179,10 @@ class Presentacion(Escena):
                 if self.estado == "DIALOGO":
                     if self.dialogo_actual >= len(self.dialogos) - 1:
                         self.completado = True
-                        self.director.salirEscena()
+                        self.director.cambiarEscena(self.siguienteEscena)
                     else:
                         self.dialogo_actual += 1
-            elif evento.type == pygame.QUIT:
+            elif evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
                 self.director.salirEscena()
 
     def dibujar(self, pantalla):

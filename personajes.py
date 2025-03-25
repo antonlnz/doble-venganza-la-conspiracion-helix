@@ -28,7 +28,7 @@ SPRITE_ANDANDO = 1
 SPRITE_NOQUEADO = 2 
 
 # Velocidades de los distintos personajes
-VELOCIDAD_JUGADOR = 0.5 # Pixeles por milisegundo
+VELOCIDAD_JUGADOR = 0.3 # Pixeles por milisegundo
 VELOCIDAD_SALTO_JUGADOR = 0.3 # Pixeles por milisegundo
 RETARDO_ANIMACION_JUGADOR = 5 # updates que durará cada imagen del personaje
                               # debería de ser un valor distinto para cada postura

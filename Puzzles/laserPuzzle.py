@@ -237,8 +237,8 @@ class LaserPuzzle(Escena):
 
     def eventos(self, eventos):
         for event in eventos:
-            if event.type == pygame.QUIT:
-                sys.exit(0)
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                self.director.salirEscena()
             elif event.type == pygame.MOUSEBUTTONDOWN and not self.puzzle_solved:
                 mouse_x, mouse_y = event.pos
                 grid_x = int((mouse_x - self.grid_offset_x) // self.TILE_WIDTH)

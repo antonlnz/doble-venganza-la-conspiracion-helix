@@ -24,7 +24,7 @@ class Almacen(Mapa):
 
         self.puzle = SortingGridPuzzle(director)
         self.puzle2 = SwitchPuzzle(director)
-        self.puzle3 = Pipe(director)
+        self.puzle3 = Pipe(director) #Hay que cambiar y añadir la funcion retardo
         self.puzle4 = Huella(director) 
         self.puzle5 = CablePuzzle(director)
         self.siguienteMapa = Periodico_Almacen(director)
@@ -136,22 +136,9 @@ class Almacen(Mapa):
                             self.grupoObstaculos.remove(self.guardia)
                         else:
                             self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
-
-            if evento.type == KEYDOWN and evento.key == K_q:
-                self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-                self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-                
-
-            if evento.type == KEYDOWN and evento.key == K_f:
-                self.teclaInteraccion.mostrar()
-                self.camara.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-                self.cajaFuerte.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-
-            if evento.type == KEYDOWN and evento.key == K_r:
-                self.teclaInteraccion.ocultar()
             
         teclasPulsadas = pygame.key.get_pressed()
-        self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
+        self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
     
     def update(self, tiempo):
         

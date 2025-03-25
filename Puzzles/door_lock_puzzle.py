@@ -222,6 +222,8 @@ class DoorLockPuzzle(Escena):
         
         # Procesar eventos
         for evento in lista_eventos:
+            if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
+                self.director.salirEscena()
             if evento.type == pygame.MOUSEBUTTONDOWN:
                 mouse_click = True
         
@@ -324,6 +326,7 @@ class DoorLockPuzzle(Escena):
             if self.time_remaining <= 0:
                 self.time_remaining = 0
                 self.game_over = True
+                self.completado = True
                 self.show_message = True
                 self.director.salirEscena()
             

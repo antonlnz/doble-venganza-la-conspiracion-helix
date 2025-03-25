@@ -234,7 +234,12 @@ class ConcentricCirclesPuzzle(Escena):
         key_rect = rotated_key.get_rect(center=(key_x, key_y))
         pantalla.blit(rotated_key, key_rect)
 
-    def eventos(self, mouse_click):
+    def eventos(self, lista_eventos):
+
+        for evento in lista_eventos:
+            if evento.type == pygame.QUIT or (evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE):
+                self.director.salirEscena()
+                
         if self.completado or self.game_over:
             return
             
