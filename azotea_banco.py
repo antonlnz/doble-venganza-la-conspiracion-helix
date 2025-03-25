@@ -3,6 +3,62 @@ from personajes import *
 from settings import *
 from escena import *
 from mapa import *
+import math
+
+# Clase auxiliar para manejar la aparición de la puerta final
+class ObjetoParaCambiar:
+    def __init__(self):
+        self.objeto = None
+        self.grupos = []
+        self.visible = False
+
+    def cambiar(self, grupos=None):
+        if not self.visible and self.objeto:
+            if grupos:
+                for grupo in grupos:
+                    grupo.add(self.objeto)
+            elif self.grupos:
+                for grupo in self.grupos:
+                    grupo.add(self.objeto)
+            self.visible = True
+
+# Agregar al inicio del archivo
+class PosicionamientoInteraccion(PosicionamientoInteraccion):
+    def __init__(self, escena, posicion, textoMision="", radio_interaccion=80):
+        super().__init__(escena, posicion, textoMision)
+        self.radio_interaccion = radio_interaccion
+    
+    def puedeActivar(self, jugador):
+        dx = jugador.rect.centerx - self.posicion[0]
+        dy = jugador.rect.centery - self.posicion[1]
+        distancia = math.sqrt(dx*dx + dy*dy)
+        return distancia <= self.radio_interaccion
+
+class TeclaInteraccion(TeclaInteraccion):
+    def __init__(self, jugador, posicion_interaccion=None):
+        super().__init__(jugador)
+        self.posicion_interaccion = posicion_interaccion
+        self.visible = False
+        
+    def dibujar(self, pantalla):
+        if self.visible:
+            if self.posicion_interaccion:
+                # Usamos la posición del punto de interacción en lugar de la del jugador
+                pantalla.blit(self.imagen, 
+                        (self.posicion_interaccion[0] - self.imagen.get_width() / 2,
+                         self.posicion_interaccion[1] - 60))  # Dibujar encima del punto de interacción
+            else:
+                # Comportamiento original con la posición del jugador
+                pantalla.blit(self.imagen, 
+                        (self.jugador.rect.centerx - self.imagen.get_width() / 2,
+                         self.jugador.rect.top - 40))
+    
+    # Agregamos los métodos para mostrar y ocultar explícitamente
+    def mostrar(self):
+        self.visible = True
+        
+    def ocultar(self):
+        self.visible = False
 
 class AzoteaBanco(Mapa):
     def __init__(self, director):
@@ -14,33 +70,43 @@ class AzoteaBanco(Mapa):
 
         # Inicializamos los grupos de sprites
         self.grupoSprites = pygame.sprite.Group()
-
-        # Inicializamos los grupos de sprites
-        self.grupoSprites = pygame.sprite.Group()
         self.grupoSpritesDinamicos = pygame.sprite.Group()
         self.grupoObstaculos = pygame.sprite.Group()
         self.grupoCaminos = pygame.sprite.Group()  # Añadimos esta línea
 
-        # Configuramos el puzzle
+        # Configuramos el puzzle y su posición de interacción
         self.puzzle = LaserPuzzle(director)
-        self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, (216, 528))
-        self.posicionamientoInteracciones = [self.posicionamientoInteraccion]
-        self.posicionamientoPuzleActual = 0
+        # Actualizamos la posición para que coincida con el DoorPannel (ID 141)
+        panel_pos = None
+        for objectGroup in self.tmxdata.objectgroups:
+            if objectGroup.name == "ObjetosAzoteas":
+                for obj in objectGroup:
+                    if hasattr(obj, 'id') and obj.id == 141:
+                        panel_pos = (obj.x, obj.y)
+                        break
+
+        if panel_pos:
+            self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, panel_pos, "Hackea el sistema para desbloquear la puerta y acceder al banco")
+        else:
+            self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, (216, 528), "Hackea el sistema para desbloquear la puerta y acceder al banco")
         
         # Creamos el jugador
-        self.jugador1 = Jugador('Eddie.png', 'coordEddie.txt', [7, 10])
-        self.jugador1.establecerPosicion((2350, 550))  # Cambiamos la coordenada X de 408 a 600
+        self.jugador1 = Jugador('Eddie.png', 'coordEddie.txt', [7, 10, 5])
+        self.jugador1.establecerPosicion((2350, 550))
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
         self.grupoSpritesDinamicos.add(self.jugador1)
 
-        # Configuramos la tecla de interacción
-        self.teclaInteraccion = TeclaInteraccion(self.jugador1)
+        # Configuramos la tecla de interacción usando la posición del panel
+        self.teclaInteraccion = TeclaInteraccion(self.jugador1, self.posicionamientoInteraccion.posicion)
 
         # Centramos la cámara en el jugador
         self.center_target_camera(self.jugador1)
 
         # Objeto para la puerta que cambiará de estado
         self.puertaFinal = ObjetoParaCambiar()
+        
+        # Añadimos una referencia a la puerta inicial que queremos ocultar
+        self.puertaInicial = None
 
         # Procesamos las capas del mapa TMX
         for objectGroup in self.tmxdata.objectgroups:
@@ -52,7 +118,7 @@ class AzoteaBanco(Mapa):
                     else:
                         rect = pygame.Rect(object.x, object.y, object.width, object.height)
                     
-                    # Usar la imagen original en lugar de una superficie de debug
+                    # Usar la imagen original
                     obj = Object(rect, object.image)
                     self.grupoObstaculos.add(obj)  # Para colisiones
                     self.grupoSprites.add(obj)     # Para dibujar
@@ -94,11 +160,15 @@ class AzoteaBanco(Mapa):
                                 # Creamos y mostramos la puerta inicial
                                 puerta = Object(rect, object.image)
                                 self.grupoSprites.add(puerta)
+                                # Guardamos referencia a la puerta inicial
+                                if hasattr(object, 'id') and object.id == 144:
+                                    self.puertaInicial = puerta
                             elif object.name == "Final":
                                 # Creamos la puerta final pero no la añadimos aún al grupo
                                 puerta = Object(rect, object.image)
                                 # La establecemos como objeto que cambiará
                                 self.puertaFinal.objeto = puerta
+                                # Establecemos los grupos donde se añadirá
                                 self.puertaFinal.grupos = [self.grupoSprites]
                     else:
                         obj = Object(pygame.Rect(object.x, object.y, object.width, object.height), object.image)
@@ -126,18 +196,18 @@ class AzoteaBanco(Mapa):
             # Salir del juego
             if evento.type == pygame.QUIT or (evento.type == KEYDOWN and evento.key == K_ESCAPE):
                 self.director.salirEscena()
-
+    
             # Activar puzzle
             if evento.type == KEYDOWN and evento.key == K_e:
-                if self.posicionamientoInteracciones[self.posicionamientoPuzleActual].puedeActivar(self.jugador1):
-                    self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoPuzleActual].escena)
-
+                if self.posicionamientoInteraccion.puedeActivar(self.jugador1):
+                    self.director.apilarEscena(self.posicionamientoInteraccion.escena)
+    
             # Mostrar/ocultar tecla de interacción
             if evento.type == KEYDOWN and evento.key == K_f:
                 self.teclaInteraccion.mostrar()
             if evento.type == KEYDOWN and evento.key == K_r:
                 self.teclaInteraccion.ocultar()
-
+    
         # Movimiento del jugador
         teclasPulsadas = pygame.key.get_pressed()
         self.jugador1.mover(teclasPulsadas, K_UP, K_DOWN, K_LEFT, K_RIGHT)
@@ -146,16 +216,27 @@ class AzoteaBanco(Mapa):
         # Para cada sprite en el grupo, actualizamos manualmente
         for sprite in self.grupoSpritesDinamicos:
             if isinstance(sprite, Personaje):
-                # El grupo de colisiones debe ir después del tiempo
                 sprite.update(self.grupoObstaculos, tiempo)  
             else:
                 sprite.update(tiempo)
         
         self.center_target_camera(self.jugador1)
         
+        # Actualizamos la visibilidad de la tecla de interacción
+        if self.posicionamientoInteraccion.puedeActivar(self.jugador1):
+            self.teclaInteraccion.mostrar()
+        else:
+            self.teclaInteraccion.ocultar()
+        
         # Comprobamos si el puzzle se ha completado
-        if self.puzzle.completado:
-            self.puertaFinal.cambiar([self.grupoSprites])
+        if self.puzzle.completado and not self.puertaFinal.visible:
+            # Primero eliminamos la puerta inicial si existe
+            if self.puertaInicial:
+                self.grupoSprites.remove(self.puertaInicial)
+                self.puertaInicial = None  # Limpiamos la referencia
+            
+            # Ahora mostramos la puerta final
+            self.puertaFinal.cambiar()
 
     def dibujar(self, pantalla):
         # Rellenamos el fondo
@@ -193,4 +274,9 @@ class AzoteaBanco(Mapa):
                              sprite.rect.y - self.camera.y))
 
         # 5. Dibujamos la tecla de interacción si es necesario
-        self.teclaInteraccion.dibujar(pantalla)
+        if self.teclaInteraccion.visible:
+            # Ajustamos la posición con respecto a la cámara
+            pos_x = self.posicionamientoInteraccion.posicion[0] - self.camera.x
+            pos_y = self.posicionamientoInteraccion.posicion[1] - self.camera.y - 60  # Ajustado para que aparezca encima del panel
+            pantalla.blit(self.teclaInteraccion.image, 
+                      (pos_x - self.teclaInteraccion.image.get_width() / 2, pos_y))

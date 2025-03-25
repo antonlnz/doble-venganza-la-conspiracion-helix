@@ -25,9 +25,6 @@ class LaserPuzzle(Escena):
         self.BLUE = (0, 0, 255)
         self.GRAY = (200, 200, 200)
 
-        self.screen = pygame.display.set_mode((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
-        pygame.display.set_caption("Laser Puzzle")
-
         # Imagenes
         scale_factor = 0.8
         self.laser_img_horizontal = pygame.transform.rotate(pygame.image.load('imagenes/Laser/laser.png'), 90)
@@ -49,7 +46,20 @@ class LaserPuzzle(Escena):
         self.mirrors = []
         self.door_open = False
         self.door_close = True
-        self.running = True
+        self.puzzle_solved = False
+        self.puzzle_complete_time = 0
+        self.font = pygame.font.Font(None, 74)
+        
+        # Atributo para indicar que el puzzle se ha completado
+        # Este atributo será comprobado por el mapa (azotea_banco)
+        self.completado = False
+        
+        # Configuración inicial del puzzle
+        self.place_laser(1, 0)
+        self.place_door(4, 4)
+        self.place_mirror(2, 2, 'up')
+        self.place_mirror(2, 4, 'up')
+        self.place_mirror(2, 0, 'up')
 
     def place_laser(self, x, y):
         self.laser_position = (x, y)
@@ -67,30 +77,30 @@ class LaserPuzzle(Escena):
         for row in self.grid:
             print(' '.join(row))
 
-    def draw(self):
-        self.screen.blit(self.background_img, (0, 0))  # Draw the background image
+    def draw(self, pantalla):
+        pantalla.blit(self.background_img, (0, 0))  # Draw the background image
         for y in range(self.grid_size):
             for x in range(self.grid_size):
                 rect = pygame.Rect(self.grid_offset_x + x * self.TILE_WIDTH, self.grid_offset_y + y * self.TILE_HEIGHT, self.TILE_WIDTH, self.TILE_HEIGHT)
-                pygame.draw.rect(self.screen, self.BLACK, rect)  # Draw black background for each cell
-                pygame.draw.rect(self.screen, self.GRAY, rect, 1)  # Draw gray border for each cell
+                pygame.draw.rect(pantalla, self.BLACK, rect)  # Draw black background for each cell
+                pygame.draw.rect(pantalla, self.GRAY, rect, 1)  # Draw gray border for each cell
                 if (x, y) == (0, 0):
-                    self.screen.blit(self.start_img, rect.move((self.TILE_WIDTH - self.start_img.get_width()) // 2, (self.TILE_HEIGHT - self.start_img.get_height()) // 2))
+                    pantalla.blit(self.start_img, rect.move((self.TILE_WIDTH - self.start_img.get_width()) // 2, (self.TILE_HEIGHT - self.start_img.get_height()) // 2))
                 elif self.grid[y][x] == 'L':
-                    self.screen.blit(self.laser_img_horizontal, rect)
+                    pantalla.blit(self.laser_img_horizontal, rect)
                 elif self.grid[y][x] == 'D':
                     if self.door_open:
-                        self.screen.blit(self.door_open_img, rect.move((self.TILE_WIDTH - self.door_open_img.get_width()) // 2, (self.TILE_HEIGHT - self.door_open_img.get_height()) // 2))
+                        pantalla.blit(self.door_open_img, rect.move((self.TILE_WIDTH - self.door_open_img.get_width()) // 2, (self.TILE_HEIGHT - self.door_open_img.get_height()) // 2))
                     else:
-                        self.screen.blit(self.door_closed_img, rect.move((self.TILE_WIDTH - self.door_closed_img.get_width()) // 2, (self.TILE_HEIGHT - self.door_closed_img.get_height()) // 2))
+                        pantalla.blit(self.door_closed_img, rect.move((self.TILE_WIDTH - self.door_closed_img.get_width()) // 2, (self.TILE_HEIGHT - self.door_closed_img.get_height()) // 2))
                 elif self.grid[y][x] == 'up':
-                    self.screen.blit(self.mirror_up_img, rect.move((self.TILE_WIDTH - self.mirror_up_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_up_img.get_height()) // 2))
+                    pantalla.blit(self.mirror_up_img, rect.move((self.TILE_WIDTH - self.mirror_up_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_up_img.get_height()) // 2))
                 elif self.grid[y][x] == 'down':
-                    self.screen.blit(self.mirror_down_img, rect.move((self.TILE_WIDTH - self.mirror_down_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_down_img.get_height()) // 2))
+                    pantalla.blit(self.mirror_down_img, rect.move((self.TILE_WIDTH - self.mirror_down_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_down_img.get_height()) // 2))
                 elif self.grid[y][x] == 'left':
-                    self.screen.blit(self.mirror_left_img, rect.move((self.TILE_WIDTH - self.mirror_left_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_left_img.get_height()) // 2))
+                    pantalla.blit(self.mirror_left_img, rect.move((self.TILE_WIDTH - self.mirror_left_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_left_img.get_height()) // 2))
                 elif self.grid[y][x] == 'right':
-                    self.screen.blit(self.mirror_right_img, rect.move((self.TILE_WIDTH - self.mirror_right_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_right_img.get_height()) // 2))
+                    pantalla.blit(self.mirror_right_img, rect.move((self.TILE_WIDTH - self.mirror_right_img.get_width()) // 2, (self.TILE_HEIGHT - self.mirror_right_img.get_height()) // 2))
 
     def rotate_mirror(self, x, y):
         for i, (mx, my, direction) in enumerate(self.mirrors):
@@ -159,15 +169,15 @@ class LaserPuzzle(Escena):
                 laser_y += 1
         return False
 
-    def draw_laser_path(self):
+    def draw_laser_path(self, pantalla):
         laser_x, laser_y = self.laser_position
         direction = 'right'
         while 0 <= laser_x < self.grid_size and 0 <= laser_y < self.grid_size:
             rect = pygame.Rect(self.grid_offset_x + laser_x * self.TILE_WIDTH, self.grid_offset_y + laser_y * self.TILE_HEIGHT, self.TILE_WIDTH, self.TILE_HEIGHT)
             if direction in ['up', 'down']:
-                self.screen.blit(self.laser_img_vertical, rect)
+                pantalla.blit(self.laser_img_vertical, rect)
             else:
-                self.screen.blit(self.laser_img_horizontal, rect)
+                pantalla.blit(self.laser_img_horizontal, rect)
             if (laser_x, laser_y) == self.door_position:
                 break
             if self.grid[laser_y][laser_x] == 'up':
@@ -215,80 +225,43 @@ class LaserPuzzle(Escena):
             elif direction == 'down':
                 laser_y += 1
 
-    def clear_image(self, x, y):
-        rect = pygame.Rect(x * self.TILE_WIDTH, y * self.TILE_HEIGHT, self.TILE_WIDTH, self.TILE_HEIGHT)
-        pygame.draw.rect(self.screen, self.BLACK, rect)
-        pygame.display.update(rect)
-
-    def run(self):
-        self.place_laser(1, 0)
-        self.place_door(4, 4)
-        self.place_mirror(2, 2, 'up')
-        self.place_mirror(2, 4, 'up')
-        self.place_mirror(2, 0, 'up')
-
-        while self.running:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    self.running = False
-                elif event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_x, mouse_y = event.pos
-                    grid_x = int((mouse_x - self.grid_offset_x) // self.TILE_WIDTH)
-                    grid_y = int((mouse_y - self.grid_offset_y) // self.TILE_HEIGHT)
-                    if 0 <= grid_x < self.grid_size and 0 <= grid_y < self.grid_size:
-                        if self.grid[grid_y][grid_x] in ['up', 'down', 'left', 'right']:
-                            self.rotate_mirror(grid_x, grid_y)
-
-            self.screen.fill(self.BLACK)
-            self.draw()
-            self.draw_laser_path()
-            pygame.display.flip()
-
-            if self.solve_puzzle():
-                self.clear_image(self.door_position[0], self.door_position[1])
-                self.door_open = True
-                self.draw()
-                # Paint the tile black and place the open lock image
-                rect = pygame.Rect(self.grid_offset_x + self.door_position[0] * self.TILE_WIDTH, self.grid_offset_y + self.door_position[1] * self.TILE_HEIGHT, self.TILE_WIDTH, self.TILE_HEIGHT)
-                pygame.draw.rect(self.screen, self.BLACK, rect)
-                self.screen.blit(self.door_open_img, rect.move((self.TILE_WIDTH - self.door_open_img.get_width()) // 2, (self.TILE_HEIGHT - self.door_open_img.get_height()) // 2))
-                pygame.display.flip()
-                font = pygame.font.Font(None, 74)
-                text = font.render("¡Felicidades!", True, self.BLACK)  # Change text color to black for better contrast
-                # Draw a white line behind the text
-                line_rect = pygame.Rect(0, self.SCREEN_HEIGHT // 2 - text.get_height() // 2, self.SCREEN_WIDTH, text.get_height())
-                pygame.draw.rect(self.screen, self.WHITE, line_rect)
-                self.screen.blit(text, (self.SCREEN_WIDTH // 2 - text.get_width() // 2, self.SCREEN_HEIGHT // 2 - text.get_height() // 2))
-                if self.retardo():
-                   self.director.salirEscena()
-                   pygame.flip()
-                   
-
-
-        pygame.quit()
-
     def update(self, tiempo):
-        self.run()
+        if self.puzzle_solved:
+            self.puzzle_complete_time += tiempo
+            if self.puzzle_complete_time >= 1000:  # Tiempo para la transicion entre el juego y el mapa
+                # Marcamos el puzzle como completado antes de salir
+                self.completado = True
+                
+                # Regresamos a la escena anterior del director
+                self.director.salirEscena()
 
     def eventos(self, eventos):
         for event in eventos:
             if event.type == pygame.QUIT:
-                self.running = False
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+                sys.exit(0)
+            elif event.type == pygame.MOUSEBUTTONDOWN and not self.puzzle_solved:
                 mouse_x, mouse_y = event.pos
                 grid_x = int((mouse_x - self.grid_offset_x) // self.TILE_WIDTH)
                 grid_y = int((mouse_y - self.grid_offset_y) // self.TILE_HEIGHT)
                 if 0 <= grid_x < self.grid_size and 0 <= grid_y < self.grid_size:
                     if self.grid[grid_y][grid_x] in ['up', 'down', 'left', 'right']:
                         self.rotate_mirror(grid_x, grid_y)
+                        
+                # Verificar si el puzzle ha sido resuelto
+                if self.solve_puzzle():
+                    self.puzzle_solved = True
+                    self.puzzle_complete_time = 0
 
     def dibujar(self, pantalla):
-        self.screen.fill(self.BLACK)
-        self.draw()
-        self.draw_laser_path()
-        pygame.display.flip()
-
-if __name__ == "__main__":
-    director = None  # Replace with actual director object
-    puzzle = LaserPuzzle(director)
-    puzzle.run()
+        pantalla.fill(self.BLACK)
+        self.draw(pantalla)
+        self.draw_laser_path(pantalla)
+        
+        # Si el puzzle está resuelto, mostrar mensaje de felicitación
+        if self.puzzle_solved:
+            text = self.font.render("¡Felicidades!", True, self.BLACK)
+            line_rect = pygame.Rect(0, self.SCREEN_HEIGHT // 2 - text.get_height() // 2, 
+                                  self.SCREEN_WIDTH, text.get_height())
+            pygame.draw.rect(pantalla, self.WHITE, line_rect)
+            pantalla.blit(text, (self.SCREEN_WIDTH // 2 - text.get_width() // 2, 
+                                self.SCREEN_HEIGHT // 2 - text.get_height() // 2))
