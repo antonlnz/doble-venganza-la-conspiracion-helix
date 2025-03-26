@@ -38,7 +38,7 @@ class PisoMedioBanco(Mapa):
         self.posicionamientoInteraccion2 = PosicionamientoInteraccion(self.puzle2, (1368, 576), self.textoMision2)
         self.posicionamientoInteraccion3 = PosicionamientoInteraccion(self.puzle3, (1368, 240), self.textoMision3)
         self.posicionamientoInteraccion4 = PosicionamientoInteraccion(self.puzle4, (864, 840), self.textoMision4)
-        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.anteriorMapa, (408, 192), self.textoMisionHuida)
+        self.posicionamientoInteraccionHuida = PosicionamientoInteraccion(self.anteriorMapa, (408, 192), self.textoMisionSiguienteMapa)
         
         self.posicionamientoInteracciones = [self.posicionamientoInteraccion, self.posicionamientoInteraccion2, self.posicionamientoInteraccion3, self.posicionamientoInteraccion4, self.posicionamientoInteraccionHuida]
 
@@ -192,6 +192,7 @@ class PisoMedioBanco(Mapa):
             self.noquearGuardias()
 
         if self.siguienteMapa.huida:
+            self.mision.establecerTexto(self.textoMisionHuida)
             for grupo in self.jugador1.groups():
                 grupo.remove(self.jugador1)
 
