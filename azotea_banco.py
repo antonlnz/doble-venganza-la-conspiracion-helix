@@ -67,6 +67,10 @@ class AzoteaBanco(Mapa):
         # Inicializamos la clase padre
         Mapa.__init__(self, director, "Mapas/azotea_banco48x48.tmx")
 
+        self.inicializarTextosMisiones()
+
+        self.mision.establecerTexto(self.textoMision)
+
         self.siguienteMapa = PisoMedioBanco(director, self)
 
         self.mapaHuida = Periodico_Banco(director)
@@ -94,10 +98,10 @@ class AzoteaBanco(Mapa):
                         break
 
         if panel_pos:
-            self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, panel_pos, "Hackea el sistema para desbloquear la puerta y acceder al banco")
+            self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, panel_pos, "")
             self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, panel_pos, "")
         else:
-            self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, (216, 528), "Hackea el sistema para desbloquear la puerta y acceder al banco")
+            self.posicionamientoInteraccion = PosicionamientoInteraccion(self.puzzle, (216, 528), "")
             self.bajarPiso = PosicionamientoInteraccion(self.siguienteMapa, (216, 528), "")
         
         # Creamos el jugador
@@ -191,6 +195,11 @@ class AzoteaBanco(Mapa):
                     self.grupoSprites.add(obj)
                     # Las cuerdas son caminos por los que sí se puede pasar
                     self.grupoCaminos.add(obj)
+
+    def inicializarTextosMisiones(self):
+        self.textoMision = "Hackea el sistema para desbloquear la puerta\n y acceder al banco"
+        self.textoMisionBajar = "Entra al edificio y baja hasta el piso en\n donde se encuentra la sala de seguridad"
+        self.textoMisionHuida = "Huye hasta la zona baja de la azotea del\n edificio de al lado del banco"
                     
     def center_target_camera(self, target):
         # Centramos la cámara en el objetivo (jugador)
@@ -248,9 +257,12 @@ class AzoteaBanco(Mapa):
             # Ahora mostramos la puerta final
             self.puertaFinal.cambiar()
 
+            self.mision.establecerTexto(self.textoMisionBajar)
+
         self.huida = self.siguienteMapa.huida
 
         if self.huida:
+            self.mision.establecerTexto(self.textoMisionHuida)
             self.teclaInteraccion.posicion_interaccion = self.posicionamientoInteraccionHuida.posicion
 
     def dibujar(self, pantalla):
@@ -295,6 +307,8 @@ class AzoteaBanco(Mapa):
             pos_y = self.teclaInteraccion.posicion_interaccion[1] - self.camera.y - 60  # Ajustado para que aparezca encima del panel
             pantalla.blit(self.teclaInteraccion.image, 
                       (pos_x - self.teclaInteraccion.image.get_width() / 2, pos_y))
+            
+        self.mision.dibujar(pantalla)
             
             
     def activarTeclaInteraccion(self):

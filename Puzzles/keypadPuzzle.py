@@ -57,7 +57,7 @@ class KeypadPuzzle(Escena):
 
         self.mouse_clicks = []
         self.input_text = ""
-        self.expected_text = "789456123"
+        self.expected_text = "7245427"
         self.fail = False
 
     def game_over(self, screen):

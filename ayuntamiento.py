@@ -81,7 +81,7 @@ class Ayuntamiento(Mapa):
         
     def inicializarTextosMisiones(self):
         self.textoMision = "Roba la tarjeta de acceso al guardia"
-        self.textoMision2 = "Usa el código de la tarjeta (789456123) para\n entrar en la oficina del alcalde"
+        self.textoMision2 = "Ahora deberás entrar en la habitación del alcalde. Para eso usa\n el código de la tarjeta (7*45*27), aunque algunos números\n no se distinguen y deberás descifrarlos"
         self.textoMision3 = "Descifra los planos que se encuentrar en la mesa del alcalde"
         self.textoMisionHuida = "Huye por la ventana de la sala contigua"
 
