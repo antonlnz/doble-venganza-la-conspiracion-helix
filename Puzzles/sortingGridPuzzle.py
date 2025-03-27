@@ -33,6 +33,7 @@ class SortingGridPuzzle(Escena):
         self.sound_end_game = pygame.mixer.Sound("Sonidos/endgame.wav")
         self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
         self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
 
         self.check_sound = False
 
