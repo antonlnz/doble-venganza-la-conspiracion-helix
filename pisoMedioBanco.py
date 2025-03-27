@@ -23,6 +23,14 @@ class PisoMedioBanco(Mapa):
 
         Mapa.__init__(self, director, "Mapas/pisoMedioBanco48x48.tmx")
 
+        self.sound_escaleras = pygame.mixer.Sound("Sonidos/stairs.wav")
+        self.sound_guardias = pygame.mixer.Sound("Sonidos/death.wav")
+        self.sound_door = pygame.mixer.Sound("Sonidos/door.wav")
+        self.sound_alarm = pygame.mixer.Sound("Sonidos/alarm.wav")
+        self.sound_alarm.set_volume(0.2)
+
+        self.sound_check = False
+
         self.inicializarTextosMisiones()
 
         self.anteriorMapa = anteriorMapa
@@ -150,11 +158,13 @@ class PisoMedioBanco(Mapa):
                 if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugadorActual):
                     if self.huida and self.siguienteMapa.huida:
                         self.director.salirEscena()
+                        self.sound_escaleras.play()
                     else:
                         self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
 
                 if self.bajarPiso.puedeActivar(self.jugador2):
                         self.director.apilarEscena(self.bajarPiso.escena)
+                        self.sound_escaleras.play()
             
         teclasPulsadas = pygame.key.get_pressed()
         self.jugadorActual.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
@@ -178,11 +188,13 @@ class PisoMedioBanco(Mapa):
         if self.puzle.completado: 
             if not self.puertaAcceso.objetoCambiado:
                 self.puertaAcceso.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+                self.sound_door.play()
             if not self.llego:
                 self.llego = self.jugador2.moverEnYHasta(720, 20)
 
         if self.puzle2.completado and not self.puertaSalaSeguridad.objetoCambiado:
             self.puertaSalaSeguridad.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+            self.sound_door.play()
 
         if self.puzle3.completado:
             self.cambiarJugador(self.jugador2)
@@ -190,8 +202,13 @@ class PisoMedioBanco(Mapa):
 
         if self.puzle4.completado:
             self.noquearGuardias()
+            if not self.sound_check:
+                self.sound_guardias.play()
+                self.sound_check = True
 
         if self.siguienteMapa.huida:
+            if not pygame.mixer.get_busy():
+                self.sound_alarm.play()
             self.mision.establecerTexto(self.textoMisionHuida)
             for grupo in self.jugador1.groups():
                 grupo.remove(self.jugador1)

@@ -14,6 +14,13 @@ class SwitchPuzzle(Escena):
         # Construir rutas a los recursos usando os.path.join
         panel_path = "imagenes/switch/control_camera_panel.png"
         switch_path = "imagenes/switch/switch.png"
+
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_click = pygame.mixer.Sound("Sonidos/switch.wav")
+        self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+        self.sound_wrong = pygame.mixer.Sound("Sonidos/wrong.wav")
         
         # Cargar imágenes
         self.panel_image = pygame.image.load(panel_path).convert_alpha()
@@ -278,6 +285,7 @@ class SwitchPuzzle(Escena):
                     for i, area in enumerate(self.switch_areas):
                         if area.collidepoint(mouse_pos) and not self.disabled_switches[i] and not self.switch_states[i]:
                             self.switch_states[i] = True
+                            self.sound_click.play()
                             
                             # Encontrar a qué fila pertenece este interruptor
                             current_row = None
@@ -295,9 +303,12 @@ class SwitchPuzzle(Escena):
                                 
                                 if current_row_index == self.correct_answer:
                                     self.puzzle_solved = True
+                                    self.sound_completed.play()
                                 else:
+                                    self.sound_click.stop()
                                     self.puzzle_failed = True
                                     self.attempts_left -= 1
+                                    self.sound_wrong.play()
                                     
                                     # Marcar los interruptores de esta fila como deshabilitados
                                     for switch_index in current_row:
@@ -305,9 +316,12 @@ class SwitchPuzzle(Escena):
                                     
                                     # Activar game over solo cuando no quedan intentos
                                     if self.attempts_left <= 0:
+                                        self.sound_wrong.stop()
+                                        self.sound_endgame.play()
                                         self.game_over = True
                             break
     
+    #CREO QUE ESTA FUNCION SE PUEDE BORRAR YA QUE CREO QUE NO HACE NADA
     def _check_row_completion(self):
         # Comprobar si se ha completado alguna fila
         for row_index, row in enumerate(self.rows):
@@ -322,7 +336,7 @@ class SwitchPuzzle(Escena):
                     self.puzzle_failed = True
                     self.attempts_left -= 1
                     
-                    print(f"Fallo. Intentos restantes: {self.attempts_left}") 
+                    print(f"Fallo. Intentooooooooooos restantes: {self.attempts_left}") 
                     
                     # Marcar los interruptores de esta fila como deshabilitados
                     for switch_index in row:
@@ -340,6 +354,8 @@ class SwitchPuzzle(Escena):
             
             # Activar efectos de parpadeo en los últimos 15 segundos
             if segundos_restantes <= 15:
+                if segundos_restantes == 15:
+                    self.sound_warning.play()
                 self.timer_pulsing = True
                 # Calcular valor de alfa para el parpadeo del temporizador (oscila entre 100 y 255)
                 self.timer_alpha = 100 + 155 * (0.5 + 0.5 * math.sin(pygame.time.get_ticks() * self.timer_pulse_speed))
@@ -357,6 +373,7 @@ class SwitchPuzzle(Escena):
             
             # Verificar si se acabó el tiempo
             if self.time_remaining <= 0:
+                self.sound_endgame.play()
                 self.time_remaining = 0
                 self.game_over = True
                 self.show_message = True

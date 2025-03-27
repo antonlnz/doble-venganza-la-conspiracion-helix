@@ -20,7 +20,7 @@ class Tarjeta(Escena):
         self.bar_height = 40
         self.bar_x = self.WIDTH // 2 - self.bar_width // 2
         self.bar_y = self.HEIGHT // 2 - self.bar_height // 2
-        self.bar_speed = 8
+        self.bar_speed = 5
         self.red_zone_margin = 50
         self.background_image = pygame.image.load('imagenes/Tarjeta/fondo_seguridad.jpg')
         self.background_image = pygame.transform.scale(self.background_image, (self.WIDTH, self.HEIGHT))
@@ -32,6 +32,7 @@ class Tarjeta(Escena):
         self.heart_empty = pygame.transform.scale(self.heart_empty, (24, 24))
         self.lives = 3
         self.font = pygame.font.SysFont(None, 55)
+        self.game_over_font = pygame.font.Font("Fuentes/PricedownBl.otf", 70)
         self.level = 1
         self.green_zones = [
             {'x': self.WIDTH // 2 - 150, 'y': self.HEIGHT // 2 - 20, 'width': 300, 'height': 40},
@@ -51,6 +52,12 @@ class Tarjeta(Escena):
         self.bar_moving = True
         self.bar_direction = 1
         self.completed_zones = set()
+        self.sound_bar = pygame.mixer.Sound("Sonidos/bar.mp3")
+        self.sound_wrong = pygame.mixer.Sound("Sonidos/wrong.wav")
+        self.sound_end_game = pygame.mixer.Sound("Sonidos/endgame.wav")
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+
+        self.game_over_sound = False
 
     def draw_lives(self, screen):
         hearts_width = 3 * 30
@@ -62,14 +69,19 @@ class Tarjeta(Escena):
                 screen.blit(self.heart_empty, (start_x + i * 30, self.bar_y - 40))
 
     def game_over(self, screen):
-        screen.fill(self.BLACK)
-        game_over_text = self.font.render('Perdiste', True, self.WHITE)
-        screen.blit(game_over_text, (self.WIDTH // 2 - game_over_text.get_width() // 2, self.HEIGHT // 2 - game_over_text.get_height() // 2))
+        screen.fill(NEGRO)
+        game_over_text = self.game_over_font.render('Perdiste', True, ROJO)
+        screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+        if not self.game_over_sound:
+            self.sound_end_game.play()
+            self.game_over_sound = True
         pygame.display.flip()
+        self.completado = True
         
 
     def show_completion_message(self, screen):
         screen.fill(self.BLACK)
+        self.sound_completed.play()
         screen.blit(self.completion_image, (self.WIDTH // 2 - self.completion_image.get_width() // 2, self.HEIGHT // 2 - self.completion_image.get_height() // 2))
         completion_text = self.font.render('Conseguiste la tarjeta', True, self.WHITE)
         congrats_text = self.font.render('¡Felicidades!', True, self.WHITE)
@@ -141,6 +153,8 @@ class Tarjeta(Escena):
         if self.bar_moving:
             self.bar_x += self.bar_speed * self.bar_direction
             if self.bar_x > self.WIDTH - self.red_zone_margin - self.bar_width or self.bar_x < self.red_zone_margin:
+                if self.lives > 0:
+                    self.sound_bar.play()
                 self.bar_direction *= -1
 
         if not self.bar_moving:
@@ -182,6 +196,8 @@ class Tarjeta(Escena):
                     self.bar_moving = True
             else:
                 self.lives -= 1
+                if self.lives >= 1:
+                    self.sound_wrong.play()
                 if self.lives == 0:
                     self.running = False
                     self.completado = True

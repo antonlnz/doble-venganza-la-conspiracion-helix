@@ -48,6 +48,12 @@ class SimonDice(Escena):
             {"color": self.YELLOW, "pos": pos} for pos in self.button_positions[3:]
         ]
 
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_click = pygame.mixer.Sound("Sonidos/simon.wav")
+        self.sound_blink = pygame.mixer.Sound("Sonidos/simon.wav")
+        self.sound_blink.set_volume(0.2)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+
     def draw_background(self, pantalla):
         for y in range(self.height):
             color_value = int(50 + (y / self.height) * 100)
@@ -76,6 +82,7 @@ class SimonDice(Escena):
     def show_sequence(self, pantalla):
         pygame.time.delay(200)
         for index in self.sequence:
+            self.sound_blink.play()
             self.flash_button(pantalla, self.buttons[index])
 
     def check_user_input(self):
@@ -174,10 +181,12 @@ class SimonDice(Escena):
                         self.flash_button(self.window, button)
                         self.user_sequence.append(i)
                         if not self.check_user_input():
+                            self.sound_endgame.play()
                             self.game_active = False
                         elif len(self.user_sequence) == len(self.sequence):
                             self.round_number += 1
                             if self.round_number == self.TARGET_ROUNDS:
+                                self.sound_completed.play()
                                 self.game_active = False
 
     def dibujar(self, pantalla):

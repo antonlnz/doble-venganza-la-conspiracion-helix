@@ -18,6 +18,12 @@ class Hack(Escena):
         self.SCREEN_HEIGHT = 1080
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
+
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_click = pygame.mixer.Sound("Sonidos/click.wav")
+
+        self.wait_time = 1000
+        self.wait_time_remaining = self.wait_time
         
         # Creamos un fondo en negro
         self.blank_surface = pygame.Surface((self.WIDTH, self.HEIGHT))
@@ -75,15 +81,21 @@ class Hack(Escena):
             rect = pygame.Rect(x, y, self.TILE_WIDTH, self.TILE_HEIGHT)
             if rect.collidepoint(pos):
                 if (abs(blank_x - x) == self.TILE_WIDTH and blank_y == y) or (abs(blank_y - y) == self.TILE_HEIGHT and blank_x == x):
+                    self.sound_click.play()
                     self.swap_tiles(i, blank_index)
                     break
     
     def update(self, tiempo):
+
         if self.is_solved():
-            self.completado = True
-            if self.retardo():
+            self.wait_time_remaining -= tiempo
+            if self.wait_time_remaining <= 750:
+                self.sound_completed.play()
+                self.completado = True
+            if self.retardo() and self.wait_time_remaining <= 0:
                 self.director.salirEscena()
                 pygame.display.flip()
+                
             
 
     def eventos(self, eventos):
@@ -95,11 +107,15 @@ class Hack(Escena):
 
     def dibujar(self, pantalla):
         pantalla.fill(self.BLACK)
-        for i, tile in enumerate(self.tiles):
-            x = (i % self.GRID_SIZE) * self.TILE_WIDTH
-            y = (i // self.GRID_SIZE) * self.TILE_HEIGHT
-            pantalla.blit(tile, (x, y))
-        pygame.display.flip()
+
+        if self.completado:
+            pantalla.blit(self.blank_surface, (0,0))
+        else:
+            for i, tile in enumerate(self.tiles):
+                x = (i % self.GRID_SIZE) * self.TILE_WIDTH
+                y = (i // self.GRID_SIZE) * self.TILE_HEIGHT
+                pantalla.blit(tile, (x, y))
+            pygame.display.flip()
         
         
         

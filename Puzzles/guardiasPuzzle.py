@@ -58,6 +58,15 @@ class Guardia(Escena):
             self.policeman_image
         ]
 
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_correct = pygame.mixer.Sound("Sonidos/correct.wav")
+        self.sound_warning = pygame.mixer.Sound("Sonidos/beep.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+        self.sound_wrong = pygame.mixer.Sound("Sonidos/wrong.wav")
+
+        self.check_sound = False
+
     def generate_sequence(self):
         return [random.choice('ABCDEFGHIJKLMNOPQRSTUVWXYZ') for _ in range(5)]
 
@@ -84,6 +93,7 @@ class Guardia(Escena):
                 if self.current_guardia_index >= len(self.time_limits):
                     self.running = False
                 else:
+                    self.sound_correct.play()
                     self.remaining_time = self.time_limits[self.current_guardia_index]  # Actualizar el tiempo restante
                     self.image = self.imagenes_guardias[self.current_guardia_index]  # Actualizar la imagen del guardia
                 return True
@@ -115,6 +125,8 @@ class Guardia(Escena):
                             self.image = self.imagenes_guardias[self.current_guardia_index]  # Actualizar la imagen del guardia
                 if self.wrong_key:
                     self.lives -= 1
+                    if self.lives >=1:
+                        self.sound_wrong.play()
 
     def update(self, tiempo_pasado):
         if self.start_time is None:  # Initialize timer on first key press
@@ -124,6 +136,8 @@ class Guardia(Escena):
 
         if self.start_time is not None and self.current_guardia_index < len(self.time_limits):
             self.remaining_time = self.time_limits[self.current_guardia_index] - (time.time() - self.start_time)
+            if self.remaining_time <= 5 and  not pygame.mixer.get_busy():
+                self.sound_warning.play()
             if self.remaining_time <= 0 or self.lives <= 0:
                 self.running = False
     
@@ -144,11 +158,20 @@ class Guardia(Escena):
             screen.fill(self.WHITE)
             if self.lives <= 0 or self.remaining_time <= 0:
                 end_text = self.font.render("Perdiste", True, self.RED)
+                self.completado = True
+                if not self.check_sound:
+                    self.sound_warning.stop()
+                    self.sound_endgame.play()
+                    self.check_sound = True
             else:
                 end_text = self.font.render("Felicidades", True, self.GREEN)
+                self.completado = True
+                if not self.check_sound:
+                    self.sound_warning.stop()
+                    self.sound_completed.play()
+                    self.check_sound = True
             screen.blit(end_text, (self.WIDTH // 2 - end_text.get_width() // 2, self.HEIGHT // 2 - end_text.get_height() // 2))
             if self.retardo():
-                self.completado = True
                 self.director.salirEscena()
 
             

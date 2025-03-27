@@ -61,6 +61,15 @@ class CablePuzzle(Escena):
         self.distractor_cables = []
         used_colors = []
         self.connection_radius = 30
+
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_click = pygame.mixer.Sound("Sonidos/cable.flac")
+        self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+        self.sound_wrong = pygame.mixer.Sound("Sonidos/wrong.wav")
+
+        self.check_sound = False
         
         for i in range(4):
             y_pos = self.panel_y + (i + 1) * (self.panel_height / 5)
@@ -447,6 +456,7 @@ class CablePuzzle(Escena):
                                         (mouse_pos[1] - connection_point[1])**2)
                         
                         if distance < self.connection_radius:  # Usar el nuevo radio de detección
+                            self.sound_click.play()
                             # Ajustar el cable al punto de conexión del distractor
                             cable["end"] = connection_point
                             cable["connected"] = True
@@ -487,6 +497,9 @@ class CablePuzzle(Escena):
         self.message_timer = 3000
         
         if correct_connections:
+            if not self.check_sound:
+                    self.sound_completed.play()
+                    self.check_sound = True
             self.puzzle_solved = True
         else:
             self.puzzle_failed = True
@@ -510,6 +523,8 @@ class CablePuzzle(Escena):
             
             # Efectos visuales para el tiempo
             if segundos_restantes <= 15:
+                if segundos_restantes == 15:
+                    self.sound_warning.play()
                 self.timer_pulsing = True
                 self.timer_alpha = 100 + 155 * (0.5 + 0.5 * math.sin(pygame.time.get_ticks() * self.timer_pulse_speed))
             else:
@@ -525,6 +540,9 @@ class CablePuzzle(Escena):
             
             # Verificar si se acabó el tiempo
             if self.time_remaining <= 0:
+                if not self.check_sound:
+                    self.sound_endgame.play()
+                    self.check_sound = True
                 self.time_remaining = 0
                 self.game_over = True
                 self.show_message = True

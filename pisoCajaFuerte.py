@@ -16,6 +16,12 @@ class PisoCajaFuerte(Mapa):
 
         Mapa.__init__(self, director, "Mapas/pisoCajaFuerte48x48.tmx")
 
+        self.sound_escaleras = pygame.mixer.Sound("Sonidos/stairs.wav")
+        self.sound_glass = pygame.mixer.Sound("Sonidos/glass.wav")
+        self.sound_money = pygame.mixer.Sound("Sonidos/money.wav")
+        self.sound_alarm = pygame.mixer.Sound("Sonidos/alarm.wav")
+        self.sound_alarm.set_volume(0.2)
+
         self.inicializarTextosMisiones()
 
         self.mision.establecerTexto(self.textoRoboCajasFuerte)
@@ -116,22 +122,29 @@ class PisoCajaFuerte(Mapa):
             if evento.type == KEYDOWN and evento.key == K_e:
                 if self.subirPiso.puedeActivar(self.jugador1):
                     self.director.salirEscena()
+                    self.sound_escaleras.play()
 
                 if self.cajasFuerteRobadas() and self.interaccionRoboReliquia.puedeActivar(self.jugador1):
                     self.reliquia.cambiar([self.grupoObstaculos, self.grupoSprites])
+                    self.sound_glass.play()
+
 
                 if self.interaccionRobo1.puedeActivar(self.jugador1):
                     self.grupoCajasFuerte1.cambiar([self.grupoSprites])
+                    self.sound_money.play()
 
                 if self.interaccionRobo2.puedeActivar(self.jugador1):
                     self.grupoCajasFuerte2.cambiar([self.grupoSprites])
+                    self.sound_money.play()
 
                 if self.interaccionRobo3.puedeActivar(self.jugador1):
                     self.grupoCajasFuerte3.cambiar([self.grupoSprites])
+                    self.sound_money.play()
 
                 if self.interaccionRobo4.puedeActivar(self.jugador1):
                     self.grupoCajasFuerte4.cambiar([self.grupoSprites])
-            
+                    self.sound_money.play()
+                    
         teclasPulsadas = pygame.key.get_pressed()
         self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
     
@@ -142,6 +155,8 @@ class PisoCajaFuerte(Mapa):
         
         if self.reliquia.objetoCambiado:
             self.huida = True
+            if not pygame.mixer.get_busy():
+                self.sound_alarm.play()
             self.mision.establecerTexto(self.textoMisionHuida)
 
         self.activarTeclaInteraccion()

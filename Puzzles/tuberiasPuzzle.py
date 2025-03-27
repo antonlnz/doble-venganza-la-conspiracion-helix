@@ -84,6 +84,16 @@ class Pipe(Escena):
         self.end_time = None  # Añadido para manejar el tiempo de espera
         self.message = None  # Añadido para manejar los mensajes
 
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_click = pygame.mixer.Sound("Sonidos/pipe.wav")
+        self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+
+        self.sound_check = False
+        self.sound_warning_check = False
+
+
     def draw(self):
         if self.type == 'horizontal':
             img = self.horizontal_img
@@ -126,11 +136,20 @@ class Pipe(Escena):
         self.elapsed_time = time.time() - self.start_time
         if self.elapsed_time >= 20:
             self.message = "Perdiste"
+            if not self.sound_check:
+                self.sound_endgame.play()
+                self.sound_check = True
             self.running = False
             self.end_time = time.time()
+        if self.elapsed_time >= 15 and not self.sound_warning_check:
+            self.sound_warning.play()
+            self.sound_warning_check = True
 
         # Miramos si esta resuelto
         if Pipe.is_solved(self.grid, self.solution_path):
+            if not self.sound_check:
+                self.sound_completed.play()
+                self.sound_check = True
             self.message = "¡Felicidades!"
             self.running = False
             self.end_time = time.time()
@@ -147,6 +166,7 @@ class Pipe(Escena):
                 grid_x = mouse_x // self.TILE_SIZE
                 grid_y = mouse_y // self.TILE_SIZE
                 if 0 <= grid_x < self.GRID_WIDTH and 0 <= grid_y < self.GRID_HEIGHT and self.grid[grid_y][grid_x] is not None:
+                    self.sound_click.play()
                     self.rotate_pipe(grid_y, grid_x)
 
     def rotate_pipe(self, y, x):

@@ -20,6 +20,12 @@ class Almacen(Mapa):
 
         Mapa.__init__(self, director, "Mapas/almacen48x48.tmx")
 
+        pygame.mixer.music.set_volume(0.1)
+
+        self.sound_door = pygame.mixer.Sound("Sonidos/door.wav")
+        self.sound_knockout = pygame.mixer.Sound("Sonidos/knockout.wav")
+        self.sound_huida = pygame.mixer.Sound("Sonidos/metal_plate.wav")
+
         self.inicializarTextosMisiones()
 
         self.puzle = SortingGridPuzzle(director)
@@ -130,8 +136,14 @@ class Almacen(Mapa):
                 if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugador1):
                     if self.huida:
                         self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
+                        self.sound_huida.play()
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.load("Musica/Banco.mp3")
+                        pygame.mixer.music.play(-1)
+
                     else:
                         if self.posicionamientoInteraccionActual == 3 and not self.guardia.noqueado:
+                            self.sound_knockout.play()
                             self.guardia.noquear()
                             self.grupoObstaculos.remove(self.guardia)
                         else:
@@ -158,13 +170,15 @@ class Almacen(Mapa):
 
         if self.puzle.completado and not self.puertaAlmacen.objetoCambiado:
             self.puertaAlmacen.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+            self.sound_door.play()
 
         if self.puzle2.completado and not self.camara.objetoCambiado:
             self.camara.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
 
         if self.puzle3.completado and not self.puertaSala.objetoCambiado:
             self.puertaSala.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
-        
+            self.sound_door.play()
+
         if self.puzle4.completado and not self.cajaFuerte.objetoCambiado:
             self.cajaFuerte.cambiar([self.grupoSprites])
             self.jugador1.establecerPosicion((120, 168))

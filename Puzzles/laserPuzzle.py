@@ -61,6 +61,10 @@ class LaserPuzzle(Escena):
         self.place_mirror(2, 4, 'up')
         self.place_mirror(2, 0, 'up')
 
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_electric = pygame.mixer.Sound("Sonidos/zap.wav")
+        self.sound_electric.set_volume(0.3)
+
     def place_laser(self, x, y):
         self.laser_position = (x, y)
         self.grid[y][x] = 'L'
@@ -245,10 +249,12 @@ class LaserPuzzle(Escena):
                 grid_y = int((mouse_y - self.grid_offset_y) // self.TILE_HEIGHT)
                 if 0 <= grid_x < self.grid_size and 0 <= grid_y < self.grid_size:
                     if self.grid[grid_y][grid_x] in ['up', 'down', 'left', 'right']:
+                        self.sound_electric.play()
                         self.rotate_mirror(grid_x, grid_y)
                         
                 # Verificar si el puzzle ha sido resuelto
                 if self.solve_puzzle():
+                    self.sound_completed.play()
                     self.puzzle_solved = True
                     self.puzzle_complete_time = 0
 

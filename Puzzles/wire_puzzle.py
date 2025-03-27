@@ -60,6 +60,15 @@ class WirePuzzle(Escena):
         self.banda_height = HEIGHT * 0.1  # Altura de la banda
         self.banda_y = HEIGHT * 0.45  # Posición Y de la banda
         self.banda_color = VERDE  # Color del banner horizontal
+
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_click = pygame.mixer.Sound("Sonidos/click.wav")
+        self.sound_quiz = pygame.mixer.Sound("Sonidos/quiz.wav")
+        self.sound_quiz.set_volume(0.5)
+        self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_wrong = pygame.mixer.Sound("Sonidos/wrong.wav")
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
         
     def dibujar(self, pantalla):
         # Si el temporizador no ha comenzado, iniciarlo al mostrar la primera vez
@@ -191,6 +200,7 @@ class WirePuzzle(Escena):
                             
                             if cable_rect.collidepoint(mouse_pos):
                                 if i == self.wire_correcto:
+                                    self.sound_completed.play()
                                     self.mensaje = "¡Correcto! Has desactivado la cámara"
                                     self.completado = True
                                     self.esperando_mensaje = True
@@ -199,12 +209,14 @@ class WirePuzzle(Escena):
                                 else:
                                     self.cables_cortados.append(i)
                                     self.intentos -= 1
+                                    self.sound_wrong.play()
                                     if self.intentos > 0:
                                         self.mensaje = f"Cable incorrecto. Te quedan {self.intentos} intentos"
                                     else:
                                         self.mensaje = "¡Has fallado! La alarma se ha activado"
                                         self.completado = True
                                         self.esperando_mensaje = True
+                                        self.sound_endgame.play()
                                         self.mensaje_timer = pygame.time.get_ticks()
                                         self.timer_paused = True  # Pausar el temporizador al fallar
                                 break
@@ -215,11 +227,15 @@ class WirePuzzle(Escena):
             current_time = pygame.time.get_ticks()
             elapsed_time = current_time - self.start_time
             self.time_remaining = max(0, self.total_time - elapsed_time)
+
+            if not pygame.mixer.get_busy():
+                self.sound_quiz.play()
             
             if self.time_remaining <= 0:
                 self.time_remaining = 0
                 self.completado = True
                 self.mensaje = "¡Has fallado! La alarma se ha activado"
+                self.sound_quiz.stop()
                 self.esperando_mensaje = True
                 self.mensaje_timer = pygame.time.get_ticks()
                 self.timer_paused = True  # Pausar el temporizador al acabarse el tiempo
@@ -229,6 +245,8 @@ class WirePuzzle(Escena):
             segundos_restantes = self.time_remaining / 1000  # Convertir a segundos
             
             if segundos_restantes <= 15:
+                if segundos_restantes == 15:
+                    self.sound_warning.play()
                 self.timer_alpha = 100 + 155 * (0.5 + 0.5 * math.sin(current_time * self.timer_pulse_speed))
             else:
                 self.timer_alpha = 255
@@ -239,6 +257,8 @@ class WirePuzzle(Escena):
                 self.halo_alpha = 40 + 40 * math.sin(current_time * 0.003)
             else:
                 self.red_halo_active = False
+        else:
+            self.sound_quiz.stop()
                 
         # Comprobar si el tiempo del mensaje ha terminado
         if self.esperando_mensaje:
@@ -246,3 +266,4 @@ class WirePuzzle(Escena):
             if tiempo_actual - self.mensaje_timer >= self.mensaje_duracion:
                 self.esperando_mensaje = False
                 self.director.salirEscena()
+    

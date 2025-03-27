@@ -24,6 +24,13 @@ class Huella(Escena):
         self.setup_level()
         self.primera = True
 
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_carry = pygame.mixer.Sound("Sonidos/huella.mp3")
+        self.sound_carry.set_volume(0.4)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+
+        self.check_sound = False
+
         # Cargar imagen de fondo
         self.background_image = pygame.image.load("imagenes/Huella/suelo_factory.png")
         self.bg_width, self.bg_height = self.background_image.get_size()
@@ -99,7 +106,14 @@ class Huella(Escena):
         pygame.mouse.set_pos(10, self.HEIGHT // 2)
 
     def update(self, tiempo):
+        if not pygame.mixer.get_busy() and not self.completado:
+            self.sound_carry.play()
+
         if self.completado:
+            if not self.check_sound:
+                self.sound_carry.stop()
+                self.sound_completed.play()
+                self.check_sound = True
             if self.retardo():
                 pygame.mouse.set_visible(True)
                 self.director.salirEscena()
@@ -136,6 +150,10 @@ class Huella(Escena):
         # Usamos self.player_collision_rect (50x50) para la comprobación de colisiones
         for zone in self.red_zones:
             if self.player_collision_rect.colliderect(zone):
+                if not self.check_sound:
+                    self.sound_carry.stop()
+                    self.sound_endgame.play()
+                    self.check_sound = True
                 self.message = "¡Perdiste!"
                 pygame.mouse.set_visible(False)  # Ocultar el cursor
                 pygame.event.set_grab(True)

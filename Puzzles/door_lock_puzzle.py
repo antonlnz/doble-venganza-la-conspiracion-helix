@@ -12,7 +12,15 @@ class DoorLockPuzzle(Escena):
         # Configuración general del puzzle
         self.center_x = WIDTH // 2
         self.center_y = HEIGHT // 2
-        
+
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_key = pygame.mixer.Sound("Sonidos/key.wav")
+        self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+
+        self._check_sound = False
+
         # Cargar imágenes
         self.background_image = pygame.image.load("imagenes/door_lock/lock_background.jpeg")
         # Guardar dimensiones originales antes de escalar
@@ -188,9 +196,14 @@ class DoorLockPuzzle(Escena):
         # Mostrar mensaje si corresponde
         if self.show_message:
             if self.completado and not self.game_over:
+                if not self._check_sound:
+                    self.sound_completed.play()
+                    self._check_sound = True
                 message = "¡Correcto! Has abierto la cerradura"
                 color = VERDE
             elif self.game_over:
+                if not self._check_sound:
+                    self._check_sound = True
                 message = "¡Se acabó el tiempo! Fallaste el puzzle"
                 color = ROJO
             
@@ -242,13 +255,14 @@ class DoorLockPuzzle(Escena):
             lockpick_tip_rect = pygame.Rect(self.lockpick['x'] - tip_width//2, 
                                         self.lockpick['y'] - 3, 
                                         tip_width, tip_height)
-            
+                        
             if pin_rect.colliderect(lockpick_tip_rect):
                 # Marcar este perno como seleccionado
                 pin['selected'] = True
                 
                 # Si se hace clic, mover el perno
                 if mouse_click:
+                    self.sound_key.play()
                     # Calcular cuánto mover el perno (depende de dónde se haga clic)
                     click_y = mouse_pos[1]
                     pin_top_y = pin['y'] - pin['current_position'] - self.pin_height
@@ -324,6 +338,7 @@ class DoorLockPuzzle(Escena):
             self.time_remaining -= tiempo  # Convertir a milisegundos
             
             if self.time_remaining <= 0:
+                self.sound_endgame.play()
                 self.time_remaining = 0
                 self.game_over = True
                 self.completado = True
@@ -340,6 +355,8 @@ class DoorLockPuzzle(Escena):
             
             # Activar el halo rojo en los últimos 10 segundos
             if segundos_restantes <= 10:
+                if segundos_restantes == 10:
+                    self.sound_warning.play()
                 self.red_halo_active = True
                 # Hacer que el halo parpadee
                 self.halo_alpha = 40 + 40 * math.sin(pygame.time.get_ticks() * 0.003)

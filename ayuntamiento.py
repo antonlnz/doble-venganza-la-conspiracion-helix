@@ -17,6 +17,17 @@ class Ayuntamiento(Mapa):
 
         Mapa.__init__(self, director, "Mapas/ayuntamiento48x48v2.tmx")
 
+        pygame.mixer.init()
+
+        pygame.mixer.music.load("Musica/ayuntamiento.mp3")
+
+        pygame.mixer.music.set_volume(0.1)
+
+        pygame.mixer.music.play(-1)
+
+        self.sound_door = pygame.mixer.Sound("Sonidos/door.wav")
+        self.sound_huida = pygame.mixer.Sound("Sonidos/window.wav")
+
         self.inicializarTextosMisiones()
 
         self.puzle = Tarjeta(director)
@@ -43,8 +54,7 @@ class Ayuntamiento(Mapa):
         self.grupoJugadores = pygame.sprite.Group(self.jugador1)
         self.npc = NPC_Ayuntamiento("Guardia.png", "coordGuardia.txt", [7, 7, 4], 750, 950)
         self.grupoSprites.add(self.npc)
-        self.grupoSpritesDinamicos.add(self.npc) #Modificar la logica de los grupos para poder añadir el npc solo al grupo dinamico y
-                                                    #que no se mueva con el personaje. 
+        self.grupoSpritesDinamicos.add(self.npc) 
         self.grupoSpritesDinamicos.add(self.jugador1)
 
         # self.jugador1.establecerPosicion((WIDTH//2, HEIGHT//2))
@@ -104,15 +114,26 @@ class Ayuntamiento(Mapa):
                 if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].puedeActivar(self.jugador1):
                     if self.huida:
                         self.director.cambiarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
+                        self.sound_huida.play()
+                        pygame.mixer.music.stop()
+                        pygame.mixer.music.load("Musica/almacen.mp3")
+                        pygame.mixer.music.play(-1)
                     else:
                         self.director.apilarEscena(self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena)
+
+            if evento.type == KEYDOWN and evento.key == K_q:
+                self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+
+            if evento.type == KEYDOWN and evento.key == K_f:
+                self.teclaInteraccion.mostrar()
+
+            if evento.type == KEYDOWN and evento.key == K_r:
+                self.teclaInteraccion.ocultar()
             
         teclasPulsadas = pygame.key.get_pressed()
         self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
     
     def update(self, tiempo):
-
-        
         
         if not self.huida:
             if self.posicionamientoInteracciones[self.posicionamientoInteraccionActual].escena.completado:
@@ -130,6 +151,8 @@ class Ayuntamiento(Mapa):
 
         if self.puzle2.completado and not self.puertaAlcalde.objetoCambiado:
             self.puertaAlcalde.cambiar([self.grupoDespuesPersonaje, self.grupoSprites])
+            self.sound_door.play()
+
 
             for grupo in self.npc.groups():
                 grupo.remove(self.npc)

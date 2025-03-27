@@ -67,6 +67,16 @@ class AzoteaBanco(Mapa):
         # Inicializamos la clase padre
         Mapa.__init__(self, director, "Mapas/azotea_banco48x48.tmx")
 
+        self.first = True
+
+        pygame.mixer.music.set_volume(0.1)
+
+        self.sound_escaleras = pygame.mixer.Sound("Sonidos/stairs.wav")
+        self.sound_door = pygame.mixer.Sound("Sonidos/door.wav")
+        self.sound_alarm = pygame.mixer.Sound("Sonidos/alarm.wav")
+        self.sound_alarm.set_volume(0.2)
+        self.sound_huida = pygame.mixer.Sound("Sonidos/fin.wav")
+
         self.inicializarTextosMisiones()
 
         self.mision.establecerTexto(self.textoMision)
@@ -220,11 +230,14 @@ class AzoteaBanco(Mapa):
             if evento.type == KEYDOWN and evento.key == K_e:
                 if self.posicionamientoInteraccionHuida.puedeActivar(self.jugador1) and self.huida:
                     self.director.cambiarEscena(self.posicionamientoInteraccionHuida.escena)
+                    self.sound_huida.play()
+                    pygame.mixer.music.stop()
 
                 if self.posicionamientoInteraccion.puedeActivar(self.jugador1) and not self.puzzle.completado:
                     self.director.apilarEscena(self.posicionamientoInteraccion.escena)
 
                 if self.bajarPiso.puedeActivar(self.jugador1) and not self.siguienteMapa.huida and self.puzzle.completado:
+                    self.sound_escaleras.play()
                     self.director.apilarEscena(self.bajarPiso.escena)
     
         # Movimiento del jugador
@@ -232,6 +245,7 @@ class AzoteaBanco(Mapa):
         self.jugador1.mover(teclasPulsadas, K_w, K_s, K_a, K_d)
 
     def update(self, tiempo):
+        
         # Para cada sprite en el grupo, actualizamos manualmente
         for sprite in self.grupoSpritesDinamicos:
             if isinstance(sprite, Personaje):
@@ -251,6 +265,7 @@ class AzoteaBanco(Mapa):
         if self.puzzle.completado and not self.puertaFinal.visible:
             # Primero eliminamos la puerta inicial si existe
             if self.puertaInicial:
+                self.sound_door.play()
                 self.grupoSprites.remove(self.puertaInicial)
                 self.puertaInicial = None  # Limpiamos la referencia
             
@@ -264,6 +279,8 @@ class AzoteaBanco(Mapa):
         if self.huida:
             self.mision.establecerTexto(self.textoMisionHuida)
             self.teclaInteraccion.posicion_interaccion = self.posicionamientoInteraccionHuida.posicion
+            if not pygame.mixer.get_busy():
+                self.sound_alarm.play()
 
     def dibujar(self, pantalla):
         # Rellenamos el fondo

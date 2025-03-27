@@ -34,6 +34,8 @@ class SortingGridPuzzle(Escena):
         self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
         self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
 
+        self.check_sound = False
+
         self.numbers = self.generate_puzzle()
 
         self.positions = [(col, row) for row in range(self.grid_size) for col in range(self.grid_size)]
@@ -93,11 +95,12 @@ class SortingGridPuzzle(Escena):
 
     def game_over(self, screen):
         screen.fill(NEGRO)
-        game_over_text = self.font.render('You lose', True, ROJO)
+        game_over_text = self.game_over_font.render('Perdiste', True, ROJO)
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+        if not self.check_sound:
+            self.sound_end_game.play()
+            self.check_sound = True
         pygame.display.flip()
-        self.sound_end_game.play()
-        self.sound_end_game.stop()
         self.completado = True
 
     def dibujar(self, pantalla):
@@ -174,11 +177,10 @@ class SortingGridPuzzle(Escena):
         if self.numbers == self.expected_result:
             if pygame.mixer.get_busy():
                 self.sound_timer.stop()
-            self.completion_time_remaining -= tiempo
             self.completado = True
-            self.sound_completed.play()
-            if self.completion_time_remaining <= 0:
-                self.sound_completed.stop()
+            if not self.check_sound:
+                self.sound_completed.play()
+                self.check_sound = True
         
         if not self.completado:
             self.time_remaining -= tiempo

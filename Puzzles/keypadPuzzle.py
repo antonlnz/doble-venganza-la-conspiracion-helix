@@ -12,6 +12,8 @@ class KeypadPuzzle(Escena):
         self.font = pygame.font.Font("Fuentes/SevenSegment.ttf", 36)
         self.game_over_font = pygame.font.Font("Fuentes/PricedownBl.otf", 70)
 
+        self.game_over_sound = False
+
         self.keypadX = 747 #600
         self.keypadY = 192 #270
         self.keypad_width = 426 #435
@@ -35,9 +37,12 @@ class KeypadPuzzle(Escena):
             pygame.image.load("imagenes/Keypad/keyboard_enter.png")
         ]
 
-        self.sound_end_game = pygame.mixer.Sound("Sonidos/wrong.wav")
+        self.sound_end_game = pygame.mixer.Sound("Sonidos/endgame.wav")
         self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
         self.sound_click = pygame.mixer.Sound("Sonidos/click.wav")
+
+        self.wait_time = 500
+        self.wait_time_remaining = self.wait_time
 
         self.keypad_buttons = [
             ('1', (768, 348)), ('2', (896, 348)), ('3', (1024, 348)), 
@@ -59,14 +64,16 @@ class KeypadPuzzle(Escena):
         self.input_text = ""
         self.expected_text = "7245427"
         self.fail = False
+        self.end = False
 
     def game_over(self, screen):
         screen.fill(NEGRO)
-        game_over_text = self.font.render('You lose', True, ROJO)
+        game_over_text = self.game_over_font.render('Perdiste', True, ROJO)
         screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
-        self.sound_end_game.play()
+        if not self.game_over_sound:
+            self.sound_end_game.play()
+            self.game_over_sound = True
         pygame.display.flip()
-        self.sound_end_game.stop()
         self.completado = True
 
     def click_on_button(self, pos, image, image_pos):
@@ -107,10 +114,9 @@ class KeypadPuzzle(Escena):
         for (text, position), image in zip(self.keypad_buttons, self.keys_background):
             x, y = position
             
-            #pygame.draw.rect(pantalla, NEGRO, (x, y, self.button_width, self.button_height))
             pantalla.blit(image, (x, y, self.button_width, self.button_height))
         
-        if self.fail:
+        if self.end:
             self.game_over(pantalla)
 
     def eventos(self, eventos):
@@ -135,12 +141,17 @@ class KeypadPuzzle(Escena):
                             self.sound_completed.play()
                             self.input_text = ""
                             self.completado = True
-                            #self.sound_completed.stop() #preguntar
                         else:
                             self.fail = True
                     else:
                         self.input_text += text
         self.mouse_clicks.clear()
+
+        if self.fail:
+            self.wait_time_remaining -= tiempo
+            
+            if self.wait_time_remaining <= 0:
+                self.end = True
 
         if self.completado:
             if self.retardo():

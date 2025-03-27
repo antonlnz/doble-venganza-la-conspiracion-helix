@@ -63,6 +63,13 @@ class ConcentricCirclesPuzzle(Escena):
         # Imágenes para llave
         self.key_image = self._create_key_image()
 
+        self.sound_completed = pygame.mixer.Sound("Sonidos/completed.wav")
+        self.sound_warning = pygame.mixer.Sound("Sonidos/warning.mp3")
+        self.sound_warning.set_volume(0.1)
+        self.sound_endgame = pygame.mixer.Sound("Sonidos/endgame.wav")
+
+        self.check_sound = False
+
     def _create_lock_image(self):
         # Crear una superficie para la cerradura
         size = 40
@@ -316,6 +323,9 @@ class ConcentricCirclesPuzzle(Escena):
 
     def update(self, tiempo):
         if self.completado and not self.game_over:
+            if not self.check_sound:
+                self.sound_completed.play()
+                self.check_sound = True
             # Actualizar la animación de la llave
             if self.key_animation:
                 time_since_solved = pygame.time.get_ticks() - self.solved_time
@@ -330,6 +340,9 @@ class ConcentricCirclesPuzzle(Escena):
             self.time_remaining -= tiempo
             
             if self.time_remaining <= 0:
+                if not self.check_sound:
+                    self.sound_endgame.play()
+                    self.check_sound = True
                 self.time_remaining = 0
                 self.game_over = True
                 self.show_message = True
@@ -339,6 +352,8 @@ class ConcentricCirclesPuzzle(Escena):
             segundos_restantes = max(0, int(self.time_remaining / 1000))
             
             if segundos_restantes <= 15:
+                if segundos_restantes == 15:
+                    self.sound_warning.play()
                 self.timer_alpha = 100 + 155 * (0.5 + 0.5 * math.sin(pygame.time.get_ticks() * self.timer_pulse_speed))
             else:
                 self.timer_alpha = 255
