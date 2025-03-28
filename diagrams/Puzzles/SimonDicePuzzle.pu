@@ -1,0 +1,88 @@
+@startuml SimonDicePuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class SimonDice {
+  -width: int
+  -height: int
+  -window: Surface
+  -BLACK: tuple
+  -WHITE: tuple
+  -RED: tuple
+  -GREEN: tuple
+  -BLUE: tuple
+  -YELLOW: tuple
+  -TARGET_ROUNDS: int
+  -COUNTDOWN_TIME: int
+  -sequence: list
+  -user_sequence: list
+  -round_number: int
+  -game_active: boolean
+  -start_time: float
+  -completado: boolean
+  -button_radius: int
+  -button_positions: list
+  -buttons: list
+  +__init__(director)
+  +draw_background(pantalla)
+  +draw_buttons(pantalla)
+  +flash_button(pantalla, button)
+  +show_sequence(pantalla)
+  +check_user_input(): boolean
+  +draw_text(pantalla, text, x, y, size, color, background)
+  +run()
+  +update(tiempo)
+  +eventos(eventos)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Escena <|-- SimonDice
+
+note right of SimonDice::TARGET_ROUNDS
+  Número de rondas para completar el puzzle: 5
+end note
+
+note right of SimonDice::COUNTDOWN_TIME
+  Tiempo límite para completar el puzzle: 30s
+end note
+
+note right of SimonDice::sequence
+  Secuencia de botones generada por el juego
+  que el jugador debe memorizar y repetir
+end note
+
+note right of SimonDice::buttons
+  Lista de botones de colores:
+  - Rojo (arriba izquierda)
+  - Verde (arriba derecha)
+  - Azul (abajo izquierda)
+  - Amarillo (abajo derecha)
+end note
+
+note bottom of SimonDice
+  Puzzle basado en el clásico juego "Simon Dice" donde el jugador
+  debe memorizar y repetir una secuencia de colores que se va
+  haciendo cada vez más larga. El juego muestra una secuencia de
+  colores que parpadean y el jugador debe hacer clic en los botones
+  en el mismo orden. El puzzle se completa al superar 5 rondas
+  dentro del tiempo límite de 30 segundos.
+end note
+
+@enduml

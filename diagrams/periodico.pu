@@ -1,0 +1,168 @@
+@startuml Periodico
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre para escenas
+}
+
+class Periodico {
+  // Clase abstracta conceptual (no existe en el código)
+}
+
+class Periodico_Fabrica {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+class Periodico_Ayuntamiento {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+class Periodico_Almacen {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+class Periodico_Banco {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Escena <|-- Periodico_Fabrica
+Escena <|-- Periodico_Ayuntamiento
+Escena <|-- Periodico_Almacen
+Escena <|-- Periodico_Banco
+
+Periodico <|.. Periodico_Fabrica
+Periodico <|.. Periodico_Ayuntamiento
+Periodico <|.. Periodico_Almacen
+Periodico <|.. Periodico_Banco
+
+note top of Periodico
+  Clase conceptual que representa la estructura común
+  de todas las escenas de periódico (no existe en el código)
+end note
+
+note bottom of Periodico_Fabrica
+  Muestra un periódico con información 
+  sobre la fábrica al inicio del juego
+end note
+
+note bottom of Periodico_Ayuntamiento
+  Muestra un periódico con información
+  sobre la misión en el ayuntamiento
+end note
+
+note bottom of Periodico_Almacen
+  Muestra un periódico con información
+  sobre la misión en el almacén
+end note
+
+note bottom of Periodico_Banco
+  Muestra un periódico con información
+  sobre el resultado del atraco al banco
+end note
+
+note right of Periodico
+  Las clases de periódico implementan escenas de transición narrativa
+  que muestran información contextual entre misiones. Todas comparten
+  la misma estructura y comportamiento:
+  
+  - Cargan una imagen de periódico específica
+  - Implementan efectos de fade in/out
+  - Muestran un mensaje parpadeante para continuar
+  - Transicionan a la siguiente escena al presionar una tecla
+  
+  Aunque tienen código muy similar, están implementadas como clases
+  separadas en vez de usar herencia, para facilitar
+  su mantenimiento independiente.
+end note
+
+@enduml

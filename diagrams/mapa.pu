@@ -1,0 +1,167 @@
+@startuml Mapa
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre para escenas
+}
+
+class MiSprite {
+  // Clase base para sprites
+}
+
+class Mapa {
+  -offset: Vector2
+  -half_w: int
+  -half_h: int
+  -grupoSpritesDinamicos: Group
+  -grupoSprites: Group
+  -grupoObstaculos: Group
+  -grupoDespuesPersonaje: Group
+  -mision: Mision
+  -tmxdata: TiledMap
+  +__init__(director, mapa)
+  +center_target_camera(target)
+}
+
+class Obstacle {
+  -rect: Rect
+  +__init__(rectangulo)
+}
+
+class Object {
+  -rect: Rect
+  -image: Surface
+  +__init__(rectangulo, imagen)
+}
+
+class ObjetoParaCambiar {
+  -objetoInicial: Object
+  -objetoFinal: Object
+  -objetoCambiado: boolean
+  +__init__()
+  +establecerObjeto(object, gruposParaAñadir)
+  +cambiar(gruposParaAñadir)
+}
+
+class GrupoObjetosParaCambiar {
+  -objetosIniciales: list
+  -objetosFinales: list
+  -objetoCambiado: boolean
+  +__init__()
+  +establecerObjeto(object, gruposParaAñadir)
+  +cambiar(gruposParaAñadir)
+}
+
+class TeclaInteraccion {
+  -image: Surface
+  -target: Object
+  -rect: Rect
+  -pintar: boolean
+  +__init__(target)
+  +update()
+  +dibujar(pantalla)
+  +mostrar()
+  +ocultar()
+  +cambiarTarget(target)
+}
+
+class PosicionamientoInteraccion {
+  -escena: Escena
+  -posicion: tuple
+  -textoMision: string
+  -scroll: tuple
+  +__init__(escena, posicion, textoMision)
+  +update(scroll)
+  +puedeActivar(target): boolean
+  +establecerPosicion(posicion)
+}
+
+class PosicionamientoInteraccionRobo {
+  -robo: Object
+  -posicion: tuple
+  -scroll: tuple
+  +__init__(robo, posicion)
+  +update(scroll)
+  +puedeActivar(target): boolean
+}
+
+class Mision {
+  -texto: string
+  -medium_font: Font
+  -mision_width: int
+  -mision_height: int
+  -mision_x: int
+  -mision_y: int
+  +__init__()
+  -actualizar_dimensiones()
+  +dibujar(pantalla)
+  -dibujar_texto_con_saltos(pantalla)
+  +establecerTexto(texto)
+}
+
+' Relaciones
+Escena <|-- Mapa
+MiSprite <|-- Obstacle
+MiSprite <|-- Object
+MiSprite <|-- TeclaInteraccion
+Mapa *-- "1" Mision : mision
+Mapa *-- "*" Obstacle : grupoObstaculos
+Mapa *-- "*" Object : grupoSprites
+
+note top of Mapa
+  Clase base para mapas del juego que carga 
+  archivos TMX y gestiona grupos de sprites
+end note
+
+note bottom of Obstacle
+  Define áreas de colisión en el mapa
+end note
+
+note bottom of Object
+  Objetos visibles con imagen en el mapa
+end note
+
+note bottom of ObjetoParaCambiar
+  Permite reemplazar un objeto por otro
+  (p.ej. una puerta cerrada por una abierta)
+end note
+
+note bottom of GrupoObjetosParaCambiar
+  Similar a ObjetoParaCambiar pero para
+  múltiples objetos a la vez
+end note
+
+note bottom of TeclaInteraccion
+  Muestra el indicador de tecla E para 
+  interactuar cerca de un objeto
+end note
+
+note bottom of PosicionamientoInteraccion
+  Define una ubicación donde el jugador puede
+  interactuar para activar una escena
+end note
+
+note bottom of PosicionamientoInteraccionRobo
+  Variante para interacciones de tipo robo,
+  con estado adicional
+end note
+
+note bottom of Mision
+  Muestra un texto descriptivo de la misión
+  actual en la esquina de la pantalla
+end note
+
+@enduml

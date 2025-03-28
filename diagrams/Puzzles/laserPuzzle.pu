@@ -1,0 +1,99 @@
+@startuml LaserPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class LaserPuzzle {
+  -SCREEN_WIDTH: int
+  -SCREEN_HEIGHT: int
+  -grid_size: int
+  -TILE_WIDTH: float
+  -TILE_HEIGHT: float
+  -grid_offset_x: int
+  -grid_offset_y: int
+  -WHITE: tuple
+  -BLACK: tuple
+  -RED: tuple
+  -GREEN: tuple
+  -BLUE: tuple
+  -GRAY: tuple
+  -laser_img_horizontal: Surface
+  -laser_img_vertical: Surface
+  -door_closed_img: Surface
+  -door_open_img: Surface
+  -mirror_up_img: Surface
+  -mirror_down_img: Surface
+  -mirror_left_img: Surface
+  -mirror_right_img: Surface
+  -start_img: Surface
+  -background_img: Surface
+  -grid: list
+  -laser_position: tuple
+  -door_position: tuple
+  -mirrors: list
+  -door_open: boolean
+  -door_close: boolean
+  -puzzle_solved: boolean
+  -puzzle_complete_time: int
+  -font: Font
+  -completado: boolean
+  +__init__(director)
+  +place_laser(x, y)
+  +place_door(x, y)
+  +place_mirror(x, y, direction)
+  +display_grid()
+  +draw(pantalla)
+  +rotate_mirror(x, y)
+  +solve_puzzle(): boolean
+  +draw_laser_path(pantalla)
+  +update(tiempo)
+  +eventos(eventos)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Escena <|-- LaserPuzzle
+
+note right of LaserPuzzle::grid_size
+  Tamaño de la cuadrícula: 5x5
+end note
+
+note right of LaserPuzzle::laser_position
+  Posición inicial del láser: (1, 0)
+end note
+
+note right of LaserPuzzle::door_position
+  Posición de la puerta/objetivo: (4, 4)
+end note
+
+note right of LaserPuzzle::mirrors
+  Lista de espejos con formato:
+  [(x, y, dirección), ...]
+  donde dirección puede ser:
+  'up', 'down', 'left', 'right'
+end note
+
+note bottom of LaserPuzzle
+  Puzzle donde el jugador debe orientar espejos para dirigir
+  un rayo láser desde su origen hasta la puerta objetivo.
+  Los espejos se pueden rotar haciendo clic, cambiando su
+  orientación en sentido horario. El puzzle se resuelve
+  cuando el rayo láser llega a la puerta, abriéndola.
+end note
+
+@enduml

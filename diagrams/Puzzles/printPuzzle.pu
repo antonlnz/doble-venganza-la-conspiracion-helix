@@ -1,0 +1,92 @@
+@startuml PrintPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class Huella {
+  -WIDTH: int
+  -HEIGHT: int
+  -BLANCO: tuple
+  -NEGRO: tuple
+  -ROJO: tuple
+  -AZUL: tuple
+  -goal: Rect
+  -player: Rect
+  -player_collision_rect: Rect
+  -font: Font
+  -message: string
+  -level: int
+  -completado: boolean
+  -primera: boolean
+  -background_image: Surface
+  -bg_width: int
+  -bg_height: int
+  -player_image: Surface
+  -red_zones: list
+  -moving_zones: list
+  -vertical_moving_zones: list
+  -moving_direction: list
+  -vertical_direction: list
+  +__init__(director)
+  +setup_level()
+  +update(tiempo)
+  +update_moving_zones()
+  +update_vertical_moving_zones()
+  +check_collisions()
+  +eventos(eventos)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Escena <|-- Huella
+
+note right of Huella::player_collision_rect
+  Rectángulo de colisión del jugador,
+  más pequeño que la imagen visual
+end note
+
+note right of Huella::level
+  Nivel actual del juego (1-3)
+  con dificultad progresiva
+end note
+
+note right of Huella::red_zones
+  Obstáculos estáticos que el
+  jugador debe evitar
+end note
+
+note right of Huella::moving_zones
+  Obstáculos que se mueven
+  horizontalmente
+end note
+
+note right of Huella::vertical_moving_zones
+  Obstáculos que se mueven
+  verticalmente
+end note
+
+note bottom of Huella
+  Puzzle de tipo "laberinto de huellas" donde el jugador controla
+  un personaje con el movimiento del ratón y debe llegar desde
+  el lado izquierdo hasta una línea de meta en el lado derecho,
+  evitando obstáculos estáticos y móviles. El juego tiene 3 niveles
+  con dificultad creciente. Si el jugador colisiona con cualquier
+  obstáculo, pierde y debe reintentar.
+end note
+
+@enduml

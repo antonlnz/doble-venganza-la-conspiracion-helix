@@ -1,0 +1,100 @@
+@startuml SortingGridPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class SortingGridPuzzle {
+  -background: Surface
+  -grid_size: int
+  -gridX: int
+  -gridY: int
+  -tile_size: int
+  -background_tile: Surface
+  -font: Font
+  -timer_font: Font
+  -game_over_font: Font
+  -sound_timer: Sound
+  -sound_end_game: Sound
+  -sound_completed: Sound
+  -sound_warning: Sound
+  -numbers: list
+  -positions: list
+  -expected_result: list
+  -mouse_clicks: tuple
+  -click: boolean
+  -empty: tuple
+  -time_limit: int
+  -time_remaining: int
+  -completion_time: int
+  -completion_time_remaining: int
+  -timer_alpha: int
+  -timer_pulsing: boolean
+  -timer_pulse_speed: float
+  -red_halo_active: boolean
+  -halo_alpha: int
+  -halo_max_alpha: int
+  -fail: boolean
+  +__init__(director)
+  +count_inversions(numbers): int
+  +generate_puzzle(): list
+  +move(pos)
+  +game_over(screen)
+  +dibujar(pantalla)
+  +update(tiempo)
+  +eventos(eventos)
+}
+
+' Relaciones
+Escena <|-- SortingGridPuzzle
+
+note right of SortingGridPuzzle::grid_size
+  Tamaño de la cuadrícula: 3x3
+end note
+
+note right of SortingGridPuzzle::numbers
+  Lista con los números actuales en el puzzle
+  (del 1 al 8 y un 0 que representa el espacio vacío)
+end note
+
+note right of SortingGridPuzzle::positions
+  Lista de coordenadas (col, row) para cada casilla
+end note
+
+note right of SortingGridPuzzle::expected_result
+  Configuración final esperada:
+  [1, 2, 3, 4, 5, 6, 7, 8, 0]
+end note
+
+note right of SortingGridPuzzle::empty
+  Coordenadas de la casilla vacía
+end note
+
+note right of SortingGridPuzzle::time_limit
+  Tiempo límite: 90 segundos
+end note
+
+note bottom of SortingGridPuzzle
+  Puzzle de tipo "8-puzzle" (similar al juego del 15 pero en formato 3x3)
+  donde el jugador debe ordenar los números del 1 al 8 deslizando las
+  fichas adyacentes al espacio vacío. El juego incluye un temporizador
+  de 90 segundos con efectos visuales de alerta cuando queda poco tiempo.
+  El jugador gana cuando logra la secuencia correcta [1-8, 0] y pierde
+  si se acaba el tiempo.
+end note
+
+@enduml

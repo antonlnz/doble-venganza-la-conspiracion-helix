@@ -1,0 +1,173 @@
+@startuml AzoteaBanco
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Mapa {
+  // Clase padre para mapas
+}
+
+class PosicionamientoInteraccion {
+  // Clase base original
+}
+
+class TeclaInteraccion {
+  // Clase base original
+}
+
+class ObjetoParaCambiar {
+  -objeto: Object
+  -grupos: list
+  -visible: boolean
+  +__init__()
+  +cambiar(grupos)
+}
+
+class PosicionamientoInteraccionExtendido {
+  -radio_interaccion: int
+  +__init__(escena, posicion, textoMision, radio_interaccion)
+  +puedeActivar(jugador): boolean
+}
+
+class TeclaInteraccionExtendida {
+  -posicion_interaccion: tuple
+  -visible: boolean
+  +__init__(jugador, posicion_interaccion)
+  +dibujar(pantalla)
+  +mostrar()
+  +ocultar()
+}
+
+class AzoteaBanco {
+  -siguienteMapa: PisoMedioBanco
+  -mapaHuida: Periodico_Banco
+  -posicionamientoInteraccion: PosicionamientoInteraccionExtendido
+  -bajarPiso: PosicionamientoInteraccionExtendido
+  -posicionamientoInteraccionHuida: PosicionamientoInteraccionExtendido
+  -huida: boolean
+  -camera: Rect
+  -puzzle: LaserPuzzle
+  -jugador1: Jugador
+  -teclaInteraccion: TeclaInteraccionExtendida
+  -puertaFinal: ObjetoParaCambiar
+  -puertaInicial: Object
+  -grupoSprites: Group
+  -grupoSpritesDinamicos: Group
+  -grupoObstaculos: Group
+  -grupoCaminos: Group
+  -grupoJugadores: Group
+  -textoMision: string
+  -textoMisionBajar: string
+  -textoMisionHuida: string
+  +__init__(director)
+  +inicializarTextosMisiones()
+  +center_target_camera(target)
+  +eventos(lista_eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+  +activarTeclaInteraccion(): boolean
+}
+
+class LaserPuzzle {
+  // Puzzle para desbloquear la puerta
+}
+
+class PisoMedioBanco {
+  // Siguiente mapa
+}
+
+class Periodico_Banco {
+  // Mapa de huida
+}
+
+class Jugador {
+  // Personaje jugable
+}
+
+class Object {
+  // Objeto visual con colisión
+}
+
+class Obstacle {
+  // Obstáculo para colisiones
+}
+
+' Relaciones
+Mapa <|-- AzoteaBanco
+PosicionamientoInteraccion <|-- PosicionamientoInteraccionExtendido
+TeclaInteraccion <|-- TeclaInteraccionExtendida
+AzoteaBanco *-- "1" Jugador : jugador1
+AzoteaBanco *-- "1" LaserPuzzle : puzzle
+AzoteaBanco *-- "1" PisoMedioBanco : siguienteMapa
+AzoteaBanco *-- "1" Periodico_Banco : mapaHuida
+AzoteaBanco *-- "1" TeclaInteraccionExtendida : teclaInteraccion
+AzoteaBanco *-- "3" PosicionamientoInteraccionExtendido : posicionamientos
+AzoteaBanco *-- "1" ObjetoParaCambiar : puertaFinal
+AzoteaBanco *-- "1" Object : puertaInicial
+AzoteaBanco *-- "*" Obstacle : grupoObstaculos
+ObjetoParaCambiar *-- "0..1" Object : objeto
+
+note top of ObjetoParaCambiar
+  Clase auxiliar para manejar la aparición de la puerta
+  final cuando se completa el puzzle.
+end note
+
+note bottom of PosicionamientoInteraccionExtendido
+  Versión extendida de la clase base que incluye un
+  radio de interacción para determinar si el jugador
+  está lo suficientemente cerca para activar el elemento.
+end note
+
+note bottom of TeclaInteraccionExtendida
+  Versión extendida que permite posicionar la tecla
+  en un punto específico del mapa en lugar de sobre
+  el jugador, y controlar su visibilidad.
+end note
+
+note right of AzoteaBanco::camera
+  Rectángulo que define la vista
+  de la cámara dentro del mapa
+end note
+
+note right of AzoteaBanco::puertaFinal
+  Objeto que aparecerá cuando se
+  complete el puzzle, reemplazando
+  a la puerta inicial
+end note
+
+note right of AzoteaBanco::puertaInicial
+  Referencia a la puerta inicial que se
+  eliminará cuando se complete el puzzle
+end note
+
+note right of AzoteaBanco::grupoCaminos
+  Grupo especial para las cuerdas
+  por las que el jugador puede pasar
+end note
+
+note bottom of AzoteaBanco
+  Mapa de la azotea del banco, donde el jugador debe resolver un puzzle
+  de láser para desbloquear una puerta y acceder al interior del edificio.
+  
+  El mapa incluye dos azoteas conectadas por cuerdas, con límites definidos
+  para evitar que el jugador caiga. Cuando se completa el puzzle, la puerta
+  inicial se reemplaza por la puerta final para permitir el acceso.
+  
+  El mapa tiene tres fases principales:
+  1. Resolver el puzzle de láser para desbloquear la puerta
+  2. Entrar al edificio y bajar hasta la sala de seguridad
+  3. En modo huida, escapar a la azotea del edificio adyacente
+end note
+
+@enduml

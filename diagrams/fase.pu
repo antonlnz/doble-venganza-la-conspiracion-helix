@@ -1,0 +1,114 @@
+@startuml Fase
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Fase {
+  -ayuntamiento: Ayuntamiento
+  -cardPuzle: CardPuzzle
+  -keypadPuzzle: KeypadPuzzle
+  -sorting: SortingGridPuzzle
+  -jugador1: Jugador
+  -grupoJugadores: Group
+  -grupoSpritesDinamicos: Group
+  -grupoSprites: Group
+  +__init__()
+  +dibujar(pantalla)
+  +update(tiempo)
+  +eventos(lista_eventos): boolean
+}
+
+class Ayuntamiento {
+  // Mapa del ayuntamiento
+}
+
+class CardPuzzle {
+  // Puzzle de tarjetas
+}
+
+class KeypadPuzzle {
+  // Puzzle de teclado numérico
+}
+
+class SortingGridPuzzle {
+  // Puzzle de ordenación
+}
+
+class Jugador {
+  // Clase del personaje jugable
+}
+
+' Relaciones
+Fase *-- "1" Ayuntamiento : ayuntamiento
+Fase *-- "1" CardPuzzle : cardPuzle
+Fase *-- "1" KeypadPuzzle : keypadPuzzle
+Fase *-- "1" SortingGridPuzzle : sorting
+Fase *-- "1" Jugador : jugador1
+
+note top of Fase
+  Clase que integra múltiples componentes del juego
+  y gestiona su funcionamiento conjunto
+end note
+
+note right of Fase::ayuntamiento
+  Mapa principal donde se desarrolla la acción
+end note
+
+note right of Fase::cardPuzle
+  Puzzle específico que debe resolver el jugador
+end note
+
+note right of Fase::keypadPuzzle
+  Puzzle específico que debe resolver el jugador
+end note
+
+note right of Fase::sorting
+  Puzzle específico que debe resolver el jugador
+end note
+
+note right of Fase::jugador1
+  Personaje controlado por el usuario
+end note
+
+note right of Fase::grupoJugadores
+  Grupo que contiene al jugador para facilitar
+  operaciones colectivas
+end note
+
+note right of Fase::grupoSpritesDinamicos
+  Grupo para sprites que requieren actualización
+  por frame (jugador, NPCs, etc.)
+end note
+
+note right of Fase::grupoSprites
+  Grupo para todos los sprites visibles que
+  deben dibujarse en pantalla
+end note
+
+note right of Fase::eventos
+  Procesa los eventos del usuario y devuelve true
+  si se debe salir del programa
+end note
+
+note bottom of Fase
+  La clase Fase actúa como un controlador que integra diferentes
+  componentes del juego: mapas, puzzles y personajes. Gestiona la
+  interacción entre ellos, maneja los eventos del usuario y coordina
+  la lógica de actualización y dibujado de todos los elementos.
+  
+  Esta estructura permite separar la lógica de cada componente
+  mientras proporciona un punto central de coordinación.
+end note
+
+@enduml

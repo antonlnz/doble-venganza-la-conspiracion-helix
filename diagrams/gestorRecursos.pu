@@ -1,0 +1,53 @@
+@startuml GestorRecursos
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class GestorRecursos {
+  {static} -recursos: dictionary
+  {static} +CargarImagen(nombre, colorkey): Surface
+  {static} +CargarArchivoCoordenadas(nombre): string
+}
+
+note top of GestorRecursos
+  Clase utilitaria que implementa el patrón Singleton para
+  la carga y gestión eficiente de recursos gráficos y datos
+end note
+
+note right of GestorRecursos::recursos
+  Diccionario que almacena los recursos cargados
+  para evitar cargarlos múltiples veces:
+  {nombre_recurso: recurso_cargado}
+end note
+
+note right of GestorRecursos::CargarImagen
+  Carga una imagen desde el directorio "imagenes/"
+  Si ya ha sido cargada antes, devuelve la referencia guardada.
+  Puede establecer un color transparente (colorkey).
+end note
+
+note right of GestorRecursos::CargarArchivoCoordenadas
+  Carga un archivo de texto con coordenadas desde "imagenes/"
+  Si ya ha sido cargado antes, devuelve los datos guardados.
+  Devuelve el contenido del archivo como una cadena de texto.
+end note
+
+note bottom of GestorRecursos
+  Este gestor implementa un sistema de caché que evita cargar
+  recursos múltiples veces, optimizando el uso de memoria y
+  mejorando el rendimiento. Funciona como una clase utilitaria
+  con métodos de clase, sin necesidad de instanciarla.
+end note
+
+@enduml

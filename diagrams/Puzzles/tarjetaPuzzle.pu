@@ -1,0 +1,98 @@
+@startuml TarjetaPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class Tarjeta {
+  -WIDTH: int
+  -HEIGHT: int
+  -WHITE: tuple
+  -GREEN: tuple
+  -RED: tuple
+  -BLACK: tuple
+  -bar_width: int
+  -bar_height: int
+  -bar_x: int
+  -bar_y: int
+  -bar_speed: int
+  -red_zone_margin: int
+  -background_image: Surface
+  -completion_image: Surface
+  -heart_full: Surface
+  -heart_empty: Surface
+  -lives: int
+  -font: Font
+  -level: int
+  -green_zones: list
+  -current_green_zone: int
+  -running: boolean
+  -bar_moving: boolean
+  -bar_direction: int
+  -completed_zones: set
+  +__init__(director)
+  +draw_lives(screen)
+  +game_over(screen)
+  +show_completion_message(screen)
+  +draw_green_zones(screen)
+  +check_success(): boolean/string
+  +update(tiempo)
+  +eventos(eventos)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Escena <|-- Tarjeta
+
+note right of Tarjeta::bar_width
+  Ancho de la barra móvil: 10px
+end note
+
+note right of Tarjeta::bar_height
+  Alto de la barra móvil: 40px
+end note
+
+note right of Tarjeta::lives
+  Número de vidas: 3
+end note
+
+note right of Tarjeta::level
+  Nivel actual (1-4), cada uno con mayor
+  dificultad que el anterior
+end note
+
+note right of Tarjeta::green_zones
+  Lista de diccionarios con datos de las zonas verdes:
+  {'x', 'y', 'width', 'height'} para cada zona
+end note
+
+note right of Tarjeta::completed_zones
+  Conjunto de índices de las zonas
+  que ya han sido completadas
+end note
+
+note bottom of Tarjeta
+  Puzzle de tipo "tiempo de reacción" en el que una barra vertical
+  se mueve de lado a lado. El jugador debe presionar la barra espaciadora 
+  para detener la barra cuando esté sobre una zona verde. El juego tiene
+  4 niveles con dificultad progresiva: en el nivel 1 hay una zona verde
+  grande, en el nivel 2 hay dos zonas más pequeñas, en el nivel 3 hay
+  tres zonas aún más pequeñas, y en el nivel 4 hay cinco zonas muy pequeñas.
+  El jugador tiene 3 vidas y gana al completar todas las zonas del nivel 4.
+end note
+
+@enduml

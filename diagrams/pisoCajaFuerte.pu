@@ -1,0 +1,116 @@
+@startuml PisoCajaFuerte
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Mapa {
+  // Clase base para mapas del juego
+}
+
+class PisoCajaFuerte {
+  -anteriorMapa: Mapa
+  -subirPiso: PosicionamientoInteraccion
+  -huida: boolean
+  -reliquia: ObjetoParaCambiar
+  -interaccionRoboReliquia: PosicionamientoInteraccionRobo
+  -grupoCajasFuerte1: GrupoObjetosParaCambiar
+  -grupoCajasFuerte2: GrupoObjetosParaCambiar
+  -grupoCajasFuerte3: GrupoObjetosParaCambiar
+  -grupoCajasFuerte4: GrupoObjetosParaCambiar
+  -interaccionRobo1: PosicionamientoInteraccionRobo
+  -interaccionRobo2: PosicionamientoInteraccionRobo
+  -interaccionRobo3: PosicionamientoInteraccionRobo
+  -interaccionRobo4: PosicionamientoInteraccionRobo
+  -jugador1: Jugador
+  -teclaInteraccion: TeclaInteraccion
+  -textoRoboCajasFuerte: string
+  -textoRoboReliquia: string
+  -textoMisionHuida: string
+  +__init__(director, anteriorMapa)
+  -inicializarTextosMisiones()
+  +dibujar(pantalla)
+  +eventos(lista_eventos)
+  +update(tiempo)
+  -activarTeclaInteraccion()
+  -cajasFuerteRobadas(): boolean
+  -puedeRobar(target): boolean
+}
+
+class ObjetoParaCambiar {
+  // Clase para objetos que cambian de estado
+}
+
+class GrupoObjetosParaCambiar {
+  // Clase para grupos de objetos que cambian de estado
+}
+
+class PosicionamientoInteraccion {
+  // Clase para puntos de interacción
+}
+
+class PosicionamientoInteraccionRobo {
+  // Clase específica para interacciones de robo
+}
+
+class Jugador {
+  // Personaje controlado por el usuario
+}
+
+class TeclaInteraccion {
+  // Indicador visual de tecla de interacción
+}
+
+' Relaciones
+Mapa <|-- PisoCajaFuerte
+PisoCajaFuerte *-- "1" ObjetoParaCambiar : reliquia
+PisoCajaFuerte *-- "4" GrupoObjetosParaCambiar : grupoCajasFuerte
+PisoCajaFuerte *-- "1" PosicionamientoInteraccion : subirPiso
+PisoCajaFuerte *-- "5" PosicionamientoInteraccionRobo : interacciones de robo
+PisoCajaFuerte *-- "1" Jugador : jugador1
+PisoCajaFuerte *-- "1" TeclaInteraccion : teclaInteraccion
+PisoCajaFuerte *-- "1" Mapa : anteriorMapa
+
+note top of PisoCajaFuerte
+  Mapa que representa el piso de la caja fuerte del banco,
+  donde el jugador debe robar las cajas fuertes y una reliquia
+end note
+
+note right of PisoCajaFuerte::huida
+  Cuando es true, cambia la misión actual
+  para indicar que hay que escapar
+end note
+
+note right of PisoCajaFuerte::cajasFuerteRobadas
+  Verifica si todas las cajas fuertes 
+  han sido robadas para habilitar el 
+  robo de la reliquia
+end note
+
+note right of PisoCajaFuerte::puedeRobar
+  Comprueba si el jugador está en posición
+  para robar alguna de las cajas fuertes
+end NoteBorderThickness
+
+note bottom of PisoCajaFuerte
+  Este mapa implementa un nivel de robo con múltiples objetivos secuenciales:
+  1. Robar las cuatro cajas fuertes ubicadas en distintos puntos del mapa
+  2. Una vez robadas todas las cajas fuertes, robar la reliquia central
+  3. Tras robar la reliquia, escapar del lugar
+  
+  El jugador puede moverse entre este piso y el anterior utilizando
+  el punto de interacción subirPiso. La dificultad progresiva se
+  implementa mediante la verificación del estado de los objetos robados.
+end note
+
+@enduml

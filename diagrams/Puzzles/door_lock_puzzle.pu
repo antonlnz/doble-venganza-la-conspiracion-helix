@@ -1,0 +1,112 @@
+@startuml DoorLockPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class DoorLockPuzzle {
+  -center_x: int
+  -center_y: int
+  -background_image: Surface
+  -original_bg_width: int
+  -original_bg_height: int
+  -scale_x: float
+  -scale_y: float
+  -perno_original: Surface
+  -original_pin_width: int
+  -original_pin_height: int
+  -pin_width: int
+  -pin_height: int
+  -perno_image: Surface
+  -original_pin_coords: list
+  -num_pins: int
+  -mark_height: int
+  -pins: list
+  -lockpick: dict
+  -time_remaining: int
+  -completado: boolean
+  -game_over: boolean
+  -show_message: boolean
+  -message_timer: int
+  -mensaje: string
+  -solved_time: int
+  -timer_alpha: int
+  -timer_pulse_speed: float
+  -red_halo_active: boolean
+  -halo_alpha: int
+  -halo_max_alpha: int
+  -font: Font
+  -small_font: Font
+  -animation_active: boolean
+  -animation_progress: float
+  +__init__(director)
+  +dibujar(pantalla)
+  +eventos(lista_eventos)
+  -_check_pin_position(pin_index)
+  -_check_puzzle_completion()
+  +update(tiempo)
+}
+
+' Estructura de perno
+class "Pin (dict)" as Pin <<stereotype>> {
+  x: int
+  y: int
+  height: int
+  current_position: int
+  correct_position: int
+  color: tuple
+  mark_color: tuple
+  selected: boolean
+}
+
+' Estructura de ganzúa
+class "Lockpick (dict)" as Lockpick <<stereotype>> {
+  width: int
+  height: int
+  x: int
+  y: int
+  color: tuple
+  tip_color: tuple
+}
+
+' Relaciones
+Escena <|-- DoorLockPuzzle
+DoorLockPuzzle o-- "*" Pin : pins
+DoorLockPuzzle o-- "1" Lockpick : lockpick
+
+note right of DoorLockPuzzle::scale_x
+  Factores de escala para adaptar
+  elementos visuales a diferentes 
+  resoluciones de pantalla
+end note
+
+note right of DoorLockPuzzle::pins
+  Lista de pernos de la cerradura,
+  cada uno con su posición y altura correcta
+  que el jugador debe encontrar
+end note
+
+note bottom of DoorLockPuzzle
+  Puzzle de ganzúa donde el jugador debe
+  usar el ratón para posicionar cada perno
+  a la altura marcada.
+  Incluye efectos de gravedad que hacen que
+  los pernos caigan lentamente cuando no
+  están sostenidos.
+end note
+
+@enduml

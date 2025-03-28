@@ -1,0 +1,83 @@
+@startuml Escena
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Director {
+  // Referencia al director para navegación
+}
+
+class Escena {
+  -director: Director
+  -completado: boolean
+  -retardoTrasFinalizar: int
+  +__init__(director)
+  +{abstract} update(*args)
+  +{abstract} eventos(*args)
+  +{abstract} dibujar(pantalla)
+  +retardo(): boolean
+}
+
+' Relaciones
+Escena --> Director : utiliza
+Escena <|-- "Subclases específicas"
+
+note top of Escena
+  Clase abstracta base para todas las escenas del juego
+end note
+
+note right of Escena::director
+  Referencia al Director para poder cambiar de escena,
+  apilar una nueva o salir de la actual
+end note
+
+note right of Escena::completado
+  Indica si la escena ha sido completada,
+  útil para puzzles y niveles
+end note
+
+note right of Escena::retardoTrasFinalizar
+  Contador para añadir un retraso tras completar
+  la escena antes de cambiar a la siguiente
+end note
+
+note right of Escena::update
+  Método abstracto que debe ser implementado
+  para actualizar la lógica de la escena
+end note
+
+note right of Escena::eventos
+  Método abstracto que debe ser implementado
+  para procesar los eventos de la escena
+end note
+
+note right of Escena::dibujar
+  Método abstracto que debe ser implementado
+  para dibujar los elementos de la escena
+end note
+
+note right of Escena::retardo
+  Decrementa el contador de retardo y devuelve
+  true cuando ha terminado la espera
+end note
+
+note bottom of Escena
+  Esta clase define la interfaz que deben implementar todas
+  las escenas del juego. Proporciona funcionalidad básica como
+  la gestión del director y un sistema de retardo para transiciones
+  suaves entre escenas completadas. Cada subclase debe implementar
+  su lógica específica en los métodos update, eventos y dibujar.
+end note
+
+@enduml

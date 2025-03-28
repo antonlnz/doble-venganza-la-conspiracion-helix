@@ -1,0 +1,82 @@
+@startuml Director
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Director {
+  -screen: Surface
+  -pila: list
+  -salir_escena: boolean
+  -reloj: Clock
+  +__init__()
+  +bucle(escena)
+  +ejecutar()
+  +salirEscena()
+  +salirPrograma()
+  +cambiarEscena(escena)
+  +apilarEscena(escena)
+}
+
+class Escena {
+  +escena: Escena
+  +eventos(lista_eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Director o-- "0..*" Escena : pila
+
+note top of Director
+  Clase principal que gestiona la ejecución
+  del juego y el flujo entre escenas.
+end note
+
+note right of Director::pila
+  Lista de escenas pendientes de ejecutar.
+  La última en la lista es la escena actual.
+end note
+
+note right of Director::bucle
+  Ejecuta el bucle principal de una escena:
+  procesar eventos, actualizar y dibujar.
+end note
+
+note right of Director::ejecutar
+  Inicia la ejecución del juego procesando
+  las escenas en la pila hasta que esta se vacíe.
+end note
+
+note right of Director::salirEscena
+  Sale de la escena actual eliminándola de la pila.
+end note
+
+note right of Director::cambiarEscena
+  Reemplaza la escena actual por una nueva.
+end note
+
+note right of Director::apilarEscena
+  Añade una nueva escena encima de la actual,
+  pausando la escena actual.
+end note
+
+note bottom of Director
+  El Director implementa un patrón de gestión de escenas basado en una pila.
+  Esto permite tener escenas superpuestas (como menús sobre el juego) y
+  volver a escenas anteriores al salir de la actual. La navegación entre
+  escenas se controla mediante los métodos cambiarEscena, apilarEscena y
+  salirEscena.
+end note
+
+@enduml

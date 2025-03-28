@@ -1,0 +1,138 @@
+@startuml Personajes
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class pygame.sprite.Sprite {
+  // Clase base de pygame para sprites
+}
+
+class MiSprite {
+  -posicion: tuple
+  -velocidad: tuple
+  -scroll: tuple
+  +__init__()
+  +establecerPosicion(posicion)
+  +establecerPosicionPantalla(scrollDecorado)
+  +incrementarPosicion(incremento)
+  +update(tiempo)
+}
+
+class Personaje {
+  -hoja: Surface
+  -movimiento: int
+  -mirando: int
+  -numPostura: int
+  -numImagenPostura: int
+  -coordenadasHoja: list
+  -retardoMovimiento: int
+  -numPostura: int
+  -noqueado: boolean
+  -rect: Rect
+  -velocidadX: float
+  -velocidadY: float
+  -velocidadDiagonal: float
+  -retardoAnimacion: int
+  +__init__(archivoImagen, archivoCoordenadas, numImagenes, velocidad, retardoAnimacion)
+  +mover(movimiento)
+  -actualizarPostura()
+  +update(grupoObstaculos, tiempo)
+}
+
+class Jugador {
+  +__init__(archivoImagen, archivoCoordenadas, numImagenes)
+  +mover(teclasPulsadas, arriba, abajo, izquierda, derecha)
+  +moverEnYHasta(y, variacion): boolean
+  +noquear()
+}
+
+class GuardiaBanco {
+  +__init__()
+  +noquear()
+}
+
+class NPC_Ayuntamiento {
+  -x_inicio: int
+  -x_fin: int
+  -direccion: int
+  -wait_time: int
+  -wait: boolean
+  +__init__(archivoImagen, archivoCoordenadas, numImagenes, x_inicio, x_fin)
+  +update(grupoObstaculo, tiempo)
+}
+
+' Relaciones
+pygame.sprite.Sprite <|-- MiSprite
+MiSprite <|-- Personaje
+Personaje <|-- Jugador
+Personaje <|-- GuardiaBanco
+Personaje <|-- NPC_Ayuntamiento
+
+note left of MiSprite
+  Clase básica para todos los sprites del juego,
+  añade posicionamiento y movimiento
+end note
+
+note right of Personaje
+  Implementa la lógica común de los personajes:
+  - Animaciones basadas en hojas de sprites
+  - Manejo de postura y dirección
+  - Colisiones con obstáculos
+  - Diferentes velocidades según dirección
+end note
+
+note right of Personaje::movimiento
+  Constantes de movimiento:
+  QUIETO = 0
+  IZQUIERDA = 1
+  DERECHA = 2
+  ARRIBA = 3
+  ABAJO = 4
+  ARRIBA_IZQUIERDA = 5
+  ARRIBA_DERECHA = 6
+  ABAJO_IZQUIERDA = 7
+  ABAJO_DERECHA = 8
+  NOQUEADO = 9
+end note
+
+note right of Personaje::numPostura
+  Posturas disponibles:
+  SPRITE_QUIETO = 0
+  SPRITE_ANDANDO = 1
+  SPRITE_NOQUEADO = 2
+end note
+
+note right of Jugador
+  Personaje controlado por el jugador
+  mediante el teclado
+end note
+
+note right of GuardiaBanco
+  NPC que representa a un guardia del banco,
+  puede ser noqueado
+end note
+
+note right of NPC_Ayuntamiento
+  NPC que patrulla el ayuntamiento entre dos
+  puntos con pausas entre movimientos
+end note
+
+note bottom of Personaje
+  Los personajes utilizan hojas de sprites y archivos de coordenadas
+  para animar sus diferentes posturas y movimientos. Cada personaje
+  tiene velocidades específicas y comportamientos particulares que
+  se implementan en sus subclases.
+end note
+
+@enduml

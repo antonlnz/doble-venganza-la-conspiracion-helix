@@ -1,0 +1,157 @@
+@startuml PisoMedioBanco
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Mapa {
+  // Clase base para mapas del juego
+}
+
+class PisoMedioBanco {
+  -anteriorMapa: Mapa
+  -siguienteMapa: PisoCajaFuerte
+  -puzle: ConcentricCirclesPuzzle
+  -puzle2: DoorLockPuzzle
+  -puzle3: SimonDice
+  -puzle4: Guardia
+  -posicionamientoInteraccion: PosicionamientoInteraccion
+  -posicionamientoInteraccion2: PosicionamientoInteraccion
+  -posicionamientoInteraccion3: PosicionamientoInteraccion
+  -posicionamientoInteraccion4: PosicionamientoInteraccion
+  -posicionamientoInteraccionHuida: PosicionamientoInteraccion
+  -posicionamientoInteracciones: list
+  -posicionamientoInteraccionActual: int
+  -bajarPiso: PosicionamientoInteraccion
+  -huida: boolean
+  -llego: boolean
+  -puertaAcceso: ObjetoParaCambiar
+  -puertaSalaSeguridad: ObjetoParaCambiar
+  -jugador1: Jugador
+  -jugador2: Jugador
+  -jugadorActual: Jugador
+  -teclaInteraccion: TeclaInteraccion
+  -guardia1: GuardiaBanco
+  -guardia2: GuardiaBanco
+  -guardia3: GuardiaBanco
+  -textoMision: string
+  -textoMision2: string
+  -textoMision3: string
+  -textoMision4: string
+  -textoMisionSiguienteMapa: string
+  -textoMisionHuida: string
+  +__init__(director, anteriorMapa)
+  -inicializarTextosMisiones()
+  +cambiarJugador(jugador)
+  +dibujar(pantalla)
+  +eventos(lista_eventos)
+  +update(tiempo)
+  -mostrarGuardias()
+  -noquearGuardias()
+  -activarTeclaInteraccion(): boolean
+}
+
+class PisoCajaFuerte {
+  // Nivel inferior del banco
+}
+
+class ConcentricCirclesPuzzle {
+  // Puzzle de círculos concéntricos
+}
+
+class DoorLockPuzzle {
+  // Puzzle de cerradura de puerta
+}
+
+class SimonDice {
+  // Puzzle de Simon dice
+}
+
+class Guardia {
+  // Puzzle de enfrentamiento con guardias
+}
+
+class ObjetoParaCambiar {
+  // Clase para objetos que cambian de estado
+}
+
+class PosicionamientoInteraccion {
+  // Clase para puntos de interacción
+}
+
+class Jugador {
+  // Personaje controlado por el usuario
+}
+
+class GuardiaBanco {
+  // Enemigos guardias del banco
+}
+
+class TeclaInteraccion {
+  // Indicador visual de tecla de interacción
+}
+
+' Relaciones
+Mapa <|-- PisoMedioBanco
+PisoMedioBanco *-- "1" PisoCajaFuerte : siguienteMapa
+PisoMedioBanco *-- "1" ConcentricCirclesPuzzle : puzle
+PisoMedioBanco *-- "1" DoorLockPuzzle : puzle2
+PisoMedioBanco *-- "1" SimonDice : puzle3
+PisoMedioBanco *-- "1" Guardia : puzle4
+PisoMedioBanco *-- "5" PosicionamientoInteraccion : posiciones de interacción
+PisoMedioBanco *-- "2" ObjetoParaCambiar : puertas
+PisoMedioBanco *-- "2" Jugador : personajes jugables
+PisoMedioBanco *-- "3" GuardiaBanco : enemigos
+PisoMedioBanco *-- "1" TeclaInteraccion : teclaInteraccion
+PisoMedioBanco *-- "1" Mapa : anteriorMapa
+
+note top of PisoMedioBanco
+  Mapa que representa el piso medio del banco,
+  donde los jugadores deben resolver puzzles
+  y enfrentarse a guardias para acceder al piso inferior
+end note
+
+note right of PisoMedioBanco::jugador1
+  Personaje Vince, controlado por el jugador
+  inicialmente y especializado en hacking
+end note
+
+note right of PisoMedioBanco::jugador2
+  Personaje Eddie, inicialmente controlado por la IA
+  y luego por el jugador, especializado en combate
+end note
+
+note right of PisoMedioBanco::cambiarJugador
+  Permite al jugador alternar el control
+  entre los dos personajes disponibles
+end note
+
+note right of PisoMedioBanco::posicionamientoInteraccionActual
+  Índice que determina cuál es el objetivo
+  actual dentro de la secuencia del nivel
+end note
+
+note bottom of PisoMedioBanco
+  Este nivel implementa una secuencia progresiva de puzzles y desafíos:
+  1. Abrir la puerta de acceso principal (puzle de círculos concéntricos)
+  2. Abrir la puerta de la sala de seguridad (puzle de cerradura)
+  3. Desarmar los sistemas de seguridad (puzle de Simon dice)
+  4. Defender a Vince de los guardias mientras termina (cambio de personaje)
+  5. Bajar al piso de la caja fuerte para continuar
+  
+  El nivel incluye dos personajes jugables con diferentes habilidades y
+  momentos en los que el control cambia de uno a otro. También implementa
+  obstáculos (puertas) que se abren al completar puzzles específicos.
+end note
+
+@enduml

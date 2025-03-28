@@ -1,0 +1,90 @@
+@startuml ConcentricCirclesPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class ConcentricCirclesPuzzle {
+  -center_x: int
+  -center_y: int
+  -num_circles: int
+  -circle_spacing: int
+  -notch_width: int
+  -circles: list
+  -target_angle: float
+  -last_mouse_angle: float
+  -selected_circle: int
+  -time_remaining: int
+  -completado: boolean
+  -game_over: boolean
+  -show_message: boolean
+  -message_timer: int
+  -mensaje: string
+  -solved_time: int
+  -key_animation: boolean
+  -key_progress: float
+  -timer_alpha: int
+  -timer_pulse_speed: float
+  -red_halo_active: boolean
+  -halo_alpha: int
+  -font: Font
+  -small_font: Font
+  -lock_image: Surface
+  -key_image: Surface
+  +__init__(director)
+  -_create_lock_image(): Surface
+  -_create_key_image(): Surface
+  +dibujar(pantalla)
+  -_draw_circle_with_notch(surface, x, y, radius, notch_angle, notch_width, color)
+  -_draw_key_animation(pantalla)
+  +eventos(lista_eventos)
+  -_check_puzzle_completion()
+  +update(tiempo)
+}
+
+' Estructura de círculo
+class "Circle (dict)" as Circle <<stereotype>> {
+  radius: int
+  angle: float
+  color: tuple
+}
+
+' Relaciones
+Escena <|-- ConcentricCirclesPuzzle
+ConcentricCirclesPuzzle o-- "*" Circle : circles
+
+note right of ConcentricCirclesPuzzle::circles
+  Lista de círculos concéntricos,
+  cada uno con su propio radio,
+  ángulo de muesca y color
+end note
+
+note right of ConcentricCirclesPuzzle::target_angle
+  Ángulo objetivo donde deben alinearse
+  todas las muescas de los círculos
+  (establecido en π/2, es decir, hacia abajo)
+end note
+
+note bottom of ConcentricCirclesPuzzle
+  El puzzle consiste en alinear las muescas de todos
+  los anillos concéntricos en la posición inferior.
+  El jugador debe girar cada anillo haciendo clic y
+  arrastrando. Al completarse, se muestra una animación
+  de una llave entrando en la cerradura.
+end note
+
+@enduml

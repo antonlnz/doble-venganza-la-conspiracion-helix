@@ -1,0 +1,109 @@
+@startuml CablePuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class CablePuzzle {
+  -base_path: string
+  -panel_width: int
+  -panel_height: int 
+  -panel_x: int
+  -panel_y: int
+  -panel: Surface
+  -patterns: list
+  -cable_colors: list
+  -start_connectors: list
+  -start_patterns: list
+  -end_connectors: list
+  -end_patterns: list
+  -distractor_cables: list
+  -connection_radius: int
+  -cables: list
+  -selected_cable: int
+  -dragging: boolean
+  -puzzle_solved: boolean
+  -puzzle_failed: boolean
+  -show_message: boolean
+  -message_timer: int
+  -attempts_left: int
+  -game_over: boolean
+  -time_limit: int
+  -time_remaining: int
+  -timer_paused: boolean
+  -timer_alpha: int
+  -timer_pulsing: boolean
+  -timer_pulse_speed: float
+  -red_halo_active: boolean
+  -halo_alpha: int
+  -halo_max_alpha: int
+  -font: Font
+  -small_font: Font
+  -medium_font: Font
+  +__init__(director)
+  +draw_pattern(pantalla, pattern, rect, color)
+  +draw_striped_cable(pantalla, start_pos, end_pos, color_pattern, thickness, stripe_width)
+  +dibujar(pantalla)
+  +eventos(lista_eventos)
+  -_check_connections()
+  +update(tiempo)
+}
+
+' Estructura de cable
+class "Cable (dict)" as Cable <<stereotype>> {
+  start: tuple
+  end: tuple
+  color_pattern: list
+  connected: boolean
+  start_pattern: string
+  connection: int
+}
+
+' Estructura de distractor
+class "DistractorCable (dict)" as DistractorCable <<stereotype>> {
+  start: tuple
+  end: tuple
+  color_pattern: list
+  connection_point: tuple
+}
+
+' Relaciones
+Escena <|-- CablePuzzle
+CablePuzzle o-- "*" Cable : cables
+CablePuzzle o-- "*" DistractorCable : distractor_cables
+
+note right of CablePuzzle::patterns
+  Patrones visuales para los conectores:
+  "circuito", "engranaje", "átomo", "cruz", 
+  "triángulo", "hexágono", "espiral", "diamante"
+end note
+
+note right of CablePuzzle::cable_colors
+  Patrones de colores para los cables señuelo:
+  - Rojo-Azul-Amarillo
+  - Verde-Magenta-Cian
+  - Naranja-Azul-Blanco
+  - Rojo-Blanco-Azul
+end note
+
+note bottom of CablePuzzle
+  El puzzle consiste en conectar correctamente
+  los cables a los conectores del mismo patrón,
+  teniendo en cuenta los patrones visuales.
+end note
+
+@enduml

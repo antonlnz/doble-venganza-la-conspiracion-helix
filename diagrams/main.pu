@@ -1,0 +1,58 @@
+@startuml Main
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class "main.py" as Main <<entry point>> {
+  + main()
+}
+
+class Director {
+  // Clase que gestiona las escenas
+}
+
+class Periodico_Fabrica {
+  // Primera escena del juego
+}
+
+class Escena {
+  // Clase base para todas las escenas
+}
+
+Main ..> Director : crea
+Main ..> Periodico_Fabrica : crea
+Director o-- "0..*" Escena : pila
+Escena <|-- Periodico_Fabrica
+
+note top of Main
+  Punto de entrada principal de la aplicación.
+  Inicializa el juego y configura la primera escena.
+end note
+
+note right of Main
+  Secuencia de ejecución:
+  1. Inicializa pygame
+  2. Crea el Director
+  3. Crea la primera escena (Periodico_Fabrica)
+  4. Apila la escena en el Director
+  5. Ejecuta el bucle principal del juego
+  6. Al terminar, finaliza pygame
+end note
+
+note bottom of Periodico_Fabrica
+  Primera escena que se muestra al iniciar el juego.
+  Representa un periódico con información sobre la fábrica.
+end note
+
+@enduml

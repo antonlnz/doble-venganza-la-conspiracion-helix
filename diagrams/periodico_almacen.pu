@@ -1,0 +1,90 @@
+@startuml Periodico_Almacen
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre para escenas
+}
+
+class Periodico_Almacen {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  -siguienteMapa: AzoteaBanco
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+class AzoteaBanco {
+  // Siguiente escena
+}
+
+' Relaciones
+Escena <|-- Periodico_Almacen
+Periodico_Almacen *-- "1" AzoteaBanco : siguienteMapa
+
+note top of Periodico_Almacen
+  Escena que muestra un periódico con información 
+  sobre el almacén antes de pasar a la siguiente fase del juego
+end note
+
+note right of Periodico_Almacen::titulo
+  Título del periódico: "Noticias de la Fábrica"
+end note
+
+note right of Periodico_Almacen::alpha
+  Valor para los efectos de fade in/out (0-255)
+end note
+
+note right of Periodico_Almacen::fadeout
+  Controla si está en proceso de fade out
+  para cambiar a la siguiente escena
+end note
+
+note right of Periodico_Almacen::mostrar_mensaje
+  Indica si debe mostrarse el mensaje de
+  "Toca cualquier tecla para continuar"
+end note
+
+note right of Periodico_Almacen::texto_visible
+  Controla el parpadeo del texto de continuar
+end note
+
+note bottom of Periodico_Almacen
+  Esta escena implementa una transición narrativa que muestra
+  un periódico con información contextual sobre el almacén.
+  
+  Cuenta con efectos de fade in/out y un mensaje parpadeante
+  que indica al jugador que puede continuar. Al presionar
+  cualquier tecla, se realiza una transición a la escena
+  de AzoteaBanco para continuar con el juego.
+end note
+
+@enduml

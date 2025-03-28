@@ -1,0 +1,114 @@
+@startuml Ayuntamiento
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Mapa {
+  // Clase padre
+}
+
+class Ayuntamiento {
+  -puzle: Tarjeta
+  -puzle2: KeypadPuzzle
+  -puzle3: Hack
+  -siguienteMapa: Periodico_Ayuntamiento
+  -posicionamientoInteraccion: PosicionamientoInteraccion
+  -posicionamientoInteraccion2: PosicionamientoInteraccion
+  -posicionamientoInteraccion3: PosicionamientoInteraccion
+  -posicionamientoInteraccionHuida: PosicionamientoInteraccion
+  -posicionamientoInteracciones: list
+  -posicionamientoInteraccionActual: int
+  -huida: boolean
+  -puertaAlcalde: ObjetoParaCambiar
+  -jugador1: Jugador
+  -grupoJugadores: Group
+  -npc: NPC_Ayuntamiento
+  -teclaInteraccion: TeclaInteraccion
+  +__init__(director)
+  +inicializarTextosMisiones()
+  +dibujar(pantalla)
+  +eventos(lista_eventos)
+  +update(tiempo)
+}
+
+class PosicionamientoInteraccion {
+  // Clase para posicionar interacciones
+}
+
+class ObjetoParaCambiar {
+  // Clase para cambiar objetos
+}
+
+class Jugador {
+  // Clase jugador
+}
+
+class NPC_Ayuntamiento {
+  // Clase NPC del ayuntamiento
+}
+
+class TeclaInteraccion {
+  // Clase para mostrar tecla de interacción
+}
+
+class Tarjeta {
+  // Clase puzzle
+}
+
+class KeypadPuzzle {
+  // Clase puzzle
+}
+
+class Hack {
+  // Clase puzzle
+}
+
+class Periodico_Ayuntamiento {
+  // Clase siguiente mapa
+}
+
+' Relaciones
+Mapa <|-- Ayuntamiento
+Ayuntamiento *-- "1" Tarjeta : puzle
+Ayuntamiento *-- "1" KeypadPuzzle : puzle2
+Ayuntamiento *-- "1" Hack : puzle3
+Ayuntamiento *-- "4" PosicionamientoInteraccion : posicionamientoInteracciones
+Ayuntamiento *-- "1" ObjetoParaCambiar : puertaAlcalde
+Ayuntamiento *-- "1" Jugador : jugador1
+Ayuntamiento *-- "1" NPC_Ayuntamiento : npc
+Ayuntamiento *-- "1" TeclaInteraccion : teclaInteraccion
+Ayuntamiento *-- "1" Periodico_Ayuntamiento : siguienteMapa
+
+note top of Ayuntamiento
+  Mapa del ayuntamiento, donde el jugador debe resolver varios puzzles
+  para obtener información importante.
+end note
+
+note right of Ayuntamiento::posicionamientoInteraccionActual
+  Índice de la interacción actual que debe completar el jugador
+end note
+
+note right of Ayuntamiento::huida
+  Indica si el jugador ha alcanzado la fase final de huida
+end note
+
+note bottom of Ayuntamiento
+  El mapa implementa una secuencia de puzzles que el jugador debe resolver en orden:
+  1. Puzzle de Tarjeta para robar la tarjeta de acceso al guardia
+  2. Puzzle de Keypad para acceder a la habitación del alcalde usando un código
+  3. Puzzle de Hack para descifrar los planos del alcalde
+  4. Huir por la ventana de la sala contigua
+end note
+
+@enduml

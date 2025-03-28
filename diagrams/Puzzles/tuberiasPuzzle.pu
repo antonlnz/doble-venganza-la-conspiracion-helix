@@ -1,0 +1,96 @@
+@startuml TuberiasPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class Pipe {
+  -SCREEN_WIDTH: int
+  -SCREEN_HEIGHT: int
+  -TILE_SIZE: int
+  -GRID_WIDTH: int
+  -GRID_HEIGHT: int
+  -WHITE: tuple
+  -BLACK: tuple
+  -screen: Surface
+  -background_img: Surface
+  -horizontal_img: Surface
+  -vertical_img: Surface
+  -corner_tl_img: Surface
+  -corner_tr_img: Surface
+  -corner_bl_img: Surface
+  -corner_br_img: Surface
+  -path: list
+  -solution_path: list
+  -grid: list
+  -elapsed_time: float
+  -start_time: float
+  -running: boolean
+  -end_time: float
+  -message: string
+  +__init__(director)
+  +draw()
+  +rotate()
+  +is_solved(grid, solution_path): boolean
+  +update(tiempo)
+  +eventos(eventos)
+  +rotate_pipe(y, x)
+  +dibujar(pantalla)
+  +draw_pipe(pipe)
+}
+
+' Relaciones
+Escena <|-- Pipe
+
+note right of Pipe::TILE_SIZE
+  Tamaño de cada casilla: SCREEN_WIDTH // 8
+end note
+
+note right of Pipe::GRID_WIDTH
+  Ancho de la cuadrícula: 8 casillas
+end note
+
+note right of Pipe::GRID_HEIGHT
+  Alto de la cuadrícula: 6 casillas
+end note
+
+note right of Pipe::path
+  Configuración inicial de tuberías:
+  [(x, y, tipo_tubería), ...]
+end note
+
+note right of Pipe::solution_path
+  Configuración correcta para resolver:
+  [(x, y, tipo_tubería), ...]
+end note
+
+note right of Pipe::grid
+  Representación de la cuadrícula:
+  [fila][columna] = {'x', 'y', 'type'}
+end note
+
+note bottom of Pipe
+  Puzzle de tuberías donde el jugador debe rotar las piezas
+  haciendo clic sobre ellas para formar un camino continuo
+  de izquierda a derecha. Existen diferentes tipos
+  de tuberías: horizontales, verticales y curvadas en cuatro direcciones.
+  El jugador tiene un límite de 20 segundos para resolver el puzzle.
+  El puzzle se completa cuando todas las tuberías están en la
+  orientación correcta según la solución predefinida.
+end note
+
+@enduml

@@ -1,0 +1,78 @@
+@startuml KeypadPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class KeypadPuzzle {
+  -font: Font
+  -game_over_font: Font
+  -keypadX: int
+  -keypadY: int
+  -keypad_width: int
+  -keypad_height: int
+  -button_width: int
+  -button_height: int
+  -background: Surface
+  -keypad_background: Surface
+  -screen_background: Surface
+  -keys_background: list
+  -sound_end_game: Sound
+  -sound_completed: Sound
+  -sound_click: Sound
+  -keypad_buttons: list
+  -keypad_button_click: list
+  -letters_rect: list
+  -mouse_clicks: list
+  -input_text: string
+  -expected_text: string
+  -fail: boolean
+  +__init__(director)
+  +game_over(screen)
+  +click_on_button(pos, image, image_pos): boolean
+  +dibujar(pantalla)
+  +eventos(eventos)
+  +update(tiempo)
+}
+
+' Relaciones
+Escena <|-- KeypadPuzzle
+
+note right of KeypadPuzzle::keys_background
+  Lista de imágenes para los botones del teclado:
+  Números 1-9, tecla de borrado, 0, y Enter
+end note
+
+note right of KeypadPuzzle::keypad_buttons
+  Lista de tuplas con el texto del botón y su posición:
+  ('1', (768, 348)), ('2', (896, 348)), etc.
+end note
+
+note right of KeypadPuzzle::expected_text
+  Código correcto para resolver el puzzle: "7245427"
+end note
+
+note bottom of KeypadPuzzle
+  Puzzle de introducción de código donde el jugador debe 
+  introducir la combinación correcta "7245427" usando un
+  teclado numérico virtual. El jugador puede pulsar los
+  botones haciendo clic con el ratón, borrar caracteres,
+  y confirmar la entrada con un botón "OK". Si el código
+  es incorrecto, el juego termina.
+end note
+
+@enduml

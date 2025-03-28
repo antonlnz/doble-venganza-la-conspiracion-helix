@@ -1,0 +1,104 @@
+@startuml SwitchPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class SwitchPuzzle {
+  -base_path: string
+  -panel_image: Surface
+  -switch_down_image: Surface
+  -original_width: int
+  -original_height: int
+  -scale_factor: float
+  -new_width: int
+  -new_height: int
+  -timer_paused: boolean
+  -panel_x: int
+  -panel_y: int
+  -original_switch_positions: list
+  -switch_states: list
+  -disabled_switches: list
+  -switch_areas: list
+  -puzzle_solved: boolean
+  -puzzle_failed: boolean
+  -show_message: boolean
+  -message_timer: int
+  -attempts_left: int
+  -game_over: boolean
+  -time_limit: int
+  -time_remaining: int
+  -timer_alpha: int
+  -timer_pulsing: boolean
+  -timer_pulse_speed: float
+  -red_halo_active: boolean
+  -halo_alpha: int
+  -halo_max_alpha: int
+  -correct_answer: int
+  -rows: list
+  -font: Font
+  -small_font: Font
+  -medium_font: Font
+  +__init__(director)
+  +dibujar(pantalla)
+  +resetear_interruptores_activos()
+  +eventos(lista_eventos)
+  -_check_row_completion()
+  +update(tiempo)
+}
+
+' Estructura de interruptores
+class "SwitchArea (Rect)" as SwitchArea <<stereotype>> {
+  x: int
+  y: int
+  width: int
+  height: int
+}
+
+' Relaciones
+Escena <|-- SwitchPuzzle
+SwitchPuzzle o-- "*" SwitchArea : switch_areas
+
+note right of SwitchPuzzle::scale_factor
+  Factor de escala para adaptar
+  los elementos visuales al
+  tamaño de la pantalla actual
+end note
+
+note bottom of SwitchPuzzle
+  Puzzle de interruptores donde el jugador debe bajar 
+  todos los interruptores correspondientes a la fila correcta
+  de un acertijo matemático. Si activa una
+  fila incorrecta, pierde un intento y esa fila queda
+  deshabilitada. Tiene límite de tiempo y 3 intentos.
+end note
+
+note right of SwitchPuzzle::rows
+  Agrupación de interruptores por filas:
+  - Fila A: interruptores 0-4
+  - Fila B: interruptores 5-9
+  - Fila C: interruptores 10-14 
+  - Fila D: interruptores 15-19
+end note
+
+note right of SwitchPuzzle::correct_answer
+  Índice de la fila correcta:
+  0:A, 1:B, 2:C, 3:D
+  (La respuesta correcta es C)
+end note
+
+@enduml

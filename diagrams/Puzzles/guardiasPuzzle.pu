@@ -1,0 +1,86 @@
+@startuml GuardiasPuzzle
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre
+}
+
+class Guardia {
+  -WIDTH: int
+  -HEIGHT: int
+  -screen: Surface
+  -WHITE: tuple
+  -BLACK: tuple
+  -RED: tuple
+  -GREEN: tuple
+  -font: Font
+  -background_image: Surface
+  -heart_full: Surface
+  -heart_empty: Surface
+  -policeman_image: Surface
+  -policewoman_image: Surface
+  -x: int
+  -y: int
+  -image: Surface
+  -sequence: list
+  -current_index: int
+  -health: int
+  -wrong_key: boolean
+  -lives: int
+  -last_key_time: float
+  -start_time: float
+  -time_limits: list
+  -current_guardia_index: int
+  -running: boolean
+  -remaining_time: float
+  -imagenes_guardias: list
+  +__init__(director, x=0, y=0, image=None)
+  +generate_sequence(): list
+  +draw(screen)
+  +check_key(key): boolean
+  +eventos(eventos)
+  +update(tiempo_pasado)
+  +dibujar(screen)
+}
+
+' Relaciones
+Escena <|-- Guardia
+
+note right of Guardia::sequence
+  Secuencia aleatoria de letras
+  que el jugador debe introducir
+end note
+
+note right of Guardia::time_limits
+  Tiempos límite para completar
+  cada secuencia: [10, 7, 5] segundos
+end note
+
+note right of Guardia::imagenes_guardias
+  Lista de imágenes para los distintos
+  guardias que aparecen en cada nivel
+end note
+
+note bottom of Guardia
+  Puzzle de mecanografía donde el jugador debe introducir
+  secuencias de letras aleatorias antes de que se acabe el tiempo.
+  Hay tres guardias (niveles) con tiempos cada vez más ajustados.
+  El jugador tiene 3 vidas y pierde una cada vez que introduce
+  una letra incorrecta. El puzzle termina al superar los tres
+  niveles o al quedarse sin vidas.
+end note
+
+@enduml

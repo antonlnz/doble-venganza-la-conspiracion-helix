@@ -1,0 +1,86 @@
+@startuml Periodico_Banco
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre para escenas
+}
+
+class Periodico_Banco {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+' Relaciones
+Escena <|-- Periodico_Banco
+
+note top of Periodico_Banco
+  Escena final que muestra un periódico con información 
+  sobre el resultado del atraco al banco
+end note
+
+note right of Periodico_Banco::titulo
+  Título del periódico: "Noticias de la Fábrica"
+end note
+
+note right of Periodico_Banco::alpha
+  Valor para los efectos de fade in/out (0-255)
+end note
+
+note right of Periodico_Banco::fadeout
+  Controla si está en proceso de fade out
+  para salir de la escena
+end note
+
+note right of Periodico_Banco::mostrar_mensaje
+  Indica si debe mostrarse el mensaje de
+  "Toca cualquier tecla para continuar"
+end note
+
+note right of Periodico_Banco::texto_visible
+  Controla el parpadeo del texto de continuar
+end note
+
+note bottom of Periodico_Banco
+  Esta escena implementa la conclusión narrativa del juego,
+  mostrando un periódico que informa sobre el resultado del
+  atraco al banco. A diferencia de otras escenas similares,
+  este periódico marca el final del juego, por lo que al
+  presionar una tecla se sale de la escena sin cargar otra.
+  
+  Cuenta con los mismos efectos de fade in/out y mensaje
+  parpadeante que sus clases hermanas, pero al completarse
+  se invoca director.salirEscena() en lugar de cambiar a otra escena.
+end note
+
+@enduml

@@ -1,0 +1,102 @@
+@startuml Presentacion
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase base para escenas
+}
+
+class Presentacion {
+  -estado: string
+  -alpha: int
+  -tiempo: int
+  -dialogo_actual: int
+  -next_background: Surface
+  -siguienteEscena: Ayuntamiento
+  -fondo_noche: Surface
+  -fondo_callejon: Surface
+  -soldados_estaticos: list
+  -soldados_disparo: list
+  -eddie_imagen: Surface
+  -eddie_silueta: Surface
+  -vince_imagen: Surface
+  -retratos: dict
+  -fade_surface: Surface
+  -dialogos: list
+  -cajas_dialogo: dict
+  -nombres_hablantes: dict
+  -fuente: Font
+  -mostrar_triangulo: boolean
+  -tiempo_parpadeo: int
+  +__init__(director)
+  +update(tiempo)
+  +eventos(lista_eventos)
+  +dibujar(pantalla)
+}
+
+class Ayuntamiento {
+  // Escena del ayuntamiento
+}
+
+' Relaciones
+Escena <|-- Presentacion
+Presentacion *-- "1" Ayuntamiento : siguienteEscena
+
+note top of Presentacion
+  Escena de introducción que narra
+  la historia del juego mediante diálogos
+  y escenas visuales con transiciones
+end note
+
+note right of Presentacion::estado
+  Estados posibles:
+  - "FADE_IN" (entrada gradual)
+  - "DIALOGO" (mostrar conversación)
+  - "FADE_OUT" (salida gradual)
+end note
+
+note right of Presentacion::dialogos
+  Lista de diccionarios con la información de cada diálogo:
+  - texto: el contenido del diálogo
+  - fondo: qué fondo mostrar ("noche", "callejon", "negro")
+  - retrato: qué caja de diálogo mostrar
+  - personajes: qué personajes aparecen
+  - mostrar_soldados: si mostrar soldados
+  - soldados_estaticos/disparo: qué animación mostrar
+  - siluetas: si mostrar siluetas de manifestantes
+end note
+
+note right of Presentacion::cajas_dialogo
+  Diferentes estilos de cajas de diálogo
+  para cada personaje o narrador
+end note
+
+note right of Presentacion::nombres_hablantes
+  Mapeo entre identificadores de personajes
+  y sus nombres completos para mostrar
+end note
+
+note bottom of Presentacion
+  Esta clase implementa una secuencia narrativa interactiva que cuenta
+  la historia de fondo del juego mediante diálogos entre personajes
+  y escenas visuales. Utiliza un sistema de estados para controlar las
+  transiciones entre diálogos con efectos de fade in/out.
+  
+  La secuencia narra cómo Eddie, tras enfrentarse con la policía en una
+  manifestación, conoce a Vince que le propone realizar un atraco al
+  banco de Ironridge como venganza contra la corporación Helix Global.
+end note
+
+@enduml

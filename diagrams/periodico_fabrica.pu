@@ -1,0 +1,91 @@
+@startuml Periodico_Fabrica
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre para escenas
+}
+
+class Periodico_Fabrica {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  -siguienteMapa: Presentacion
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+class Presentacion {
+  // Siguiente escena
+}
+
+' Relaciones
+Escena <|-- Periodico_Fabrica
+Periodico_Fabrica *-- "1" Presentacion : siguienteMapa
+
+note top of Periodico_Fabrica
+  Escena inicial que muestra un periódico con información 
+  sobre la fábrica para introducir la historia del juego
+end note
+
+note right of Periodico_Fabrica::titulo
+  Título del periódico: "Noticias de la Fábrica"
+end note
+
+note right of Periodico_Fabrica::alpha
+  Valor para los efectos de fade in/out (0-255)
+end note
+
+note right of Periodico_Fabrica::fadeout
+  Controla si está en proceso de fade out
+  para cambiar a la siguiente escena
+end note
+
+note right of Periodico_Fabrica::mostrar_mensaje
+  Indica si debe mostrarse el mensaje de
+  "Toca cualquier tecla para continuar"
+end note
+
+note right of Periodico_Fabrica::texto_visible
+  Controla el parpadeo del texto de continuar
+end note
+
+note bottom of Periodico_Fabrica
+  Esta escena implementa la introducción narrativa del juego,
+  mostrando un periódico con información sobre la fábrica que
+  sirve como contexto inicial para la historia.
+  
+  Es la primera escena del juego y tras completarla, el jugador
+  pasa a la pantalla de Presentación donde se explica más sobre
+  la trama y los personajes. Cuenta con efectos de fade in/out y
+  un mensaje parpadeante que indica al jugador que puede continuar.
+end note
+
+@enduml

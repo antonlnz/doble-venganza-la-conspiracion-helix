@@ -1,0 +1,90 @@
+@startuml Periodico_Ayuntamiento
+
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #FFFFEE
+skinparam classBorderColor #969696
+skinparam arrowColor #4D4D4D
+skinparam shadowing false
+skinparam stereotypeCBackgroundColor #CCE6FF
+
+skinparam class {
+  FontColor #000000
+  HeaderBackgroundColor #EAEABD
+  BorderThickness 1
+}
+
+class Escena {
+  // Clase padre para escenas
+}
+
+class Periodico_Ayuntamiento {
+  -titulo: string
+  -contenido: list
+  -fondo: Surface
+  -imagen_periodico: Surface
+  -alpha: int
+  -fadeout: boolean
+  -fade_speed: int
+  -overlay: Surface
+  -tiempo_transcurrido: int
+  -mostrar_mensaje: boolean
+  -fuente: Font
+  -texto: Surface
+  -texto_rect: Rect
+  -tiempo_parpadeo: int
+  -texto_visible: boolean
+  -velocidad_parpadeo: int
+  -siguienteMapa: Almacen
+  +__init__(director)
+  +eventos(eventos)
+  +update(tiempo)
+  +dibujar(pantalla)
+}
+
+class Almacen {
+  // Siguiente escena
+}
+
+' Relaciones
+Escena <|-- Periodico_Ayuntamiento
+Periodico_Ayuntamiento *-- "1" Almacen : siguienteMapa
+
+note top of Periodico_Ayuntamiento
+  Escena que muestra un periódico con información 
+  sobre el ayuntamiento antes de pasar a la siguiente fase del juego
+end note
+
+note right of Periodico_Ayuntamiento::titulo
+  Título del periódico: "Noticias de la Fábrica"
+end note
+
+note right of Periodico_Ayuntamiento::alpha
+  Valor para los efectos de fade in/out (0-255)
+end note
+
+note right of Periodico_Ayuntamiento::fadeout
+  Controla si está en proceso de fade out
+  para cambiar a la siguiente escena
+end note
+
+note right of Periodico_Ayuntamiento::mostrar_mensaje
+  Indica si debe mostrarse el mensaje de
+  "Toca cualquier tecla para continuar"
+end note
+
+note right of Periodico_Ayuntamiento::texto_visible
+  Controla el parpadeo del texto de continuar
+end note
+
+note bottom of Periodico_Ayuntamiento
+  Esta escena implementa una transición narrativa que muestra
+  un periódico con información contextual sobre el ayuntamiento.
+  
+  Cuenta con efectos de fade in/out y un mensaje parpadeante
+  que indica al jugador que puede continuar. Al presionar
+  cualquier tecla, se realiza una transición a la escena
+  del Almacen para continuar con el juego.
+end note
+
+@enduml
