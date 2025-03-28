@@ -1,7 +1,6 @@
 import pygame
 import pytmx
 
-from Puzzles.cardPuzzle import CardPuzzle
 from Puzzles.hackPuzzle import Hack
 from Puzzles.tarjetaPuzzle import Tarjeta
 from Puzzles.keypadPuzzle import KeypadPuzzle

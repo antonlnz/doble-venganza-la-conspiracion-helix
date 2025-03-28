@@ -2,7 +2,6 @@ import pygame
 import pytmx
 
 from Puzzles.SimonDicePuzzle import SimonDice
-from Puzzles.cardPuzzle import CardPuzzle
 from Puzzles.concentric_circles_puzzle import ConcentricCirclesPuzzle
 from Puzzles.door_lock_puzzle import DoorLockPuzzle
 from Puzzles.guardiasPuzzle import Guardia
